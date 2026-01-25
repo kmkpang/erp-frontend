@@ -1,4 +1,4 @@
-<template>
+﻿<template>
   <div class="bg-img-Register main-page">
     <!-- call navigate tab -->
     <!-- <Navigate /> -->

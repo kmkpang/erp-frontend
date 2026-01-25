@@ -1,4 +1,4 @@
-<script>
+﻿<script>
 import Navigate from "./components/Navigation.vue";
 export default {
   name: "App",

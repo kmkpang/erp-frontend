@@ -1,4 +1,4 @@
-<template>
+﻿<template>
   <div class="forget-password-body">
     <div class="switch-lang-login">
       <div class="icon_language_dark me-4"></div>

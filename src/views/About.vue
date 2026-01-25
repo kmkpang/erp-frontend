@@ -1,4 +1,4 @@
-<template>
+﻿<template>
   <div class="main-page">
     <div class="page-body">
       <div class="mb-3">

@@ -1,4 +1,4 @@
-<template>
+﻿<template>
   <div class="main-page">
     <!-- call navigate tab -->
     <!-- <Navigate /> -->
@@ -581,7 +581,7 @@
         >
           <template v-slot="{ inputEvents }">
             <input
-              class="px-2 py-1 border rounded focus:outline-none focus:border-blue-300"
+              class="custom-input"
               :value="formatDatePicker(formDataLeave.date)"
               v-on="inputEvents"
               placeholder="เลือกวันที่"
@@ -611,7 +611,7 @@
         >
           <template v-slot="{ inputEvents }">
             <input
-              class="px-2 py-1 border rounded focus:outline-none focus:border-blue-300"
+              class="custom-input"
               :value="formatDatePicker(formDataLeave.date)"
               v-on="inputEvents"
               placeholder="เลือกวันที่"
@@ -646,7 +646,7 @@
         >
           <template v-slot="{ inputEvents }">
             <input
-              class="px-2 py-1 border rounded focus:outline-none focus:border-blue-300"
+              class="custom-input"
               :value="formatDatePicker(formDataLeave.date)"
               v-on="inputEvents"
               placeholder="เลือกวันที่"
@@ -662,7 +662,7 @@
         >
           <template v-slot="{ inputEvents }">
             <input
-              class="px-2 py-1 border rounded focus:outline-none focus:border-blue-300"
+              class="custom-input"
               :value="formatDatePicker(formDataLeave.dateEnd)"
               v-on="inputEvents"
               placeholder="เลือกวันที่"

@@ -1,4 +1,4 @@
-<template>
+﻿<template>
   <div class="main-page">
     <div class="h-screen pt-8 px-2" style="margin-top: 60px;">
       <!-- Section Header -->

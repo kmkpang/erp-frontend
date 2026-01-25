@@ -1,6 +1,20 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+/* Custom input styling to replace Tailwind classes */
+.custom-input {
+  padding: 0.25rem 0.5rem;
+  border: 1px solid #cfcfcf;
+  border-radius: 0.375rem;
+  transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+}
+
+.custom-input:focus {
+  outline: none;
+  border-color: #93c5fd;
+  box-shadow: 0 0 0 0.2rem rgba(147, 197, 253, 0.25);
+}
+
+.bg-white {
+  background-color: #ffffff;
+}
 
 th {
   min-width: 200px;

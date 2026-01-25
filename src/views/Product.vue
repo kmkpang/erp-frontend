@@ -1,4 +1,4 @@
-<template>
+﻿<template>
   <div class="main-page page_product">
     <!-- call navigate tab -->
     <!-- <Navigate /> -->

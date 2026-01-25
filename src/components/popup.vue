@@ -1,4 +1,4 @@
-<template>
+﻿<template>
   <transition name="fade">
     <div v-if="isOpen" class="popup">
       <div class="popup-content">

@@ -1,4 +1,4 @@
-<template>
+﻿<template>
   <div class="main-page">
     <!-- call navigate tab -->
     <!-- <Navigate /> -->
@@ -314,7 +314,7 @@
         >
           <template v-slot="{ togglePopover }">
             <input
-              class="px-2 py-1 border rounded focus:outline-none focus:border-blue-300"
+              class="custom-input"
               :value="formatDatePicker(formData.billing_date)"
               @focus="togglePopover"
               readonly
@@ -787,7 +787,7 @@
           >
             <template v-slot="{ togglePopover }">
               <input
-                class="px-2 py-1 border rounded focus:outline-none focus:border-blue-300 bg-white"
+                class="custom-input bg-white"
                 :value="formatDatePicker(formData.pay_date)"
                 @click="togglePopover"
                 readonly

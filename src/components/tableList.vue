@@ -1,4 +1,4 @@
-<template>
+﻿<template>
   <div>
     <div class="table-contain table-responsive table-form">
       <table class="table table-bordered table-striped">

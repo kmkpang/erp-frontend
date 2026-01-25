@@ -1,4 +1,4 @@
-<template>
+﻿<template>
   <div class="bg-img-login">
     <div class="switch-lang-login">
       <div class="icon_language me-4"></div>

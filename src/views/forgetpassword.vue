@@ -1,4 +1,4 @@
-<template>
+﻿<template>
   <div class="forget-password-body">
     <!-- <Navigate/> -->
     <div class="switch-lang-login">
