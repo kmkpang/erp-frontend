@@ -2,27 +2,16 @@ import { createRouter, createWebHistory } from "vue-router";
 import LoginPage from "./views/LoginPage.vue";
 import HomePage from "./views/Home.vue";
 import Product from "./views/Product.vue";
-import Employee from "./views/Employee.vue";
-import Leave from "./views/Leave.vue";
 import Category from "./views/Category.vue";
 import StockManage from "./views/StockManage.vue";
-import Salary from "./views/Salary.vue";
-import Department from "./views/Department.vue";
 import Register from "./views/Register.vue";
 import RoleManage from "./views/RoleManage.vue";
 import About from "./views/About.vue";
-import Quotation from "./views/Quotation.vue";
 import forgetPassword from "./views/forgetpassword.vue";
 import Customer from "./views/Customer.vue";
-import Invoice from "./views/Invoice.vue";
 import BillingNote from "./views/BillingNote.vue";
 import { config } from "../constant";
-import SalesReport from "./views/SalesReport.vue";
-import EmployeeReport from "./views/EmployeeReport.vue";
 import FirstRegis from "./views/FirstRegister.vue";
-import Position from "./views/Position.vue";
-import Expenses from "./views/Expenses.vue";
-import Tax from "./views/Tax.vue";
 
 const API_CALL = config["url"];
 
@@ -65,61 +54,9 @@ const routes = [
     meta: { requiresAuth: true, roles: ["SUPERUSER", "MANAGER", "SALE"] },
   },
   {
-    path: "/employee",
-    component: Employee,
-    name: "employee",
-    meta: { requiresAuth: true, roles: ["SUPERUSER", "MANAGER", "SALE"] },
-  },
-  {
-    path: "/leave",
-    component: Leave,
-    name: "leave",
-    meta: { requiresAuth: true, roles: ["SUPERUSER", "MANAGER", "SALE"] },
-  },
-  // {
-  //   path: "/salary",
-  //   component: Salary,
-  //   name: "salary",
-  //   meta: {
-  //     requiresAuth: true,
-  //     requiresAdmin: true,
-  //     roles: ["SUPERUSER", "MANAGER", "SALE"],
-  //   },
-  // },
-  {
-    path: "/department",
-    component: Department,
-    name: "department",
-    meta: { requiresAuth: true, roles: ["SUPERUSER", "MANAGER", "SALE"] },
-  },
-  {
-    path: "/position",
-    component: Position,
-    name: "position",
-    meta: { requiresAuth: true, roles: ["SUPERUSER", "MANAGER", "SALE"] },
-  },
-  {
-    path: "/quotation",
-    component: Quotation,
-    name: "quotation",
-    meta: { requiresAuth: true, roles: ["SUPERUSER", "MANAGER", "SALE"] },
-  },
-  {
     path: "/billingnote",
     component: BillingNote,
     name: "billingnote",
-    meta: { requiresAuth: true, roles: ["SUPERUSER", "MANAGER", "SALE"] },
-  },
-  {
-    path: "/invoice",
-    component: Invoice,
-    name: "invoice",
-    meta: { requiresAuth: true, roles: ["SUPERUSER", "MANAGER", "SALE"] },
-  },
-  {
-    path: "/taxinvoice",
-    component: Tax,
-    name: "taxinvoice",
     meta: { requiresAuth: true, roles: ["SUPERUSER", "MANAGER", "SALE"] },
   },
   {
@@ -141,38 +78,8 @@ const routes = [
     meta: { requiresAuth: true, requiresAdmin: true, roles: ["SUPERUSER"] },
   },
   {
-    path: "/salesreport",
-    component: SalesReport,
-    name: "salesreport",
-    meta: {
-      requiresAuth: true,
-      requiresAdmin: true,
-      roles: ["SUPERUSER", "MANAGER", "SALE"],
-    },
-  },
-  {
-    path: "/employeereport",
-    component: EmployeeReport,
-    name: "employeereport",
-    meta: {
-      requiresAuth: true,
-      requiresAdmin: true,
-      roles: ["SUPERUSER", "MANAGER", "SALE"],
-    },
-  },
-  {
     path: "/:pathMatch(.*)*",
     redirect: "/home",
-  },
-  {
-    path: "/expenses",
-    component: Expenses,
-    name: "expenses",
-    meta: {
-      requiresAuth: true,
-      requiresAdmin: true,
-      roles: ["SUPERUSER", "MANAGER", "SALE"],
-    },
   },
 ];
 

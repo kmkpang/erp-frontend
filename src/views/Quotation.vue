@@ -4096,10 +4096,11 @@ export default {
       const accessToken = localStorage.getItem("@accessToken");
 
       const now = new Date();
-      const yy = String(now.getFullYear()).slice(-2); // ปี ค.ศ. 2 หลัก
+      const yyyy = now.getFullYear(); // ปี ค.ศ. 4 หลัก
       const mm = String(now.getMonth() + 1).padStart(2, "0"); // เดือน 2 หลัก
       const dd = String(now.getDate()).padStart(2, "0"); // วันที่ 2 หลัก
-      const todayPrefix = `${yy}${mm}${dd}`; // ตัวอย่าง: 250424
+      const todayDatePart = `${yyyy}${mm}${dd}`; // ตัวอย่าง: 20260124
+      const prefix = "QT-HD";
 
       try {
         const response = await fetch(
@@ -4113,21 +4114,34 @@ export default {
         const json = await response.json();
 
         if (json.statusCode === 200 && json.data.sale_number) {
-          const lastCode = json.data.sale_number; // ตัวอย่าง: QT-2504240005
-          const lastDatePart = lastCode.slice(3, 9); // เอาเฉพาะวันที่ 6 หลัก
-          const lastNumberPart = lastCode.slice(9); // เอาเลขรัน 4 หลัก
+          const lastCode = json.data.sale_number; 
+          // รูปแบบใหม่: QT-HD20260124-01
+          // รูปแบบเก่า: QT-2601240001
 
           let nextNumber = 1;
 
-          if (lastDatePart === todayPrefix) {
-            nextNumber = parseInt(lastNumberPart) + 1;
-          }
+          // ตรวจสอบว่าเป็นรูปแบบใหม่หรือไม่ (ขึ้นต้นด้วย QT-HD)
+          if (lastCode.startsWith(prefix)) {
+             // ตัด prefix ออก: 20260124-01
+             const codeBody = lastCode.substring(prefix.length); 
+             // แยกวันที่และลำดับด้วยชีดกลาง
+             const parts = codeBody.split('-');
+             
+             if (parts.length === 2) {
+                const lastDate = parts[0];
+                const lastSeq = parts[1];
 
-          const nextNumberStr = String(nextNumber).padStart(4, "0");
-          this.formData.sale_number = `QT-${todayPrefix}${nextNumberStr}`;
+                if (lastDate === todayDatePart) {
+                   nextNumber = parseInt(lastSeq) + 1;
+                }
+             }
+          } 
+          
+          const nextNumberStr = String(nextNumber).padStart(2, "0");
+          this.formData.sale_number = `${prefix}${todayDatePart}-${nextNumberStr}`;
         } else {
           // ถ้าไม่มีข้อมูลล่าสุด หรือสถานะเป็น 400 → เริ่มรันใหม่
-          this.formData.sale_number = `QT-${todayPrefix}0001`;
+          this.formData.sale_number = `${prefix}${todayDatePart}-01`;
         }
       } catch (error) {
         console.error("Error fetching data:", error);

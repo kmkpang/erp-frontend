@@ -18,7 +18,6 @@
           :columnEditAndDelete="true"
           @handleEdit="handleEdit"
           @handleDelete="handleDelete"
-          v-if="Users && Users.length > 0"
           :isLoading="isLoading"
           :documentName="documentName"
           :showAllowButton="true"
@@ -36,7 +35,7 @@
         <Popup :isOpen="isPopupOpen" :closePopup="closePopup">
           <h2 v-if="isAddingMode">{{ t("addNewUser") }}</h2>
           <h2 v-if="isEditMode">{{ t("editUser") }}</h2>
-          <div v-if="isAddingMode" class="form-check">
+          <!-- <div v-if="isAddingMode" class="form-check">
             <input
               class="form-check-input"
               type="radio"
@@ -48,9 +47,9 @@
             <label class="form-check-label" for="radio-new-user">
               {{ t("NewUser") }}
             </label>
-          </div>
+          </div> -->
 
-          <div v-if="isAddingMode" class="form-check">
+          <!-- <div v-if="isAddingMode" class="form-check">
             <input
               class="form-check-input"
               type="radio"
@@ -62,7 +61,7 @@
             <label class="form-check-label" for="radio-existing-user">
               {{ t("UserExitsEmployee") }}
             </label>
-          </div>
+          </div> -->
           <!-- Dropdown: แสดงเฉพาะเมื่อเลือก "พนักงานที่มีอยู่" -->
           <div v-if="isExistingUser && isAddingMode" class="mt-3">
             <select
@@ -82,6 +81,25 @@
             </select>
           </div>
           <div class="mb-3 mt-3 div-for-formControl">
+            <div class="me-3">
+              <label><span style="color: red">*</span>{{ t("role") }}</label>
+            </div>
+            <select
+              class="form-control col-sm-5 col-md-6 form-select"
+              v-model="formData.RoleID"
+              required
+              :class="{ error: isEmpty.RoleID }"
+            >
+              <option
+                v-for="user in Roles"
+                :key="user.RoleID"
+                :value="user.RoleID"
+              >
+                {{ user.RoleName }}
+              </option>
+            </select>
+          </div>
+          <div class="mb-3 div-for-formControl">
             <label><span style="color: red">*</span>{{ t("firstname") }}</label>
             <input
               v-model="formData.userF_name"
@@ -125,32 +143,37 @@
           </div>
           <div class="mb-3 div-for-formControl">
             <label><span style="color: red">*</span>{{ t("password") }}</label>
-            <input
-              v-model="formData.userPassword"
-              type="text"
-              class="form-control"
-              :class="{ error: isEmpty.userPassword }"
-            />
-          </div>
-          <div class="mb-3 div-for-formControl">
-            <div class="me-3">
-              <label><span style="color: red">*</span>{{ t("role") }}</label>
+            <div class="" style="width: 50%;">
+              <div class="input-group">
+                <input
+                  :type="statusPassword ? 'text' : 'password'"
+                  class="form-control"
+                  style="padding-right: 40px;"
+                  :class="{ error: isEmpty.userPassword }"
+                  aria-label="Password"
+                  aria-describedby="basic-addon2"
+                  v-model="formData.userPassword"
+                />
+                <button
+                  class="btn btn-outline-secondary"
+                  type="button"
+                  id="button-addon2"
+                  @click="statusPassword = !statusPassword"
+                >
+                  <span
+                    :class="
+                      statusPassword
+                        ? 'mdi mdi-eye-off-outline'
+                        : 'mdi mdi-eye-circle'
+                    "
+                  ></span>
+                </button>
+              </div>
             </div>
-            <select
-              class="form-control col-sm-5 col-md-6 form-select"
-              v-model="formData.RoleID"
-              required
-              :class="{ error: isEmpty.RoleID }"
-            >
-              <option
-                v-for="user in Roles"
-                :key="user.RoleID"
-                :value="user.RoleID"
-              >
-                {{ user.RoleName }}
-              </option>
-            </select>
           </div>
+          <small class="text-info d-block mt-1" style="font-size: 13px !important;">
+            {{ t("passwordCondition") }}
+          </small>
           <div style="display: flex; justify-content: flex-end">
             <button
               v-if="isAddingMode"
@@ -278,6 +301,7 @@ export default {
       errorMessages: [],
       selectedEmployee: "",
       Employees: [],
+      statusPassword: false,
       isNewUser: true, // ค่าเริ่มต้น: เลือกผู้ใช้งานใหม่
       isExistingUser: false,
       isPopupVisible_error: false, // Controls the visibility of the error popup
@@ -498,18 +522,25 @@ export default {
         });
         const json = await response.json();
         if (json.statusCode === 200) {
-          this.Users = json.data.map((item) => {
-            // Maps API response to a table format
-            return {
-              ID: item.userID,
-              "First name": item.userF_name,
-              "Last name": item.userL_name,
-              "Phone number": item.userPhone,
-              Email: item.userEmail,
-              // Password: item.userPassword,
-              Role: item.role.RoleName,
-            };
-          });
+          const currentUserEmail = localStorage.getItem("userEmail"); // Get logged in user's email
+          this.Users = json.data
+            .filter((item) => {
+              console.log('item.F_name', item);
+              // Filter out Admin role and current logged in user
+              return item.userEmail !== currentUserEmail && item.userF_name !== 'Admin';
+            })
+            .map((item) => {
+              // Maps API response to a table format
+              return {
+                ID: item.userID,
+                "First name": item.userF_name,
+                "Last name": item.userL_name,
+                "Phone number": item.userPhone,
+                Email: item.userEmail,
+                // Password: item.userPassword,
+                Role: item.role.RoleName,
+              };
+            });
         } else {
           this.showPopup_error(json.data); // Shows an error popup if the API call fails
         }

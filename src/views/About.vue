@@ -1,215 +1,214 @@
 <template>
   <div class="main-page">
-    <!-- call navigate tab -->
-    <!-- <Navigate /> -->
     <div class="page-body">
       <div class="mb-3">
         <h2>{{ t("headerAbout") }}</h2>
       </div>
-      <div class="mt-3">
-        <div class="about-business-contain">
-          <div class="mb-3 mt-3">
-            <label class="col-sm-5 col-md-6">{{ t("customerName") }}</label>
-            <a v-if="isShowing">{{ formData.bus_name }}</a>
-            <input
-              class="form-control"
-              v-if="isEditMode"
-              v-model="formData.bus_name"
-              :class="{ error: isEmpty.bus_name }"
-            />
-          </div>
-          <div class="mb-3 mt-3">
-            <label class="col-sm-5 col-md-6">{{ t("address") }}</label>
-            <a v-if="isShowing">{{ formData.bus_address }}</a>
-            <input
-              class="form-control"
-              v-if="isEditMode"
-              v-model="formData.bus_address"
-              :class="{ error: isEmpty.bus_address }"
-            />
-          </div>
-          <div class="mb-3 mt-3">
-            <label class="col-sm-5 col-md-6">{{ t("companyWebsite") }}</label>
-            <a v-if="isShowing">{{ formData.bus_website }}</a>
-            <input
-              class="form-control"
-              v-if="isEditMode"
-              v-model="formData.bus_website"
-              :class="{ error: isEmpty.bus_website }"
-            />
-          </div>
-          <div class="mb-3 mt-3">
-            <label class="col-sm-5 col-md-6">{{ t("companyPhone") }}</label>
-            <a v-if="isShowing">{{ formData.bus_tel }}</a>
-            <input
-              class="form-control"
-              v-if="isEditMode"
-              v-model="formData.bus_tel"
-              :class="{ error: isEmpty.bus_tel }"
-              @keypress="validateInput"
-              maxlength="10"
-            />
-          </div>
-          <div class="mb-3 mt-3">
-            <label class="col-sm-5 col-md-6">{{ t("taxID") }}</label>
-            <a v-if="isShowing">{{ formData.bus_tax }}</a>
-            <input
-              class="form-control"
-              v-if="isEditMode"
-              v-model="formData.bus_tax"
-              :class="{ error: isEmpty.bus_tax }"
-              @keypress="validateInput"
-              maxlength="13"
-            />
-          </div>
-          <div class="mb-3 mt-3">
-            <label class="col-sm-5 col-md-6">{{ t("companyLogo") }}</label>
-            <img v-if="isShowing" :src="formData.bus_logo" class="image_exp" />
-            <br />
-            <input v-if="isEditMode" type="file" @change="handleFileUpload" />
-            <br />
-            <img
-              v-if="exp_files != '' || isEditMode"
-              :src="exp_files || formData.bus_logo"
-              alt="Uploaded Image"
-              class="image_exp"
-            />
-          </div>
-          <div class="mb-3 mt-3 edit_about">
-            <label class="col-sm-5 col-md-6">{{ t("bankname") }}</label>
-            <a v-if="isShowing">{{ formData.bank_name }}</a>
 
-            <select
-              v-if="isEditMode"
-              class="form-select"
-              aria-label="Default select example"
-              v-model="formData.bank_name"
-              :class="{ error: isEmpty.bank_name }"
-            >
-              <option value="ธนาคารกรุงเทพ">ธนาคารกรุงเทพ (BBL)</option>
-              <option value="ธนาคารกสิกรไทย">ธนาคารกสิกรไทย (KBANK)</option>
-              <option value="ธนาคารกรุงไทย">ธนาคารกรุงไทย (KTB)</option>
-              <option value="ธนาคารไทยพาณิชย์">ธนาคารไทยพาณิชย์ (SCB)</option>
-              <option value="ธนาคารกรุงศรีอยุธยา">
-                ธนาคารกรุงศรีอยุธยา (BAY)
-              </option>
-              <option value="ธนาคารทหารไทย">ธนาคารทหารไทย (TMB)</option>
-              <option value="ธนาคารธนชาต">ธนาคารธนชาต (TBANK)</option>
-              <option value="ธนาคารเกียรตินาคิน">
-                ธนาคารเกียรตินาคิน (KK)
-              </option>
-              <option value="ธนาคารทิสโก้">ธนาคารทิสโก้ (TISCO)</option>
-              <option value="ธนาคารซีไอเอ็มบีไทย">
-                ธนาคารซีไอเอ็มบีไทย (CIMBT)
-              </option>
-              <option value="ธนาคารแลนด์แอนด์เฮ้าส">
-                ธนาคารแลนด์แอนด์เฮ้าส (LH)
-              </option>
-              <option value="ธนาคารยูโอบี">ธนาคารยูโอบี (UOB)</option>
-              <option value="ธนาคารเพื่อการเกษตรและสหกรณ์การเกษตร">
-                ธนาคารเพื่อการเกษตรและสหกรณ์การเกษตร (BACC)
-              </option>
-              <option value="ธนาคารไอซีบซี">ธนาคารไอซีบซี (ICBC)</option>
-              <option value="ธนาคารไอซีบีซี (ไทย)">ธนาคารไอซีบีซี (ไทย)</option>
-              <option value="ธนาคารออมสิน">ธนาคารออมสิน (GSB)</option>
-            </select>
+      <div class="mt-3">
+        <!-- Main Card Container -->
+        <div class="about-business-contain bg-white shadow rounded-lg overflow-hidden">
+          
+          <!-- Business Name Header - Moved to Top -->
+          <div class="p-4 border-bottom text-center bg-light">
+             <h3 class="fw-bold text-dark m-0" v-if="isShowing">{{ formData.bus_name }}</h3>
+             <div v-if="isEditMode" class="w-full mx-5 mx-auto">
+                <label class="form-label small text-muted">Business Name</label>
+                <input 
+                   class="form-control text-center fw-bold fs-4" 
+                   v-model="formData.bus_name" 
+                   :class="{ error: isEmpty.bus_name }"
+                />
+             </div>
           </div>
-          <div class="mb-3 mt-3">
-            <label class="col-sm-5 col-md-6">{{ t("bankAccName") }}</label>
-            <a v-if="isShowing">{{ formData.bank_account }}</a>
-            <input
-              class="form-control"
-              v-if="isEditMode"
-              v-model="formData.bank_account"
-            />
-          </div>
-          <div class="mb-3 mt-3">
-            <label class="col-sm-5 col-md-6">{{ t("bankaccount") }}</label>
-            <a v-if="isShowing">{{ formData.bank_number }}</a>
-            <input
-              class="form-control"
-              v-if="isEditMode"
-              v-model="formData.bank_number"
-              :class="{ error: isEmpty.bank_number }"
-              @keypress="validateInput"
-              maxlength="15"
-            />
-          </div>
-          <div class="modal-footer">
-            <button
-              v-if="isShowing"
-              @click="handleEdit"
-              class="btn btn-primary"
-            >
-              {{ t("buttonEdit") }}
-            </button>
-            <button
-              v-if="isEditMode"
-              :disabled="isLoading"
-              class="btn btn-primary me-3"
-              @click="editBusiness"
-            >
-              <span
-                v-if="isLoading"
-                class="spinner-border spinner-border-sm"
-                role="status"
-                aria-hidden="true"
-              ></span>
-              <span v-else>{{ t("buttonSave") }}</span>
-            </button>
-            <button
-              class="btn btn-secondary"
-              v-if="isEditMode"
-              @click="closeEdit"
-            >
-              {{ t("buttonCancel") }}
-            </button>
+
+          <div class="row">
+            <!-- Left Column: Logo & Header Info -->
+            <div class="col-md-6 border-end d-flex flex-column align-items-center text-center p-4">
+              <div class="mb-4 position-relative">
+                <!-- Logo Display -->
+                <div 
+                  class="rounded-circle overflow-hidden shadow-sm d-flex align-items-center justify-content-center bg-white"
+                  style="width: 250px; height: 250px; border: 5px solid #fff;"
+                >
+                  <img 
+                    v-if="exp_files || formData.bus_logo" 
+                    :src="exp_files || formData.bus_logo" 
+                    class="w-100 h-100"
+                    style="object-fit: contain;"
+                  />
+                  <span v-else class="mdi mdi-image text-secondary" style="font-size: 80px;"></span>
+                </div>
+                
+                <!-- Edit Overlay (Only in Edit Mode) -->
+                <div v-if="isEditMode" class="mt-3">
+                  <label class="btn btn-sm btn-outline-primary shadow-sm cursor-pointer">
+                    <i class="mdi mdi-camera me-1"></i> Change Logo
+                    <input type="file" hidden @change="handleFileUpload" />
+                  </label>
+                </div>
+              </div>
+            </div>
+
+            <!-- Right Column: Details & Edit -->
+            <div class="col-md-6 p-4">
+              <!-- Header with Edit Button -->
+              <div class="d-flex justify-content-between align-items-center mb-4 border-bottom pb-3">
+                <h5 class="text-primary fw-bold m-0"><i class="mdi mdi-information-outline me-2"></i>Business Information</h5>
+                
+                <!-- Edit Button (Top Right) -->
+                <button 
+                  v-if="isShowing" 
+                  @click="handleEdit" 
+                  class="btn btn-outline-primary btn-sm rounded-pill px-4 shadow-sm"
+                >
+                  <i class="mdi mdi-pencil me-1"></i> {{ t("buttonEdit") }}
+                </button>
+              </div>
+
+              <!-- Information Grid -->
+              <div class="row g-3">
+                <!-- Address -->
+                <div class="col-12">
+                   <label class="fw-bold text-secondary mb-1">{{ t("address") }}</label>
+                   <div v-if="isShowing" class="text-dark">{{ formData.bus_address }}</div>
+                   <textarea 
+                      v-if="isEditMode"
+                      class="form-control" 
+                      rows="3"
+                      v-model="formData.bus_address"
+                      :class="{ error: isEmpty.bus_address }"
+                   ></textarea>
+                </div>
+
+                <!-- Website -->
+                <div class="col-12">
+                  <label class="fw-bold text-secondary small mb-1">{{ t("companyWebsite") }}</label>
+                  <div v-if="isShowing" class="text-dark">{{ formData.bus_website || '-' }}</div>
+                  <input v-if="isEditMode" class="form-control" v-model="formData.bus_website" :class="{ error: isEmpty.bus_website }" />
+                </div>
+
+                <!-- Phone -->
+                <div class="col-12">
+                  <label class="fw-bold text-secondary small mb-1">{{ t("companyPhone") }}</label>
+                   <div v-if="isShowing" class="text-dark">{{ formatPhoneNumber(formData.bus_tel) }}</div>
+                   <input 
+                      v-if="isEditMode" 
+                      class="form-control" 
+                      v-model="formData.bus_tel" 
+                      :class="{ error: isEmpty.bus_tel }"
+                      @keypress="validateInput"
+                      maxlength="10"
+                   />
+                </div>
+
+                 <!-- Tax ID -->
+                <div class="col-12">
+                  <label class="fw-bold text-secondary small mb-1">{{ t("taxID") }}</label>
+                   <div v-if="isShowing" class="text-dark">{{ formData.bus_tax }}</div>
+                   <input 
+                      v-if="isEditMode" 
+                      class="form-control" 
+                      v-model="formData.bus_tax" 
+                      :class="{ error: isEmpty.bus_tax }"
+                      @keypress="validateInput"
+                      maxlength="13"
+                   />
+                </div>
+
+                 <div class="col-12 mt-4 mb-2">
+                    <h5 class="text-primary fw-bold border-bottom pb-2"><i class="mdi mdi-bank me-2"></i>Banking Details</h5>
+                 </div>
+
+                 <!-- Bank Name -->
+                 <div class="col-12">
+                    <label class="fw-bold text-secondary small mb-1">{{ t("bankname") }}</label>
+                    <div v-if="isShowing" class="text-dark">{{ formData.bank_name }}</div>
+                     <select
+                      v-if="isEditMode"
+                      class="form-select"
+                      v-model="formData.bank_name"
+                      :class="{ error: isEmpty.bank_name }"
+                    >
+                      <option value="ธนาคารกรุงเทพ">ธนาคารกรุงเทพ (BBL)</option>
+                      <option value="ธนาคารกสิกรไทย">ธนาคารกสิกรไทย (KBANK)</option>
+                      <option value="ธนาคารกรุงไทย">ธนาคารกรุงไทย (KTB)</option>
+                      <option value="ธนาคารไทยพาณิชย์">ธนาคารไทยพาณิชย์ (SCB)</option>
+                      <option value="ธนาคารกรุงศรีอยุธยา">ธนาคารกรุงศรีอยุธยา (BAY)</option>
+                      <option value="ธนาคารทหารไทย">ธนาคารทหารไทย (TMB)</option>
+                      <option value="ธนาคารธนชาต">ธนาคารธนชาต (TBANK)</option>
+                      <option value="ธนาคารเกียรตินาคิน">ธนาคารเกียรตินาคิน (KK)</option>
+                      <option value="ธนาคารทิสโก้">ธนาคารทิสโก้ (TISCO)</option>
+                      <option value="ธนาคารซีไอเอ็มบีไทย">ธนาคารซีไอเอ็มบีไทย (CIMBT)</option>
+                      <option value="ธนาคารแลนด์แอนด์เฮ้าส">ธนาคารแลนด์แอนด์เฮ้าส (LH)</option>
+                      <option value="ธนาคารยูโอบี">ธนาคารยูโอบี (UOB)</option>
+                      <option value="ธนาคารเพื่อการเกษตรและสหกรณ์การเกษตร">ธนาคารเพื่อการเกษตรและสหกรณ์การเกษตร (BACC)</option>
+                      <option value="ธนาคารไอซีบซี">ธนาคารไอซีบซี (ICBC)</option>
+                      <option value="ธนาคารไอซีบีซี (ไทย)">ธนาคารไอซีบีซี (ไทย)</option>
+                      <option value="ธนาคารออมสิน">ธนาคารออมสิน (GSB)</option>
+                    </select>
+                 </div>
+
+                 <!-- Account Name -->
+                 <div class="col-12">
+                    <label class="fw-bold text-secondary small mb-1">{{ t("bankAccName") }}</label>
+                    <div v-if="isShowing" class="text-dark">{{ formData.bank_account }}</div>
+                    <input v-if="isEditMode" class="form-control" v-model="formData.bank_account" />
+                 </div>
+
+                 <!-- Account Number -->
+                 <div class="col-12">
+                    <label class="fw-bold text-secondary small mb-1">{{ t("bankaccount") }}</label>
+                    <div v-if="isShowing" class="text-dark">{{ formData.bank_number }}</div>
+                    <input 
+                      v-if="isEditMode" 
+                      class="form-control" 
+                      v-model="formData.bank_number" 
+                      :class="{ error: isEmpty.bank_number }"
+                      @keypress="validateInput"
+                      maxlength="15"
+                    />
+                 </div>
+
+              </div>
+              
+              <!-- Action Buttons (Save/Cancel) -->
+              <div v-if="isEditMode" class="d-flex justify-content-end mt-5 pt-3 border-top">
+                 <button class="btn btn-secondary me-3" @click="closeEdit">{{ t("buttonCancel") }}</button>
+                 <button class="btn btn-primary" :disabled="isLoading" @click="editBusiness">
+                    <span v-if="isLoading" class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                    {{ t("buttonSave") }}
+                 </button>
+              </div>
+
+            </div>
           </div>
         </div>
-        <div
-          v-if="isLoading"
-          class="d-flex justify-content-center align-items-center"
-        >
-          <div class="spinner-border text-primary" role="status">
+
+        <!-- Loading Overlay -->
+        <div v-if="isLoading" class="d-flex justify-content-center align-items-center mt-3 position-absolute top-50 start-50 translate-middle" style="z-index: 10;">
+          <div class="spinner-border text-primary" role="status" style="width: 3rem; height: 3rem;">
             <span class="visually-hidden">Loading...</span>
           </div>
         </div>
+
+        <!-- Popups -->
         <div v-if="isPopupVisible" class="popup-success">
           <div class="popup-content-success">
             <a>{{ popupMessage }}</a>
           </div>
         </div>
-        <!-- <div v-if="isPopupVisible_error" class="popup-success">
-          <div class="popup-content-error">
-            <a>{{ popupMessage_error }}</a>
-          </div>
-        </div> -->
+
         <div v-if="isPopupVisible_error" class="popup-error2">
           <div class="text-end">
-            <button
-              type="button"
-              class="btn-close"
-              aria-label="Close"
-              @click="closeErrorPopup"
-              style="color: #9f9999"
-            ></button>
+            <button type="button" class="btn-close" aria-label="Close" @click="closeErrorPopup" style="color: #9f9999"></button>
           </div>
           <div class="popup-content-error2">
             <ul>
-              <li v-for="(msg, index) in errorMessages" :key="index">
-                {{ msg }}
-              </li>
+              <li v-for="(msg, index) in errorMessages" :key="index">{{ msg }}</li>
             </ul>
           </div>
         </div>
-      </div>
-    </div>
-    <div
-      v-if="isLoading"
-      class="d-flex justify-content-center align-items-center"
-    >
-      <div class="spinner-border text-primary" role="status">
-        <span class="visually-hidden">Loading...</span>
       </div>
     </div>
   </div>
@@ -240,7 +239,7 @@ export default {
       Business: [],
       bus_data: [],
       Image_bus: [],
-      exp_files: [],
+      exp_files: "",
       AllBanks: [],
       BusinessJson: [],
       isShowing: true,
@@ -280,6 +279,19 @@ export default {
       if (charCode < 48 || charCode > 57) {
         event.preventDefault();
       }
+    },
+    formatPhoneNumber(phone) {
+      if (!phone || phone === '-') return "-";
+      const cleaned = ('' + phone).replace(/\D/g, '');
+      const match10 = cleaned.match(/^(\d{3})(\d{3})(\d{4})$/);
+      if (match10) {
+        return `${match10[1]}-${match10[2]}-${match10[3]}`;
+      }
+      const match9 = cleaned.match(/^(\d{2})(\d{3})(\d{4})$/);
+      if (match9) {
+        return `${match9[1]}-${match9[2]}-${match9[3]}`;
+      }
+      return phone;
     },
     closeEdit() {
       this.isEditMode = false;

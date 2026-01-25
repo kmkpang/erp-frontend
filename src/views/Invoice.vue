@@ -1159,7 +1159,12 @@ export default {
     async handleAllow(row) {
       this.shortcutAllow = true;
       await this.handleEdit(row);
-      if (this.formData.invoice_status === "Pending") {
+      console.log(this.formData.invoice_status);
+      if (
+        this.formData.invoice_status === "Pending" ||
+        this.formData.invoice_status === "ยังไม่มีใบกํากับภาษี" ||
+        this.formData.invoice_status === "Tax Invoice not Issued"
+      ) {
         await this.editInvoice2();
         this.openPopupAllow = true;
         setTimeout(() => {
@@ -1334,7 +1339,12 @@ export default {
         (inv) => inv.invoice_number === row.invoice_number
       );
 
-      console.log("this.Invoices", filteredInvoice[0].invoice_status);
+      console.log("this.Invoices status:", filteredInvoice[0]?.invoice_status);
+      
+      // หา ID ให้เจอไม่ว่าจะจาก row หรือ filteredInvoice
+      const invoiceIdVal = row.ID || (filteredInvoice[0] ? filteredInvoice[0].ID : null);
+      console.log("Invoice ID resolved:", invoiceIdVal, "From row:", row.ID);
+
       this.formData = {
         employeeID: row.employeeID,
         employeeName: row.employeeName,
@@ -1346,14 +1356,14 @@ export default {
         cus_tax: row.cus_tax,
         cus_purchase: row.cus_purchase,
         sale_totalprice: row.sale_totalprice,
-        remark: row.remark || "", // จัดการค่า remark ให้เป็น string ว่างถ้าเป็น null
-        invoice_id: row.ID,
+        remark: row.remark || "", 
+        invoice_id: invoiceIdVal,
         invoice_number: row.invoice_number,
-        invoice_status: filteredInvoice[0].invoice_status,
+        invoice_status: filteredInvoice[0] ? filteredInvoice[0].invoice_status : row.invoice_status,
         // invoice_date: formattedInvoice,
-        invoice_date: formatDateForPicker(filteredInvoice[0].invoice_date),
-        discount_quotation: quotationData.discount_quotation,
-        vatType: quotationData.vatType,
+        invoice_date: filteredInvoice[0] ? formatDateForPicker(filteredInvoice[0].invoice_date) : formatDateForPicker(row.invoice_date),
+        discount_quotation: quotationData ? quotationData.discount_quotation : 0,
+        vatType: quotationData ? quotationData.vatType : "VATexcluding",
       };
 
       this.productForms = (row.productForms || []).map((detail) => {
@@ -2981,6 +2991,11 @@ export default {
         try {
           console.log("Not Space");
           const in_id = this.formData.invoice_id;
+          if (!in_id || in_id === "null") {
+            console.error("Invalid Invoice ID:", in_id);
+            this.showPopup_error("Error: Invalid Invoice ID");
+            return;
+          }
           const response = await fetch(
             `${API_CALL}/quotation/editInvoice/${in_id}`,
             {

@@ -245,21 +245,26 @@ export default {
         console.log(json);
 
         if (response.ok) {
-          // On successful login, store token and user info in localStorage
-          localStorage.setItem("@accessToken", json.token);
-          localStorage.setItem("RoleName", json.RoleName);
-          localStorage.setItem("user_id", json.userID);
-          localStorage.setItem("user_name", json.userF_name);
-          localStorage.setItem("RoleID", json.RoleID);
-          localStorage.setItem("TokenCreate", json.TokenCreate);
+          // On successful login, check if token exists before storing
+          if (json.token) {
+            // Combine first and last name for full name
+            const fullName = json.userL_name 
+              ? `${json.userF_name} ${json.userL_name}`.trim()
+              : json.userF_name;
+            
+            localStorage.setItem("@accessToken", json.token);
+            localStorage.setItem("RoleName", json.RoleName);
+            localStorage.setItem("user_id", json.userID);
+            localStorage.setItem("user_name", fullName);
+            localStorage.setItem("RoleID", json.RoleID);
+            localStorage.setItem("TokenCreate", json.TokenCreate);
+            localStorage.setItem("userEmail", this.formUser.useremail.toLowerCase().trim());
 
-          // If token and user info are stored, redirect to home
-          if (localStorage.getItem("@accessToken")) {
             console.log("Login successful:", json);
             this.$router.push("/home");
           } else {
-            this.showPopup_error(json.data);
-            this.$router.push("/");
+            this.showPopup_error("Login failed: Token missing");
+            // this.$router.push("/");
           }
         } else {
           this.showPopup_error(`Login failed: ${json.data}`);

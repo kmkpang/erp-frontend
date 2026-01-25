@@ -1,16 +1,13 @@
 {
   "headerLang": "EN",
-
   "invoice": "Invoice",
   "billing": "Billing note",
-
   "profile": "Profile",
   "logout": "Logout",
   "home": "Home",
   "sale": "Sale",
   "administrator": "Administrator",
   "date": "Date: ",
-
   "headerQuotation": "Quotation",
   "headerProduct": "Product",
   "headerCustomer": "Contact Person",
@@ -27,15 +24,20 @@
   "headerRole": "User role",
   "headerManageUSer": "Manage User",
   "headerAbout": "About Business",
-  "headerBilling": "Billing Note",
+  "headerBilling": "Receipt/Tax Invoice",
   "headerInvoice": "Invoice",
-
+  "descAbout": "Manage business information",
+  "descCustomer": "Manage customer information",
+  "descProduct": "Manage product information",
+  "descService": "Manage service information",
+  "descBilling": "Manage receipt/tax invoice",
+  "descInvoice": "Manage invoice",
   "addQuotation": "+ Add Quotation",
   "addCustomer": "+ Add Contact Person",
   "addCustomer2": "+ Add Company",
   "addProduct": "+ Add Product",
   "addService": "+ Add Service",
-
+  "addBilling": "Create Receipt/Tax Invoice",
   "manageStock": "Manage Stock",
   "addCategory": "+ Add Category",
   "addEmployee": "+ Add Employee",
@@ -44,7 +46,6 @@
   "addPosition": "+ Add Position",
   "addPaySalary": "+ Pay Salary",
   "addUser": "+ Create User",
-
   "buttonAdd": "Add",
   "buttonSave": "Save",
   "buttonCancel": "Cancel",
@@ -53,9 +54,7 @@
   "buttonRemove": "Remove",
   "buttonConfirm": "Confirm",
   "buttonEdit": "Edit",
-
   "headerTableRole": "Role",
-
   "phoneNum": "Phone:",
   "email": "Email:",
   "taxID": "Tax ID:",
@@ -63,7 +62,6 @@
   "price": "Price",
   "product": "Product",
   "service": "Service",
-
   "headerPopupAddExpenses": "Add a new Expand",
   "headerPopupEditExpenses": "Edit a new Expand",
   "dontHaveExpenses": "Not Found Expenses",
@@ -76,7 +74,6 @@
   "headerPopupEditCustomer": "Edit Company",
   "headerPopupEditCustomer2": "Edit Customer",
   "headerPopupEditCustomer3": "Add a new Contact Person",
-
   "headerPopupAddProduct": "Add New Product",
   "headerPopupEditProduct": "Edit Product",
   "headerPopupAddService": "Add New Service",
@@ -90,18 +87,15 @@
   "productCost": "Cost: ",
   "productAmount": "Amount: ",
   "warningsizeproductImage": "*Image file limit size 5 MB",
-
   "manageStockType": "Manage Stock: ",
   "receive": "Receive",
   "issue": "Issue",
   "quantityProduct": "Amount: ",
   "current_product_amount": "Available Amount: ",
   "update_product_amount": "Final Amount: ",
-
   "headerPopupAddCategory": "Add New Category",
   "headerPopupEditCategory": "Edit Category",
   "categoryName": "Category Name: ",
-
   "headerPopupAddEmployee": "Add new Employee",
   "headerPopupEditEmployee": "Edit Employee",
   "employeeInformation": "Personal Information",
@@ -126,32 +120,27 @@
   "bankaccount": "Bank Account Number: ",
   "empname": "Employee Name: ",
   "leavetype": "Leave Type: ",
-
   "headerPopupAddDepartment": "Add New Department",
   "headerPopupEditDepartment": "Edit Department",
   "departName": "Department Name: ",
   "headerPopupAddPosition": "Add New Position",
   "headerPopupEditPosition": "Edit Position",
   "positionName": "Position Name: ",
-
   "headerpopupaddPayment": "Add Payment",
   "month": "Month: ",
   "year": "Year: ",
   "round": "Round: ",
-
   "addNewUser": "Create User",
   "editUser": "Edit User",
   "password": "Password: ",
   "comfrimpassword": "Confirm Password: ",
   "role": "Role: ",
-
   "companyWebsite": "Company Website: ",
   "companyPhone": "Company Tel: ",
   "companyPhone2": "Company Tel Continue: ",
   "companyLogo": "Company Logo: ",
   "bankAccName": "Bank Account Name: ",
   "managerbtn": "Manage",
-
   "numberQuotation": "Quotation Number: ",
   "statusQuotation": "Order Status: ",
   "waitingStatus": "Pending",
@@ -160,7 +149,8 @@
   "cancelStatus": "Pending",
   "employeeName": "Created By:",
   "customerPart": "Customer Info.",
-  "customerName": "Company Name: ",
+  "customerName": "Company Name/ Customer Name: ",
+  "customerNamePlaceholder": "Enter Company Name/ Customer Name",
   "customerAddress": "Company Address: ",
   "customerPurchaseBy": "Contact Person: ",
   "quantity": "Quantity",
@@ -180,21 +170,24 @@
   "consluPrice": "Total Price: ",
   "quotationRemark": "Remark: ",
   "characters": "Letters Left",
-
   "numberBilling": "Bill Number: ",
   "dateBilling": "Receipt Date: ",
   "payments": "Payment:",
   "cash": "Cash",
   "credit": "Credit Card",
   "mobileBanking": "Mobile Banking",
-
+  "cheque": "Cheque",
+  "select_bank": "Select Bank",
+  "pay_bank": "Bank:",
+  "pay_number": "No:",
+  "pay_branch": "Branch:",
+  "pay_date": "Transaction Date:",
   "numberInvoice": "Invoice Number: ",
   "numberTaxInvoice": "Tax Invoice Number: ",
   "dateInvoice": "Invoice Date: ",
   "statusInvoice": "Status: ",
   "statusTaxInvoice": "Tax Invoice Status: ",
   "issueReceipt": "Issue a Receipt",
-
   "deleteConfirmSentence": "Are you sure? you want to delete.",
   "AllowConfirmSentence": "Are you sure? you want to Allow.",
   "closeconfirm": "Are you sure you want to close the profile? Your edits will not be saved.",
@@ -203,12 +196,12 @@
   "NumberHeaderTable": "No.",
   "billingNumberHeaderTable": "Bill Number",
   "employeeNameHeaderTable": "Employee Name",
-  "cusNameHeaderTable": "Company Name",
-  "cusAddressHeaderTable": "Company Address",
-  "cusTelHeaderTable": "Company Tel",
-  "cusEmailHeaderTable": "Company Email",
-  "cusTaxHeaderTable": "Company Tax",
-  "cusPurchaseHeaderTable": "Company Purchase",
+  "cusNameHeaderTable": "Company /Customer Name",
+  "cusAddressHeaderTable": "Company /Customer Address",
+  "cusTelHeaderTable": "Company /Customer Tel",
+  "cusEmailHeaderTable": "Company /Customer Email",
+  "cusTaxHeaderTable": "Company /Customer Tax",
+  "cusPurchaseHeaderTable": "Company /Customer Purchase",
   "saleTotalpriceHeaderTable": "Total Before VAT",
   "remarkHeaderTable": "Remark",
   "billingDateHeaderTable": "Receipt Date",
@@ -258,7 +251,6 @@
   "quanHeaderTable": "Quantity",
   "amountHeaderTable": "Stock",
   "onlystatusHeaderTable": "Status",
-
   "sentenceSummaryYear": "Summary: ",
   "totalsaleDash": "Sales Vat 7%",
   "costDash": "Product Cost",
@@ -266,7 +258,6 @@
   "numberproductDash": "Product and Service Quantities",
   "summarySaleMonth": "Summary Sales",
   "totalbillDash": "Sales Report",
-
   "inventoryVolume": "Value Sale by Product Type",
   "jan": "jan",
   "feb": "feb",
@@ -280,11 +271,9 @@
   "oct": "oct",
   "nov": "nov",
   "dec": "dec",
-
   "report": "Report",
   "salesreport": "Sales Report",
   "employeereport": "Employee Report",
-
   "incomeDash": "Income",
   "costallDash": "Cost",
   "profitallDAsh": "Profit",
@@ -293,7 +282,6 @@
   "today": "Today",
   "thismonth": "This Month",
   "thisyear": "This Year",
-
   "fastaccess": "Fast Access",
   "salestatus": "Sale Status",
   "waitingcustomer": "Pending to Customer ",
@@ -330,11 +318,9 @@
   "salaryEdit": "Edit Salary",
   "salaryEmployeeName": "Employee Name",
   "salaryPosition": "Position ",
-
   "invoiceHeaderTable": "Invoice Number",
   "AbsentRate": "Absent Rate",
   "OvertimeRate": "Overtime Rate",
-
   "lastyear": "Last Year",
   "thisquarter": "This Quarter",
   "thisweek": "This Week",
@@ -396,7 +382,7 @@
     "cus_tax": "Please fill out Customer tax",
     "cus_tax_length": "Customer tax 13 number ",
     "cus_tax_already": "tax ID already exist",
-    "cus_name_already": "company name already exist",
+    "cus_name_already": "company/customer name already exist",
     "amount": "Please fill out Product Amount",
     "productname": "Please fill out Product Name",
     "duplicateProductName": "Product name already exist",
@@ -414,7 +400,6 @@
     "categoryName": "Please fill Categoet Name",
     "duplicatecategoryName": "Category name already exist",
     "validateImgOnly": "Images are image files only (PNG, JPG, GIF).",
-
     "title": "Please select a title",
     "F_name": "Please enter the first name",
     "L_name": "Please enter the last name",
@@ -446,11 +431,9 @@
     "duplicateDepartmentName": "Department already exist",
     "Position": "Please Fill Position ",
     "positionDup": "position already exist",
-
     "AddSucc": "Data Added Successfully",
     "EditSucc": "Edit Data Successfully",
     "DelateSucc": "Delate Data Successfully",
-
     "selectedMonth": "Please select Month",
     "selectedYear": "Please select Year",
     "selectedRound": "Please select Round",
@@ -463,7 +446,6 @@
     "company_person_email": "Please fill Customer Email",
     "company_person_email2": "Invalid email format. Please enter a valid email.",
     "company_person_customer": "Please select Customer Company",
-
     "userF_name": "Please enter your first name",
     "userL_name": "Please enter your last name",
     "userPhone": "Please enter your phone number",
@@ -522,7 +504,7 @@
   "FileLabel": "Attached",
   "Search": "Search...",
   "SearchLeve": "Search by Name...",
-  "Company": "Company",
+  "Company": "Company/Customer",
   "Customer": "Contact Person",
   "DiscontinuedLG": "Discontinued",
   "ReceiveLG": "Receipt",
@@ -531,7 +513,13 @@
   "CashLG": "Cash",
   "CardLG": "Card",
   "MobileBankLG": "MobileBank",
-  "creditDays": ["7 Days", "14 Days", "30 Days", "60 Days", "90 Days"],
+  "creditDays": [
+    "7 Days",
+    "14 Days",
+    "30 Days",
+    "60 Days",
+    "90 Days"
+  ],
   "checkProductformQTY": "Please fill Product QTY",
   "CollapseItemsAll": "Collapse All",
   "expandedItemsAll": "Expand All",
@@ -552,7 +540,6 @@
     "lastYear": "Last Year",
     "customDate": "Custom Date"
   },
-
   "dontHaveUserActive": "No active user data available at the moment",
   "dontHaveUser": "No user permission data available at the moment",
   "dontHaveSalary": "No employee salary data available at the moment",
@@ -565,7 +552,7 @@
   "dontHaveService": "No service data available at the moment",
   "dontHaveProduct": "No product data available at the moment",
   "dontHaveCustomerCompany": "No contact person data available at the moment",
-  "dontHaveCompany": "No company data available at the moment",
+  "dontHaveCompany": "No company/customer data available at the moment",
   "dontHaveBilling": "No receipt data available at the moment",
   "dontHaveInvoice": "No invoice data available at the moment",
   "dontHaveQuotataion": "No quotation data available at the moment",
@@ -574,7 +561,6 @@
   "Next": "Next",
   "Previous": "Previous",
   "pagenationShow": "Show",
-
   "expense": {
     "selectCategory": "Select Expense Category",
     "salary": "Salary",
@@ -600,5 +586,9 @@
   "MoreDays": "More Days",
   "SelectDate": "Select Date",
   "StartDateLeave": "Start Date",
-  "EndDateLeave": "End Date"
+  "EndDateLeave": "End Date",
+  "passwordCondition": "** Password must be at least 12 characters, 1 uppercase, 1 lowercase, 1 number, and 1 special character**",
+  "cusPurchasePhone": "Contact Phone:",
+  "cusPurchaseEmail": "Contact Email:",
+  "cusPurchaseRemark": "Remark:"
 }

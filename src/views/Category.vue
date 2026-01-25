@@ -534,7 +534,11 @@ export default {
           this.closeDeleteConfirmPopup();
         } else {
           // alert(json.data);
-          errorMessages.push(json.data);
+          if (typeof json.data === 'string' && json.data.includes("violates foreign key constraint")) {
+             errorMessages.push(this.$t("validation.category_in_use"));
+          } else {
+             errorMessages.push(json.data);
+          }
           this.showPopup_validate(errorMessages);
           console.log("Delete category error", json);
         }

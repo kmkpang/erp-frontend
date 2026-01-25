@@ -1,14 +1,14 @@
-<template>
+﻿<template>
   <div class="Navigation">
     <!-- Top Navigate -->
     <div>
       <nav
         class="navtop navbar navbar-expand-sm fixed-top"
-        style="flex-wrap: nowrap"
+        style="flex-wrap: nowrap; z-index: 4"
       >
         <span
-          class="mdi mdi-menu show-moblie"
-          style="cursor: pointer; display: none"
+          class="mdi mdi-menu "
+          style="cursor: pointer; width: 20px; height: 20px; font-size: 20px;"
           @click="toggleSidebarMenu"
         ></span>
 
@@ -17,19 +17,16 @@
           <a class="navbar-brand">{{ formDataBusiness.bus_name }}</a>
         </div>
         <div class="me-3">
-          <div style="cursor: pointer" @click="toggleLanguage(t('headerLang'))">
+          <div style="cursor: pointer" @click="toggleLanguage(t('headerLang'))" ref="languageBtn">
             <a>{{ t("headerLang") }}</a>
           </div>
         </div>
         <div class="me-3">
-          <div class="user-profile-button" @click="toggleDropdown">
+          <div class="user-profile-button" @click="toggleDropdown" ref="profileBtn">
             <a target="_blank" class="me-2">
-              <img
-                src="/src/assets/user.svg"
-                alt="Forest"
-                width="30"
-                height="30"
-              />
+            <div class="user-avatar text-center">
+              {{ firstChar }}
+            </div>
             </a>
             <a style="white-space: nowrap">
               {{ userName }}
@@ -40,14 +37,14 @@
     </div>
     <!-- Expanded bar - click on username box on top nav -->
     <div class="expanded-content">
-      <div v-if="isExpanded" class="dropdown-content">
+      <div v-if="isExpanded" class="dropdown-content" ref="profileDropdown">
         <p @click="openPopup">{{ t("profile") }}</p>
         <p @click="Logout">{{ t("logout") }}</p>
       </div>
     </div>
     <!-- Expanded bar - click TH/EN for switch language -->
     <div class="expanded-content">
-      <div v-if="isExpandedLanguage" class="dropdown-content">
+      <div v-if="isExpandedLanguage" class="dropdown-content" ref="languageDropdown">
         <p @click="setLanguage('th')">TH</p>
         <p @click="setLanguage('en')">EN</p>
       </div>
@@ -61,7 +58,7 @@
       >
         <div
           class="container-fluid"
-          style="padding-bottom: 100px; padding-top: 60px"
+          style="padding-bottom: 100px; padding-top: 50%;"
         >
           <ul class="navbar-nav">
             <!-- Search input -->
@@ -88,20 +85,7 @@
                 >{{ t("home") }}</router-link
               >
             </li>
-            <li
-              v-if="searchNav === ''"
-              class="nav-item"
-              :class="{ active: activePage === 'expenses' }"
-              @click="handleSidebarToggleOnMobile"
-            >
-              <router-link
-                @click="handleClicktoExpenses"
-                class="nav-link"
-                to="/"
-                :disabled="activePage === 'expenses'"
-                >{{ t("Expenses") }}</router-link
-              >
-            </li>
+
             <!--filter sidebar (if input text on search input)-->
             <li
               v-else
@@ -142,10 +126,7 @@
               @click="toggleSubSidebarSale"
               :class="{
                 active:
-                  activePage === 'quotation' ||
                   activePage === 'billingnote' ||
-                  activePage === 'invoice' ||
-                  activePage === 'taxinvoice' ||
                   activePage === 'customer',
               }"
             >
@@ -155,51 +136,6 @@
               </a>
             </li>
             <div class="sub-sidebar" v-if="isOpenSale">
-              <!-- Quotation -->
-              <li
-                v-if="searchNav === ''"
-                class="nav-item"
-                :class="{ active: activePage === 'quotation' }"
-                @click="handleSidebarToggleOnMobile"
-              >
-                <router-link
-                  @click="handleClicktoQuotation"
-                  class="nav-link"
-                  to="/quotation"
-                  :disabled="activePage === 'quotation'"
-                  >{{ t("headerQuotation") }}
-                </router-link>
-              </li>
-              <!-- Invoice -->
-              <li
-                v-if="searchNav === ''"
-                class="nav-item"
-                :class="{ active: activePage === 'invoice' }"
-                @click="handleSidebarToggleOnMobile"
-              >
-                <router-link
-                  @click="handleClicktoInvoice"
-                  class="nav-link"
-                  to="/invoice"
-                  :disabled="activePage === 'invoice'"
-                  >{{ t("headerInvoice") }}</router-link
-                >
-              </li>
-              <!-- Tax -->
-              <li
-                v-if="searchNav === ''"
-                class="nav-item"
-                :class="{ active: activePage === 'taxinvoice' }"
-                @click="handleSidebarToggleOnMobile"
-              >
-                <router-link
-                  @click="handleClicktoTaxInvoice"
-                  class="nav-link"
-                  to="/taxinvoice"
-                  :disabled="activePage === 'taxinvoice'"
-                  >{{ t("taxinvoice") }}</router-link
-                >
-              </li>
               <!-- Billing Note -->
               <li
                 v-if="searchNav === ''"
@@ -298,151 +234,8 @@
                 >
               </li>
             </div>
-            <!-- Employee Navigate -->
-            <li
-              v-if="searchNav === '' && userRole != 'SALE'"
-              class="nav-item"
-              @click="toggleSubSidebarEmp"
-              :class="{
-                active:
-                  activePage === 'employee' ||
-                  activePage === 'department' ||
-                  activePage === 'position' ||
-                  activePage === 'salary',
-              }"
-            >
-              <a class="nav-link sidebar-expanded">
-                {{ t("headerEmployee") }}
-                <i
-                  class="bi"
-                  :class="isOpenEmployee ? 'bi-dash' : 'bi-plus'"
-                ></i>
-              </a>
-            </li>
-            <div class="sub-sidebar" v-if="isOpenEmployee">
-              <!-- Employee -->
-              <li
-                v-if="searchNav === ''"
-                class="nav-item"
-                :class="{ active: activePage === 'employee' }"
-                @click="handleSidebarToggleOnMobile"
-              >
-                <router-link
-                  @click="subEmployee"
-                  class="nav-link"
-                  to="/employee"
-                  :disabled="activePage === 'employee'"
-                  >{{ t("headerEmployee") }}</router-link
-                >
-              </li>
-              <!-- leave -->
-              <li
-                v-if="searchNav === ''"
-                class="nav-item"
-                :class="{ active: activePage === 'leave' }"
-                @click="handleSidebarToggleOnMobile"
-              >
-                <router-link
-                  @click="subLeave"
-                  class="nav-link"
-                  to="/leave"
-                  :disabled="activePage === 'leave'"
-                  >{{ t("headerLeave") }}</router-link
-                >
-              </li>
-              <!-- Department -->
-              <li
-                v-if="searchNav === ''"
-                class="nav-item"
-                :class="{ active: activePage === 'department' }"
-                @click="handleSidebarToggleOnMobile"
-              >
-                <router-link
-                  @click="subEmployee_department"
-                  class="nav-link"
-                  to="/department"
-                  :disabled="activePage === 'department'"
-                  >{{ t("headerDepartment") }}</router-link
-                >
-              </li>
-              <!-- Position -->
-              <li
-                v-if="searchNav === ''"
-                class="nav-item"
-                :class="{ active: activePage === 'position' }"
-                @click="handleSidebarToggleOnMobile"
-              >
-                <router-link
-                  @click="subEmployee_position"
-                  class="nav-link"
-                  to="/position"
-                  :disabled="activePage === 'position'"
-                  >{{ t("headerPosition") }}</router-link
-                >
-              </li>
-              <!-- Salary -->
-              <!-- <li
-                v-if="searchNav === ''"
-                class="nav-item"
-                :class="{ active: activePage === 'salary' }"
-              >
-                <router-link
-                  class="nav-link"
-                  @click="subEmployee_salary"
-                  to="/salary"
-                  :disabled="activePage === 'salary'"
-                  >{{ t("headerSalary") }}</router-link
-                >
-              </li> -->
-            </div>
-            <!-- Report Navigate -->
-            <li
-              v-if="searchNav === '' && userRole === 'SUPERUSER'"
-              class="nav-item"
-              @click="toggleSubSidebarReport"
-              :class="{
-                active:
-                  activePage === 'salesreport' ||
-                  activePage === 'employeereport',
-              }"
-            >
-              <a class="nav-link sidebar-expanded">
-                {{ t("report") }}
-                <i class="bi" :class="isOpenReport ? 'bi-dash' : 'bi-plus'"></i>
-              </a>
-            </li>
-            <div class="sub-sidebar" v-if="isOpenReport">
-              <!-- Sales report -->
-              <li
-                v-if="searchNav === ''"
-                class="nav-item"
-                :class="{ active: activePage === 'salesreport' }"
-                @click="handleSidebarToggleOnMobile"
-              >
-                <router-link
-                  @click="subSalesReport"
-                  class="nav-link"
-                  to="/salesreport"
-                  :disabled="activePage === 'salesreport'"
-                  >{{ t("salesreport") }}</router-link
-                >
-              </li>
-              <!-- Employee report -->
-              <li
-                v-if="searchNav === ''"
-                class="nav-item"
-                :class="{ active: activePage === 'employeereport' }"
-                @click="handleSidebarToggleOnMobile"
-              >
-                <router-link
-                  @click="subEmployeeReport"
-                  class="nav-link"
-                  to="/employeereport"
-                  :disabled="activePage === 'employeereport'"
-                  >{{ t("employeereport") }}</router-link
-                >
-              </li>
-            </div>
+
+
             <!-- Administrator Navigate -->
             <li
               v-if="searchNav === '' && userRole === 'SUPERUSER'"
@@ -516,11 +309,15 @@
   <div>
     <!-- Popup for change profile -->
     <Popup :isOpen="isPopupOpen" :closePopup="closePopup">
+      <div class="popup-header">
+        <h5>{{ t("editUser") }}</h5>
+      </div>
       <div class="mb-3 mt-3 div-for-formProfile">
         <label>{{ t("firstname") }}</label>
         <a v-if="isShowingF_name">{{ formDataUser.userF_name }}</a>
         <input
           class="form-control"
+          style="margin-right: 8px;"
           v-if="isEditF_nameMode"
           v-model="formDataUser.userF_name"
           type="text"
@@ -535,6 +332,7 @@
         <a v-if="isShowingL_name">{{ formDataUser.userL_name }}</a>
         <input
           class="form-control"
+          style="margin-right: 8px;"
           v-if="isEditL_nameMode"
           v-model="formDataUser.userL_name"
           type="text"
@@ -546,9 +344,10 @@
       </div>
       <div class="mb-3 div-for-formProfile">
         <label>{{ t("phoneNum") }}</label>
-        <a v-if="isShowingPhone">{{ formDataUser.userPhone }}</a>
+        <a v-if="isShowingPhone">{{ formatPhoneNumber(formDataUser.userPhone) }}</a>
         <input
           class="form-control"
+          style="margin-right: 8px;"
           v-if="isEdituserPhoneMode"
           v-model="formDataUser.userPhone"
           type="text"
@@ -565,6 +364,7 @@
         <a v-if="isShowingEmail">{{ formDataUser.userEmail }}</a>
         <input
           class="form-control"
+          style="margin-right: 8px;"
           v-if="isEdituserEmailMode"
           v-model="formDataUser.userEmail"
           type="text"
@@ -576,14 +376,22 @@
       </div>
       <div class="mb-3 div-for-formProfile">
         <label>{{ t("password") }}</label>
-        <a v-if="isShowingPassword">{{ formDataUser.userPassword }}</a>
-        <input
-          class="form-control"
-          v-if="isEdituserPasswordMode"
-          v-model="formDataUser.userPassword"
-          type="text"
-          :class="{ error: inputError }"
-        />
+        <a v-if="isShowingPassword">********</a>
+        <div v-if="isEdituserPasswordMode" class="password-wrapper" 
+          style="flex: 2; position: relative; padding-right: 8px;">
+          <input
+            class="form-control"
+            v-model="formDataUser.userPassword"
+            :type="showPassword ? 'text' : 'password'"
+            :class="{ error: inputError }"
+          />
+          <span 
+            class="mdi" 
+            :class="showPassword ? 'mdi-eye-outline' : 'mdi-eye-off-outline'"
+            @click="showPassword = !showPassword"
+            style="position: absolute; right: 20px; top: 50%; transform: translateY(-50%); cursor: pointer; color: #6c757d;"
+          ></span>
+        </div>
         <button class="btn btn-outline-secondary" @click="EditPassword">
           <div class="icon-edit"></div>
         </button>
@@ -719,7 +527,7 @@ export default {
   data() {
     return {
       errorMessages: [],
-      isSidebarVisible: window.innerWidth >= 992, // เปิดเมนูเมื่อจอใหญ่
+      isSidebarVisible: false, // Default closed, user toggles manually
       isConfirmPopup: false,
       isEditF_nameMode: false,
       isEditL_nameMode: false,
@@ -738,10 +546,10 @@ export default {
       userRole: userRoles,
       isPopupOpen: false,
       searchNav: "",
-      filteredNavItems: [],
       isExpanded: false,
       isExpandedLanguage: false,
       userName: [],
+      showPassword: false,
       isOpen: false,
       isOpenSale: false,
       isOpenProduct: false,
@@ -798,28 +606,28 @@ export default {
           path: "/home",
           displayNameTh: "หน้าหลัก",
         },
-        {
-          name: "expenses",
-          displayName: "Expenses",
-          path: "/expenses",
-          displayNameTh: "รายจ่าย",
-        },
-        {
-          name: "quotation",
-          displayName: "Quotation",
-          path: "/quotation",
-          displayNameTh: "ใบเสนอราคา",
-        },
-        {
-          name: "invoice",
-          displayName: "Invoice",
-          path: "/invoice",
-          displayNameTh: "ใบวางบิล",
-        },
+        // {
+        //   name: "expenses",
+        //   displayName: "Expenses",
+        //   path: "/expenses",
+        //   displayNameTh: "รายจ่าย",
+        // },
+        // {
+        //   name: "quotation",
+        //   displayName: "Quotation",
+        //   path: "/quotation",
+        //   displayNameTh: "ใบเสนอราคา",
+        // },
+        // {
+        //   name: "invoice",
+        //   displayName: "Invoice",
+        //   path: "/invoice",
+        //   displayNameTh: "ใบวางบิล",
+        // },
         {
           name: "taxinvoice",
           displayName: "Tax Invoice",
-          path: "/taxinvoice",
+          path: "/billingnote",
           displayNameTh: "ใบกํากับภาษี",
         },
         {
@@ -858,24 +666,24 @@ export default {
           path: "/employee",
           displayNameTh: "พนักงาน",
         },
-        {
-          name: "leave",
-          displayName: "Leave",
-          path: "/leave",
-          displayNameTh: "จัดการวันลา",
-        },
-        {
-          name: "department",
-          displayName: "Department",
-          path: "/department",
-          displayNameTh: "แผนก",
-        },
-        {
-          name: "position",
-          displayName: "Position",
-          path: "/position",
-          displayNameTh: "จัดการตําแหน่งงาน",
-        },
+        // {
+        //   name: "leave",
+        //   displayName: "Leave",
+        //   path: "/leave",
+        //   displayNameTh: "จัดการวันลา",
+        // },
+        // {
+        //   name: "department",
+        //   displayName: "Department",
+        //   path: "/department",
+        //   displayNameTh: "แผนก",
+        // },
+        // {
+        //   name: "position",
+        //   displayName: "Position",
+        //   path: "/position",
+        //   displayNameTh: "จัดการตําแหน่งงาน",
+        // },
         // {
         //   name: "salary",
         //   displayName: "Salary Management",
@@ -900,18 +708,18 @@ export default {
           path: "/aboutcompany",
           displayNameTh: "เกี่ยวกับธุรกิจ",
         },
-        {
-          name: "salesreport",
-          displayName: "Sales Report",
-          path: "/salesreport",
-          displayNameTh: "รายงานการขาย",
-        },
-        {
-          name: "employeereport",
-          displayName: "Sales Report",
-          path: "/employeereport",
-          displayNameTh: "รายงานพนักงาน",
-        },
+        // {
+        //   name: "salesreport",
+        //   displayName: "Sales Report",
+        //   path: "/salesreport",
+        //   displayNameTh: "รายงานการขาย",
+        // },
+        // {
+        //   name: "employeereport",
+        //   displayName: "Sales Report",
+        //   path: "/employeereport",
+        //   displayNameTh: "รายงานพนักงาน",
+        // },
       ],
     };
   },
@@ -922,7 +730,7 @@ export default {
     },
     filteredNavItems() {
       const search = this.searchNav.toLowerCase();
-      const isThai = /[\u0E00-\u0E7F]/.test(search); // ตรวจสอบว่าเป็นภาษาไทยหรือไม่
+      const isThai = /[\u0E00-\u0E7F]/.test(search); 
 
       return this.navItems.filter((item) => {
         if (isThai) {
@@ -938,6 +746,12 @@ export default {
           );
         }
       });
+    },
+    firstChar() {
+      if (this.userName) {
+        return this.userName.charAt(0).toUpperCase();
+      }
+      return "U";
     },
     //get role of user from localstorage
     userRole() {
@@ -979,8 +793,47 @@ export default {
   },
   mounted() {
     console.log("Sidebar:", this.$refs.sidebar); // ตรวจสอบค่า
+    document.addEventListener("click", this.handleClickOutside);
+  },
+  beforeUnmount() {
+    document.removeEventListener("click", this.handleClickOutside);
   },
   methods: {
+    handleClickOutside(event) {
+      // Sidebar closing
+      if (
+        this.isSidebarVisible &&
+        this.$refs.sidebar &&
+        !this.$refs.sidebar.contains(event.target) &&
+        !event.target.closest(".mdi-menu")
+      ) {
+        this.isSidebarVisible = false;
+      }
+
+      // Profile Dropdown closing
+      if (this.isExpanded) {
+        if (
+          this.$refs.profileDropdown &&
+          !this.$refs.profileDropdown.contains(event.target) &&
+          this.$refs.profileBtn &&
+          !this.$refs.profileBtn.contains(event.target)
+        ) {
+          this.isExpanded = false;
+        }
+      }
+
+      // Language Dropdown closing
+      if (this.isExpandedLanguage) {
+        if (
+          this.$refs.languageDropdown &&
+          !this.$refs.languageDropdown.contains(event.target) &&
+          this.$refs.languageBtn &&
+          !this.$refs.languageBtn.contains(event.target)
+        ) {
+          this.isExpandedLanguage = false;
+        }
+      }
+    },
     isMobile() {
       return window.innerWidth <= 768; // กำหนดขนาดสำหรับ mobile
     },
@@ -1002,16 +855,20 @@ export default {
     toggleSidebarMenu() {
       this.isSidebarVisible = !this.isSidebarVisible;
     },
-    updateWidth() {
-      this.isSidebarVisible = window.innerWidth >= 992;
+    formatPhoneNumber(phone) {
+      if (!phone || phone === '-') return "-";
+      const cleaned = ('' + phone).replace(/\D/g, '');
+      const match10 = cleaned.match(/^(\d{3})(\d{3})(\d{4})$/);
+      if (match10) {
+        return `${match10[1]}-${match10[2]}-${match10[3]}`;
+      }
+      const match9 = cleaned.match(/^(\d{2})(\d{3})(\d{4})$/);
+      if (match9) {
+        return `${match9[1]}-${match9[2]}-${match9[3]}`;
+      }
+      return phone;
     },
-    mounted() {
-      window.addEventListener("resize", this.updateWidth);
-    },
-    beforeUnmount() {
-      window.removeEventListener("resize", this.updateWidth);
-    },
-    //validate Email format after @/. must be text
+    // Validate email format using regular expressiont be text
     validateEmail(email) {
       const emailRegex = /^[^\s@]+@[^\s@]+\.[a-zA-Z]{2,}(\.[a-zA-Z]{2,})?$/;
       return emailRegex.test(email);
@@ -1598,6 +1455,7 @@ export default {
       const accessToken = localStorage.getItem("@accessToken");
       if (!accessToken) {
         console.error("JWT token is missing");
+        return;
       }
       this.isLoading = true;
       try {
@@ -1642,6 +1500,9 @@ export default {
     //getrole of user
     async getRole() {
       const accessToken = localStorage.getItem("@accessToken");
+      if (!accessToken) {
+        return;
+      }
       try {
         const response = await fetch(`${API_CALL}/auth/GetRole`, {
           headers: {
@@ -1664,6 +1525,9 @@ export default {
       const userID = localStorage.getItem("user_id");
       this.getRole();
       const accessToken = localStorage.getItem("@accessToken");
+      if (!accessToken) {
+        return;
+      }
       try {
         const response = await fetch(`${API_CALL}/auth/GetUserByID/${userID}`, {
           headers: {

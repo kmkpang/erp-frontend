@@ -6,15 +6,12 @@
       <div class="mb-3">
         <h2>{{ t("headerBilling") }}</h2>
       </div>
-      <!-- <div class="add-btn mb-3">
-        <input
-          v-model="searchQuery"
-          type="text"
-          class="form-control custome-search-css"
-          style="width: 20%"
-          :placeholder="$t('Search')"
-        />
-      </div> -->
+      <!-- ✅ Add New Billing Button -->
+      <div class="add-btn mb-3">
+        <button class="btn btn-primary" @click="openPopup">
+          <i class="mdi mdi-plus"></i> {{ t("addBilling") }}
+        </button>
+      </div>
       <div class="row mb-3">
         <div class="col-6 col-sm-6 col-md-6 col-lg-3">
           <input
@@ -315,19 +312,20 @@
           locale="th-TH"
           :format="formatDatePicker"
         >
-          <template v-slot="{ inputEvents }">
+          <template v-slot="{ togglePopover }">
             <input
               class="px-2 py-1 border rounded focus:outline-none focus:border-blue-300"
               :value="formatDatePicker(formData.billing_date)"
-              v-on="inputEvents"
+              @focus="togglePopover"
+              readonly
               placeholder="เลือกวันที่"
-              style="width: 100%"
+              style="width: 100%; cursor: pointer"
             />
           </template>
         </v-date-picker>
       </div>
       <div class="mb-3 div-for-formControl">
-        <label class="col-sm-5 col-md-2">{{ t("employeeName") }}</label>
+        <label class="col-sm-6 col-md-6">{{ t("employeeName") }}</label>
         <input
           class="form-control dropdown_selector readonly"
           v-model="formData.employeeName"
@@ -343,7 +341,42 @@
       <div class="mb-3 div-for-InputDropdown">
         <label class="col-sm-6 col-md-6">{{ t("customerName") }}</label>
         <div class="relative-wrapper">
+          <!-- ✅ Add mode: Customer selection dropdown -->
+          <div v-if="!isEditMode" style="position: relative">
+            <input
+              list="customerList"
+              name="customerBrowser"
+              class="form-control"
+              v-model="selectedCusName"
+              @input="getDetailCustomer()"
+              :class="{ error: isEmpty.cus_name }"
+              autoComplete="off"
+              style="width: 100%; padding-right: 30px; font-size: 14px"
+              :placeholder="t('customerNamePlaceholder')"
+            />
+            <span
+              style="
+                position: absolute;
+                right: 16px;
+                top: 50%;
+                transform: translateY(-50%) scaleX(1.5);
+                font-size: 8px;
+                color: #888;
+              "
+            >
+              ▼
+            </span>
+            <datalist id="customerList">
+              <option
+                v-for="item in Customers"
+                :key="item.cus_id"
+                :value="item.cus_name"
+              ></option>
+            </datalist>
+          </div>
+          <!-- Edit mode: Readonly -->
           <input
+            v-else
             class="form-control readonly"
             v-model="formData.cus_name"
             :class="{ error: inputError }"
@@ -355,53 +388,62 @@
       <div class="mb-3 div-for-formControl">
         <label class="col-sm-5 col-md-6">{{ t("customerAddress") }}</label>
         <input
-          class="form-control readonly"
+          class="form-control"
           v-model="formData.cus_address"
-          readonly
-          disabled
+          :class="{ error: isEmpty.cus_address }"
+          placeholder="กรุณากรอกที่อยู่"
         />
       </div>
       <div class="mb-3 div-for-formControl">
         <label class="col-sm-5 col-md-6">{{ t("phoneNum") }}</label>
         <input
-          class="form-control readonly"
+          class="form-control"
           v-model="formData.cus_tel"
-          readonly
-          disabled
+          :class="{ error: isEmpty.cus_tel }"
+          placeholder="กรุณากรอกเบอร์โทรศัพท์"
         />
       </div>
       <div class="mb-3 div-for-formControl">
         <label class="col-sm-5 col-md-6">{{ t("email") }}</label>
         <input
-          class="form-control readonly"
+          class="form-control"
           v-model="formData.cus_email"
-          readonly
-          disabled
+          :class="{ error: isEmpty.cus_email }"
+          placeholder="กรุณากรอกอีเมล"
         />
       </div>
       <div class="mb-3 div-for-formControl">
         <label class="col-sm-5 col-md-6">{{ t("taxID") }}</label>
         <input
-          class="form-control readonly"
+          class="form-control"
           v-model="formData.cus_tax"
-          readonly
-          disabled
+          :class="{ error: isEmpty.cus_tax }"
+          placeholder="กรุณากรอกเลขประจำตัวผู้เสียภาษี"
         />
       </div>
       <div class="mb-3 div-for-formControl">
         <label class="col-sm-5 col-md-6">{{ t("customerPurchaseBy") }}</label>
         <input
-          class="form-control readonly"
+          class="form-control"
           v-model="formData.cus_purchase"
-          readonly
-          disabled
+          :class="{ error: isEmpty.cus_purchase }"
+          placeholder="กรุณากรอกผู้ติดต่อ"
         />
       </div>
     </div>
     <div class="mb-3">
-      <div class="Register-contain" style="padding: 20px; width: unset">
+      <div class="Register-contain" :class="{ error: isEmpty.productForms }" style="padding: 20px; width: unset">
         <div>
           <h5 style="text-decoration-line: underline">{{ t("product") }}</h5>
+          <!-- ✅ Add Product Button (only in Add mode) -->
+          <div v-if="!isEditMode" class="mb-3">
+            <button
+              class="round-button btn btn-primary"
+              @click="showingAddProduct"
+            >
+              +
+            </button>
+          </div>
           <table class="table">
             <thead>
               <tr>
@@ -411,59 +453,118 @@
                 <th class="unit-column">{{ t("pro_unit") }}</th>
                 <th class="discount-column">{{ t("discount") }}</th>
                 <th class="total-price-column">{{ t("totalPrice") }}</th>
+                <th v-if="!isEditMode" class="action-column"></th>
               </tr>
             </thead>
             <tbody>
               <tr v-for="(form, index) in productForms" :key="index">
-                <td>
-                  <input
-                    class="form-control readonly"
-                    v-model="form.productname"
-                    readonly
-                    disabled
-                  />
-                  <textarea
-                    v-if="form.showDetails || form.product_detail !== ''"
-                    class="form-control"
-                    v-model="form.product_detail"
-                    rows="3"
-                    readonly
-                    disabled
-                  ></textarea>
+                <td class="product-name-column">
+                  <!-- ✅ Add mode: Product selection -->
+                  <div v-if="!isEditMode" class="relative-wrapper">
+                    <div style="position: relative">
+                      <input
+                        :list="'productList' + index"
+                        class="form-control"
+                        v-model="form.productName"
+                        @input="getDetailProduct(form, index)"
+                        :class="{ error: inputError }"
+                        autoComplete="off"
+                        style="width: 100%; padding-right: 30px; font-size: 14px"
+                        placeholder="เลือกสินค้า"
+                      />
+                      <span
+                        style="
+                          position: absolute;
+                          right: 16px;
+                          top: 50%;
+                          transform: translateY(-50%) scaleX(1.5);
+                          font-size: 8px;
+                          color: #888;
+                        "
+                      >
+                        ▼
+                      </span>
+                    </div>
+                    <datalist :id="'productList' + index">
+                      <option
+                        v-for="item in Products"
+                        :key="item.productID"
+                        :value="item.productname"
+                      ></option>
+                    </datalist>
+
+                    <a
+                      class="text-muted ng-star-inserted text-start"
+                      href="javascript:void(0)"
+                      @click="toggleProductDetail(form)"
+                    >
+                      <div class="description-row">
+                        เพิ่มรายละเอียดสินค้า
+                      </div>
+                    </a>
+                    <textarea
+                      v-if="form.showDetails || form.product_detail !== ''"
+                      class="form-control"
+                      v-model="form.product_detail"
+                      rows="3"
+                    ></textarea>
+                  </div>
+                  <!-- Edit mode: Readonly -->
+                  <div v-else>
+                    <input
+                      class="form-control readonly"
+                      v-model="form.productname"
+                      readonly
+                      disabled
+                    />
+                    <textarea
+                      v-if="form.showDetails || form.product_detail !== ''"
+                      class="form-control"
+                      v-model="form.product_detail"
+                      rows="3"
+                      readonly
+                      disabled
+                    ></textarea>
+                  </div>
                 </td>
-                <td>
+                <td class="price-column">
                   <input
                     class="form-control readonly"
                     v-model="form.price"
-                    readonly
-                    disabled
+                    type="number"
+                    min="0"
+                    @input="updatePrice2(form, index)"
+                    :readonly="isEditMode || form.isReadonly2"
+                    :disabled="isEditMode || form.isDisabled2"
                   />
                 </td>
-                <td>
+                <td class="quantity-column">
                   <input
-                    class="form-control readonly"
+                    class="form-control"
                     v-model="form.sale_qty"
-                    @input="updatePrice(form)"
-                    readonly
-                    disabled
+                    type="number"
+                    min="1"
+                    @input="updatePrice2(form, index)"
+                    :readonly="isEditMode"
+                    :disabled="isEditMode"
                   />
                 </td>
-                <td>
+                <td class="unit-column">
                   <input
                     class="form-control"
                     v-model="form.pro_unti"
-                    readonly
-                    disabled
+                    :readonly="isEditMode"
+                    :disabled="isEditMode"
                   />
                 </td>
 
-                <td>
+                <td class="discount-column">
                   <div class="discount-type">
                     <select
                       class="form-control form-select"
                       v-model="form.discounttype"
-                      @change="updatePrice(form)"
-                      :disabled="true"
+                      @change="updatePrice2(form, index)"
+                      :disabled="isEditMode"
                       style="
                         border-top-right-radius: 0px;
                         border-bottom-right-radius: 0px;
@@ -485,21 +586,31 @@
                       "
                       class="form-control"
                       v-model="form.sale_discount"
-                      readonly
-                      disabled
+                      type="number"
                       min="0"
                       @input="limitDiscount(form)"
-                      @change="updatePrice(form)"
+                      @change="updatePrice2(form, index)"
+                      :readonly="isEditMode"
+                      :disabled="isEditMode"
                     />
                   </div>
                 </td>
-                <td>
+                <td class="total-price-column">
                   <input
                     class="form-control readonly"
                     v-model="form.sale_price"
                     readonly
                     disabled
                   />
+                </td>
+                <!-- ✅ Delete button (only in Add mode) -->
+                <td v-if="!isEditMode" class="action-column">
+                  <button
+                    class="btn btn-danger btn-sm"
+                    @click="closingProduct(index)"
+                  >
+                    <i class="mdi mdi-delete"></i>
+                  </button>
                 </td>
               </tr>
             </tbody>
@@ -512,14 +623,14 @@
         <label class="col-sm-5 col-md-6">{{ t("totalDiscount") }}</label>
         <input
           class="form-control readonly"
-          v-model="formData.total_discount"
+          :value="calculatedTotalDiscount.toFixed(2)"
           readonly
           disabled
           :class="{ error: inputError }"
         />
       </div>
       <div class="mb-3 div-for-formControl">
-        <!-- <label class="col-sm-5 col-md-6">{{ t("consluPrice") }} </label> -->
+        <!-- ราคารวม (ก่อนหัก VAT หรือหลังหัก VAT ขึ้นอยู่กับประเภท) -->
         <label
           v-if="this.formData.vatType === 'VATincluding'"
           class="col-sm-5 col-md-6"
@@ -529,7 +640,7 @@
         <input
           v-if="this.formData.vatType === 'VATincluding'"
           class="form-control readonly"
-          v-model="formData.sale_totalprice"
+          :value="calculatedFinalPrice.toFixed(2)"
           readonly
           :class="{ error: inputError }"
           disabled
@@ -537,7 +648,7 @@
         <input
           v-else
           class="form-control readonly"
-          v-model="formData.Net_price"
+          :value="calculatedNetPrice.toFixed(2)"
           readonly
           :class="{ error: inputError }"
           disabled
@@ -553,7 +664,7 @@
               value="VATexcluding"
               v-model="formData.vatType"
               @change="vatTypeChange()"
-              disabled
+              :disabled="isEditMode"
             />
             <label class="form-check-label" for="inlineCheckbox1">{{
               t("vatType1")
@@ -566,7 +677,7 @@
               value="VATincluding"
               v-model="formData.vatType"
               @change="vatTypeChange()"
-              disabled
+              :disabled="isEditMode"
             />
             <label class="form-check-label" for="inlineCheckbox2">{{
               t("vatType2")
@@ -578,7 +689,7 @@
         <label class="col-sm-5 col-md-6">{{ t("vatPrice") }}</label>
         <input
           placeholder="vat price 7%"
-          v-model="formData.vat"
+          :value="calculatedVat.toFixed(2)"
           class="form-control readonly"
           readonly
           disabled
@@ -595,7 +706,7 @@
         <input
           v-if="this.formData.vatType === 'VATincluding'"
           class="form-control readonly"
-          v-model="formData.Net_price"
+          :value="calculatedNetPrice.toFixed(2)"
           readonly
           :class="{ error: inputError }"
           disabled
@@ -603,7 +714,7 @@
         <input
           v-else
           class="form-control readonly"
-          v-model="formData.sale_totalprice"
+          :value="calculatedFinalPrice.toFixed(2)"
           readonly
           :class="{ error: inputError }"
           disabled
@@ -626,9 +737,66 @@
           :class="{ error: inputError }"
         >
           <option value="Cash">{{ t("cash") }}</option>
-          <option value="Card">{{ t("credit") }}</option>
           <option value="MobileBank">{{ t("mobileBanking") }}</option>
+          <option value="Cheque">{{ t("cheque") }}</option>
         </select>
+      </div>
+
+      <!-- ✅ New: Payment details for Bank/Cheque -->
+      <div v-if="formData.payments === 'MobileBank' || formData.payments === 'Cheque'" class="border p-3 mb-3 bg-light rounded">
+        <div class="mb-2 div-for-formControl">
+          <label class="col-sm-5 col-md-6">{{ t("pay_bank") }}</label>
+          <select
+            class="form-select"
+            v-model="formData.pay_bank"
+            :class="{ error: inputError }"
+          >
+            <option value="" disabled selected>{{ t("select_bank") }}</option>
+            <option value="ธนาคารกรุงเทพ">ธนาคารกรุงเทพ (BBL)</option>
+            <option value="ธนาคารกสิกรไทย">ธนาคารกสิกรไทย (KBANK)</option>
+            <option value="ธนาคารกรุงไทย">ธนาคารกรุงไทย (KTB)</option>
+            <option value="ธนาคารไทยพาณิชย์">ธนาคารไทยพาณิชย์ (SCB)</option>
+            <option value="ธนาคารกรุงศรีอยุธยา">ธนาคารกรุงศรีอยุธยา (BAY)</option>
+            <option value="ธนาคารทหารไทย">ธนาคารทหารไทย (TMB)</option>
+            <option value="ธนาคารธนชาต">ธนาคารธนชาต (TBANK)</option>
+            <option value="ธนาคารเกียรตินาคิน">ธนาคารเกียรตินาคิน (KK)</option>
+            <option value="ธนาคารทิสโก้">ธนาคารทิสโก้ (TISCO)</option>
+            <option value="ธนาคารซีไอเอ็มบีไทย">ธนาคารซีไอเอ็มบีไทย (CIMBT)</option>
+            <option value="ธนาคารแลนด์แอนด์เฮ้าส">ธนาคารแลนด์แอนด์เฮ้าส (LH)</option>
+            <option value="ธนาคารยูโอบี">ธนาคารยูโอบี (UOB)</option>
+            <option value="ธนาคารเพื่อการเกษตรและสหกรณ์การเกษตร">ธนาคารเพื่อการเกษตรและสหกรณ์การเกษตร (BACC)</option>
+            <option value="ธนาคารไอซีบซี">ธนาคารไอซีบซี (ICBC)</option>
+            <option value="ธนาคารไอซีบีซี (ไทย)">ธนาคารไอซีบีซี (ไทย)</option>
+            <option value="ธนาคารออมสิน">ธนาคารออมสิน (GSB)</option>
+          </select>
+        </div>
+        <div class="mb-2 div-for-formControl">
+          <label class="col-sm-5 col-md-6">{{ t("pay_number") }}</label>
+          <input class="form-control" v-model="formData.pay_number" :placeholder="formData.payments === 'Cheque' ? 'เลขที่เช็ค' : 'เลขที่รายการ'" />
+        </div>
+        <div class="mb-2 div-for-formControl">
+          <label class="col-sm-5 col-md-6">{{ t("pay_branch") }}</label>
+          <input class="form-control" v-model="formData.pay_branch" placeholder="สาขาธนาคาร" />
+        </div>
+        <div class="mb-2 div-for-formControl">
+          <label class="col-sm-5 col-md-6">{{ t("pay_date") }}</label>
+          <v-date-picker
+            v-model="formData.pay_date"
+            locale="th-TH"
+            :format="formatDatePicker"
+          >
+            <template v-slot="{ togglePopover }">
+              <input
+                class="px-2 py-1 border rounded focus:outline-none focus:border-blue-300 bg-white"
+                :value="formatDatePicker(formData.pay_date)"
+                @click="togglePopover"
+                readonly
+                placeholder="เลือกวันที่"
+                style="width: 100%; cursor: pointer"
+              />
+            </template>
+          </v-date-picker>
+        </div>
       </div>
       <div class="mb-5 div-for-formControl-textarea">
         <label class="col-sm-6 col-md-6 label-textarea">{{
@@ -650,10 +818,26 @@
       </div>
     </div>
     <div class="modal-footer">
+      <!-- ✅ Add mode: Save button -->
       <button
+        v-if="!isEditMode"
         :disabled="isLoading"
         class="btn btn-primary me-3"
-        v-if="isEditMode"
+        @click="saveBilling"
+      >
+        <span
+          v-if="isLoading"
+          class="spinner-border spinner-border-sm"
+          role="status"
+          aria-hidden="true"
+        ></span>
+        <span v-else>{{ t("buttonSave") }}</span>
+      </button>
+      <!-- Edit mode: Edit button -->
+      <button
+        v-else
+        :disabled="isLoading"
+        class="btn btn-primary me-3"
         @click="editBilling"
       >
         <span
@@ -902,7 +1086,11 @@ export default {
       Business: [],
       Products: [],
       Employees: [],
+      Customers: [], // ✅ Added for customer selection
       productForms: [],
+      isEditMode: false, // ✅ Added to differentiate Add vs Edit mode
+      selectedCusName: "", // ✅ Added for customer dropdown
+      popupMessage: "", // ✅ Added for success messages
       formData: {
         bus_id: "",
         cus_id: "",
@@ -940,12 +1128,29 @@ export default {
         billing_number: "",
         billing_status: "",
         billing_date: "",
-        payments: "",
+        payments: "Cash", // ✅ Set default payment method
+        pay_bank: "",
+        pay_number: "",
+        pay_branch: "",
+        pay_date: "",
         status: "",
         pdfname: "",
         file: "",
+        vatType: "VATexcluding", // ✅ Added VAT type
       },
       searchQuery: "",
+      isEmpty: { // ✅ Added for form validation
+        cus_name: false,
+        employeeID: false,
+        billing_date: false,
+        productForms: false,
+        cus_address: false,
+        cus_tel: false,
+        cus_email: false,
+        cus_purchase: false,
+        cus_tax: false,
+        pay_bank: false,
+      },
     };
   },
   computed: {
@@ -984,9 +1189,6 @@ export default {
         //key of lang, key of data that get from API
         // { label: this.t("billingStatusHeaderTable"), key: "billing_status" },
         { label: this.t("billingNumberHeaderTable"), key: "billing_number" },
-        { label: this.t("tax_invoice_number"), key: "tax_invoice_number" },
-        { label: this.t("invoiceHeaderTable"), key: "sale_number" },
-        { label: this.t("salenumberHeaderTable"), key: "invoice_number" },
         { label: this.t("employeeNameHeaderTable"), key: "employeeName" },
         { label: this.t("cusNameHeaderTable"), key: "cus_name" },
         { label: this.t("cusAddressHeaderTable"), key: "cus_address" },
@@ -1014,24 +1216,36 @@ export default {
       }
 
       if (this.t("headerLang") === "TH") {
-        filteredInvoices = filteredInvoices.map((inv) => ({
-          ...inv,
-          showAllowButton: true,
-          // statusds: inv.deleted_at,
-          billing_status:
-            inv.billing_status === "Complete"
-              ? this.t("CompleteLG")
-              : inv.billing_status, // ถ้าไม่ตรงเงื่อนไขใด ๆ ใช้ค่าเดิม
+        filteredInvoices = filteredInvoices.map((inv) => {
+          const { 
+            tax_invoice_number, 
+            sale_number, 
+            invoice_number, 
+            quotation_num,
+            bus_id,
+            created_at,
+            updated_at,
+            ...rest 
+          } = inv;
+          return {
+            ...rest,
+            showAllowButton: true,
+            // statusds: inv.deleted_at,
+            billing_status:
+              inv.billing_status === "Complete"
+                ? this.t("CompleteLG")
+                : inv.billing_status, // ถ้าไม่ตรงเงื่อนไขใด ๆ ใช้ค่าเดิม
 
-          payments:
-            inv.payments === "Cash"
-              ? this.t("CashLG")
-              : inv.payments === "Card"
-              ? this.t("CardLG")
-              : inv.payments === "MobileBank"
-              ? this.t("MobileBankLG")
-              : inv.payments, // ถ้าไม่ตรงเงื่อนไขใด ๆ ใช้ค่าเดิม
-        }));
+            payments:
+              inv.payments === "Cash"
+                ? this.t("CashLG")
+                : inv.payments === "Card"
+                ? this.t("CardLG")
+                : inv.payments === "MobileBank"
+                ? this.t("MobileBankLG")
+                : inv.payments, // ถ้าไม่ตรงเงื่อนไขใด ๆ ใช้ค่าเดิม
+          };
+        });
 
         const monthMapping = {
           Jan: "ม.ค.",
@@ -1061,6 +1275,58 @@ export default {
       }
 
       return filteredInvoices; // ถ้าไม่มีการค้นหาแสดงทั้งหมด
+    },
+    // ✅ Added for product filtering
+    filteredProducts() {
+      return this.Products.filter(
+        (product) => 
+          !product.Status || // If Status is null/undefined, include it
+          product.Status === "Active" || 
+          product.Status === "OpenSale"
+      );
+    },
+
+    // ✅ Computed properties for automatic price calculation
+    calculatedTotalPrice() {
+      return this.productForms.reduce((total, form) => {
+        console.log(form);
+        return total + (parseFloat(form.price) || 0) * (parseFloat(form.sale_qty) || 0);
+      }, 0);
+    },
+
+    calculatedTotalDiscount() {
+      return this.productForms.reduce((total, form) => {
+        const qty = parseFloat(form.sale_qty) || 0;
+        const price = parseFloat(form.price) || 0;
+        const discount = parseFloat(form.sale_discount) || 0;
+
+        if (form.discounttype === "percent") {
+          return total + (qty * price * discount) / 100;
+        } else {
+          return total + discount;
+        }
+      }, 0);
+    },
+
+    calculatedNetPrice() {
+      return this.calculatedTotalPrice - this.calculatedTotalDiscount;
+    },
+
+    calculatedVat() {
+      if (this.formData.vatType === "VATexcluding") {
+        return (this.calculatedNetPrice * 7) / 100;
+      } else {
+        // VATincluding
+        return (this.calculatedNetPrice * 7) / 107;
+      }
+    },
+
+    calculatedFinalPrice() {
+      if (this.formData.vatType === "VATexcluding") {
+        return this.calculatedNetPrice + this.calculatedVat;
+      } else {
+        return this.calculatedNetPrice;
+      }
     },
   },
   watch: {
@@ -1227,6 +1493,519 @@ export default {
       }
       this.expandedItems = new Set(this.expandedItems); // อัปเดต reactivity
     },
+
+    // ✅ ========== NEW METHODS FOR DIRECT BILLING CREATION ==========
+    
+    // Open popup for creating new billing
+    async openPopup() {
+      this.isEditMode = false;
+      this.isPopupOpen = true;
+      this.selectedCusName = "";
+      this.productForms = [];
+      
+      // Get employee info from localStorage
+      const employeeID = localStorage.getItem("user_id");
+      const employeeName = localStorage.getItem("user_name");
+      
+      console.log("Employee from localStorage:", { employeeID, employeeName });
+      
+      // Reset formData
+      this.formData = {
+        bus_id: localStorage.getItem("@bus_id"),
+        cus_id: "",
+        employeeID: employeeID || "",
+        employeeName: employeeName || "",
+        cus_name: "",
+        cus_address: "",
+        cus_tel: "",
+        cus_email: "",
+        cus_tax: "",
+        cus_purchase: "",
+        sale_totalprice: 0,
+        total_price: 0,
+        total_discount: 0,
+        Net_price: 0,
+        vat: 0,
+        remark: "",
+        billing_number: "",
+        billing_date: new Date(),
+        payments: "Cash",
+        pay_bank: "",
+        pay_number: "",
+        pay_branch: "",
+        pay_date: new Date(),
+        vatType: "VATexcluding",
+      };
+
+      // Reset validation
+      this.isEmpty = {
+        cus_name: false,
+        employeeID: false,
+        billing_date: false,
+        productForms: false,
+        cus_address: false,
+        cus_tel: false,
+        cus_email: false,
+        cus_purchase: false,
+        cus_tax: false,
+        pay_bank: false,
+      };
+
+      await this.checkLatestBillingNumber();
+      await this.getCustomer();
+      // ✅ Ensure products are loaded
+      if (this.Products.length === 0) {
+        await this.getProduct();
+      }
+      // ✅ Ensure employees are loaded
+      if (this.Employees.length === 0) {
+        await this.getEmployee();
+      }
+      console.log("Products loaded:", this.Products.length);
+      console.log("Filtered products:", this.filteredProducts.length);
+      
+      // ✅ Initialize price calculations
+      this.updateTotalDiscount();
+    },
+
+    // Handle employee selection
+    getDetailEmployee() {
+      const selectedEmployee = this.Employees.find(
+        (emp) => emp.Name === this.formData.employeeName
+      );
+
+      if (selectedEmployee) {
+        this.formData.employeeID = selectedEmployee.employeeID;
+      }
+    },
+
+    // Close popup
+    closePopup() {
+      this.isPopupOpen = false;
+      this.isEditMode = false;
+      this.selectedCusName = "";
+      this.productForms = [];
+    },
+
+    // Check latest billing number and generate new one
+    async checkLatestBillingNumber() {
+      const accessToken = localStorage.getItem("@accessToken");
+      try {
+        const response = await fetch(
+          `${API_CALL}/quotation/checkLatestBilling`,
+          {
+            method: "GET",
+            headers: {
+              Authorization: `Bearer ${accessToken}`,
+              "Content-Type": "application/json",
+            },
+          }
+        );
+        const json = await response.json();
+
+        if (json.statusCode === 200 && json.data) {
+          const latestNumber = json.data.billing_number;
+          const today = new Date();
+          const year = today.getFullYear();
+          const month = String(today.getMonth() + 1).padStart(2, "0");
+          const day = String(today.getDate()).padStart(2, "0");
+          const todayStr = `${year}${month}${day}`;
+
+          // Parse latest number: HDyyyyMMdd-xx (removed BL- prefix)
+          const match = latestNumber.match(/HD(\d{8})-(\d{2})/);
+          
+          if (match) {
+            const lastDate = match[1];
+            const lastSeq = parseInt(match[2], 10);
+
+            if (lastDate === todayStr) {
+              // Same day, increment sequence
+              const newSeq = String(lastSeq + 1).padStart(2, "0");
+              this.formData.billing_number = `HD${todayStr}-${newSeq}`;
+            } else {
+              // Different day, start from 01
+              this.formData.billing_number = `HD${todayStr}-01`;
+            }
+          } else {
+            // Invalid format or first billing
+            this.formData.billing_number = `HD${todayStr}-01`;
+          }
+        } else {
+          // No billing found, start from 01
+          const today = new Date();
+          const year = today.getFullYear();
+          const month = String(today.getMonth() + 1).padStart(2, "0");
+          const day = String(today.getDate()).padStart(2, "0");
+          this.formData.billing_number = `HD${year}${month}${day}-01`;
+        }
+      } catch (error) {
+        console.error("Error checking latest billing:", error);
+        // Fallback to default
+        const today = new Date();
+        const year = today.getFullYear();
+        const month = String(today.getMonth() + 1).padStart(2, "0");
+        const day = String(today.getDate()).padStart(2, "0");
+        this.formData.billing_number = `HD${year}${month}${day}-01`;
+      }
+    },
+
+    // Get customer list
+    async getCustomer() {
+      const accessToken = localStorage.getItem("@accessToken");
+      try {
+        const response = await fetch(`${API_CALL}/quotation/getCustomer`, {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+            "Content-Type": "application/json",
+          },
+        });
+        const json = await response.json();
+
+        if (json.statusCode === 200) {
+          this.Customers = json.data;
+        }
+      } catch (error) {
+        console.error("Error fetching customers:", error);
+      }
+    },
+
+    // Handle customer selection
+    getDetailCustomer() {
+      const selectedCustomer = this.Customers.find(
+        (cus) => cus.cus_name === this.selectedCusName
+      );
+
+      if (selectedCustomer) {
+        this.formData.cus_id = selectedCustomer.cus_id;
+        this.formData.cus_name = selectedCustomer.cus_name;
+        this.formData.cus_address = selectedCustomer.cus_address;
+        this.formData.cus_tel = selectedCustomer.cus_tel;
+        this.formData.cus_email = selectedCustomer.cus_email;
+        this.formData.cus_tax = selectedCustomer.cus_tax;
+        this.formData.cus_purchase = selectedCustomer.cus_purchase;
+      }
+    },
+
+    // Add product form
+    showingAddProduct() {
+      this.productForms.push({
+        productID: "",
+        productName: "",
+        productname: "",
+        price: 0,
+        sale_qty: 1,
+        sale_discount: 0,
+        discounttype: "amount",
+        sale_price: 0,
+        product_detail: "",
+        pro_unti: "",
+        showDetails: false,
+        isReadonly2: true,
+        isDisabled2: true,
+      });
+    },
+
+    // Remove product form
+    closingProduct(index) {
+      this.productForms.splice(index, 1);
+      this.updateTotalDiscount();
+    },
+
+    // Toggle product detail textarea
+    toggleProductDetail(form) {
+      form.showDetails = !form.showDetails;
+    },
+
+    // Get product details when selected
+    getDetailProduct(form, index) {
+      const selectedProduct = this.Products.find(
+        (product) => product.productname === form.productName
+      );
+
+      if (selectedProduct) {
+        // ✅ Product found: Auto-fill but allow editing
+        console.log("✅ Selected product:", selectedProduct);
+        form.productID = selectedProduct.productID;
+        form.productname = selectedProduct.productname;
+        form.price = selectedProduct.price;
+        form.pro_unti = selectedProduct.pro_unti || "";
+        form.product_detail = selectedProduct.Detail || "";
+        
+        // Allow editing all fields except total price
+        form.isReadonly2 = false;
+        form.isDisabled2 = false;
+        
+        // Calculate initial price
+        this.updatePrice2(form, index);
+        // Force update total
+        this.$nextTick(() => {
+          this.updateTotalDiscount();
+        });
+      } else {
+        // ✅ Product not found: Allow manual input
+        console.log("⚠️ Product not found, allowing manual input:", form.productName);
+        
+        // Clear auto-filled data but keep user input
+        form.productID = "";
+        // Keep form.productName as user typed
+        // Keep form.price, form.pro_unti, form.product_detail if user entered
+        
+        // Allow editing all fields
+        form.isReadonly2 = false;
+        form.isDisabled2 = false;
+        
+        // Recalculate if there's already price and quantity
+        if (form.price && form.sale_qty) {
+          this.updatePrice2(form, index);
+          this.$nextTick(() => {
+            this.updateTotalDiscount();
+          });
+        }
+      }
+    },
+
+    // Update price for individual product
+    updatePrice2(form, index) {
+      console.log("💵 updatePrice2 called for product:", form.productname);
+      const qty = parseFloat(form.sale_qty) || 0;
+      const price = parseFloat(form.price) || 0;
+      const discount = parseFloat(form.sale_discount) || 0;
+
+      let totalPrice = qty * price;
+
+      if (form.discounttype === "percent") {
+        totalPrice = totalPrice - (totalPrice * discount) / 100;
+      } else {
+        totalPrice = totalPrice - discount;
+      }
+
+      form.sale_price = Math.max(0, totalPrice);
+      console.log("💰 Product sale_price:", form.sale_price);
+      
+      console.log("🔍 About to call updateTotalDiscount...");
+      try {
+        this.updateTotalDiscount();
+        console.log("✅ updateTotalDiscount called successfully");
+      } catch (error) {
+        console.error("❌ Error calling updateTotalDiscount:", error);
+      }
+    },
+
+    // Limit discount to valid range
+    limitDiscount(form) {
+      if (form.discounttype === "percent") {
+        if (form.sale_discount > 100) {
+          form.sale_discount = 100;
+        } else if (form.sale_discount < 0) {
+          form.sale_discount = 0;
+        }
+      } else {
+        const maxDiscount = form.price * form.sale_qty;
+        if (form.sale_discount > maxDiscount) {
+          form.sale_discount = maxDiscount;
+        } else if (form.sale_discount < 0) {
+          form.sale_discount = 0;
+        }
+      }
+    },
+
+    // Update total discount and prices
+    updateTotalDiscount() {
+      console.log("=== ENTERING updateTotalDiscount ===");
+      console.log("🔄 updateTotalDiscount called");
+      console.log("📦 productForms:", this.productForms);
+      console.log("📋 formData:", this.formData);
+      
+      // Calculate total before discount
+      this.formData.total_price = this.productForms.reduce((total, form) => {
+        return total + (parseFloat(form.price) || 0) * (parseFloat(form.sale_qty) || 0);
+      }, 0);
+      console.log("💰 total_price:", this.formData.total_price);
+
+      // Calculate total discount
+      this.formData.total_discount = this.productForms.reduce((total, form) => {
+        const qty = parseFloat(form.sale_qty) || 0;
+        const price = parseFloat(form.price) || 0;
+        const discount = parseFloat(form.sale_discount) || 0;
+
+        if (form.discounttype === "percent") {
+          return total + (qty * price * discount) / 100;
+        } else {
+          return total + discount;
+        }
+      }, 0);
+      console.log("🎫 total_discount:", this.formData.total_discount);
+
+      // Calculate net price (before VAT)
+      this.formData.Net_price = this.formData.total_price - this.formData.total_discount;
+      console.log("💵 Net_price:", this.formData.Net_price);
+
+      // Calculate VAT
+      if (this.formData.vatType === "VATexcluding") {
+        this.formData.vat = (this.formData.Net_price * 7) / 100;
+        this.formData.sale_totalprice = this.formData.Net_price + this.formData.vat;
+      } else {
+        // VATincluding
+        this.formData.sale_totalprice = this.formData.Net_price;
+        this.formData.vat = (this.formData.sale_totalprice * 7) / 107;
+        this.formData.Net_price = this.formData.sale_totalprice - this.formData.vat;
+      }
+      console.log("=== EXITING updateTotalDiscount ===");
+    },
+
+    // Handle VAT type change
+    vatTypeChange() {
+      this.updateTotalDiscount();
+    },
+
+    // Validate input (numbers only)
+    validateInput(event) {
+      const charCode = event.which ? event.which : event.keyCode;
+      if (charCode > 31 && (charCode < 48 || charCode > 57)) {
+        event.preventDefault();
+      }
+    },
+
+    // Handle input for remark
+    onInput(event) {
+      const maxLength = 105;
+      if (event.target.value.length > maxLength) {
+        this.formData.remark = event.target.value.substring(0, maxLength);
+      }
+    },
+
+    // Validate form before saving
+    validateForm() {
+      let isValid = true;
+      this.isEmpty = {
+        cus_name: false,
+        employeeID: false,
+        billing_date: false,
+        productForms: false,
+        cus_address: false,
+        cus_tel: false,
+        cus_email: false,
+        cus_purchase: false,
+        cus_tax: false,
+      };
+
+      if (!this.formData.cus_name) {
+        this.isEmpty.cus_name = true;
+        isValid = false;
+      }
+
+      if (!this.formData.employeeID) {
+        this.isEmpty.employeeID = true;
+        isValid = false;
+      }
+
+      if (!this.formData.billing_date) {
+        this.isEmpty.billing_date = true;
+        isValid = false;
+      }
+
+      if (this.productForms.length === 0) {
+        this.isEmpty.productForms = true;
+        isValid = false;
+        alert(this.t("validation.productForms"));
+      }
+
+      // Validate each product has quantity > 0
+      for (let i = 0; i < this.productForms.length; i++) {
+        if (!this.productForms[i].sale_qty || this.productForms[i].sale_qty <= 0) {
+          alert(`${this.t("validation.productForms")} ${i + 1}: ${this.t("validation.quantity")}`);
+          isValid = false;
+          break;
+        }
+      }
+
+      return isValid;
+    },
+
+    // Save new billing
+    async saveBilling() {
+      if (!this.validateForm()) {
+        return;
+      }
+
+      this.isLoading = true;
+      const accessToken = localStorage.getItem("@accessToken");
+
+      try {
+        // Prepare products data
+        const products = this.productForms.map((form) => ({
+          productID: form.productID,
+          sale_price: form.sale_price,
+          sale_discount: form.sale_discount,
+          discounttype: form.discounttype,
+          sale_qty: form.sale_qty,
+          product_detail: form.product_detail || "",
+          pro_unti: form.pro_unti || "",
+        }));
+
+        const requestBody = {
+          billing_number: this.formData.billing_number,
+          billing_date: this.formData.billing_date,
+          cus_id: this.formData.cus_id,
+          employeeID: this.formData.employeeID,
+          payments: this.formData.payments,
+          pay_bank: this.formData.pay_bank,
+          pay_number: this.formData.pay_number,
+        pay_branch: this.formData.pay_branch,
+        pay_date: this.formData.pay_date ? new Date(this.formData.pay_date).toISOString().split('T')[0] : "",
+        remark: this.formData.remark,
+          sale_totalprice: this.formData.sale_totalprice,
+          total_discount: this.formData.total_discount,
+          vatType: this.formData.vatType,
+          products: products,
+        };
+
+        const response = await fetch(
+          `${API_CALL}/quotation/addDirectBilling`,
+          {
+            method: "POST",
+            headers: {
+              Authorization: `Bearer ${accessToken}`,
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(requestBody),
+          }
+        );
+
+        const json = await response.json();
+
+        if (json.statusCode === 200) {
+          this.popupMessage = this.t("popupCreatedBilling");
+          this.isPopupVisible = true;
+          setTimeout(() => {
+            this.isPopupVisible = false;
+          }, 3000);
+
+          this.closePopup();
+          await this.getBilling();
+        } else {
+          this.showPopup_error(json.message || "Error creating billing");
+        }
+      } catch (error) {
+        console.error("Error saving billing:", error);
+        this.showPopup_error("Error creating billing");
+      } finally {
+        this.isLoading = false;
+      }
+    },
+
+    // Show error popup
+    showPopup_error(message) {
+      this.isPopupVisible_error = true;
+      this.errorMessages = Array.isArray(message) ? message : [message];
+      setTimeout(() => {
+        this.isPopupVisible_error = false;
+      }, 5000);
+    },
+
+    // ✅ ========== END OF NEW METHODS ==========
+
     async getBanks() {
       const accessToken = localStorage.getItem("@accessToken");
       this.isLoading = true;
@@ -1376,6 +2155,10 @@ export default {
         // billing_date: formattedBill,
         billing_date: formatDateForPicker(filteredInvoice[0].billing_date),
         payments: filteredInvoice[0].payments,
+        pay_bank: filteredInvoice[0].pay_bank,
+        pay_number: filteredInvoice[0].pay_number,
+        pay_branch: filteredInvoice[0].pay_branch,
+        pay_date: filteredInvoice[0].pay_date,
         discount_quotation: quotationData.discount_quotation,
         vatType: quotationData.vatType,
       };
@@ -1393,7 +2176,8 @@ export default {
           );
           productname = selectedProduct.productname;
         }
-        const salePrice = detail.sale_qty * parseFloat(price.replace(/,/g, ""));
+        const currentPrice = String(price || "0").replace(/,/g, "");
+        const salePrice = detail.sale_qty * parseFloat(currentPrice);
         let saleDiscount = detail.sale_discount;
         if (detail.discounttype === "percent") {
           saleDiscount = (detail.sale_discount / 100) * salePrice;
@@ -1417,27 +2201,28 @@ export default {
       this.total_priceBeforeDiscount();
 
       if (this.formData.vatType === "VATincluding") {
-        this.formData.sale_totalprice = this.formatDecimal(
-          parseFloat(this.formData.Net_price.replace(/,/g, "")) / 1.07
-        );
-        this.formData.vat = this.formatDecimal(
-          parseFloat(this.formData.Net_price.replace(/,/g, "")) -
-            parseFloat(this.formData.sale_totalprice.replace(/,/g, ""))
-        );
+        const netPriceRaw = String(this.formData.Net_price || "0").replace(/,/g, "");
+        const netVal = parseFloat(netPriceRaw);
+        
+        this.formData.sale_totalprice = this.formatDecimal(netVal / 1.07);
+        const saleTotalPriceRaw = String(this.formData.sale_totalprice || "0").replace(/,/g, "");
+        
+        this.formData.vat = this.formatDecimal(netVal - parseFloat(saleTotalPriceRaw));
       } else {
-        this.formData.vat = this.formatDecimal(
-          parseFloat(this.formData.Net_price.replace(/,/g, "")) * 0.07
-        );
-        this.formData.sale_totalprice = this.formatDecimal(
-          parseFloat(this.formData.Net_price.replace(/,/g, "")) +
-            parseFloat(this.formData.vat)
-        );
+        const netPriceRaw = String(this.formData.Net_price || "0").replace(/,/g, "");
+        const netVal = parseFloat(netPriceRaw);
+        
+        this.formData.vat = this.formatDecimal(netVal * 0.07);
+        const vatRaw = String(this.formData.vat || "0").replace(/,/g, "");
+        
+        this.formData.sale_totalprice = this.formatDecimal(netVal + parseFloat(vatRaw));
       }
       this.calculateNat(quotationData.discount_quotation);
     },
     calculateNat(discount) {
       const totalNet = this.productForms.reduce((total, form) => {
-        const salePrice = parseFloat(form.sale_price.replace(/,/g, "")); // แปลง formatDecimal เป็นตัวเลข
+        const salePriceRaw = String(form.sale_price || "0").replace(/,/g, "");
+        const salePrice = parseFloat(salePriceRaw); // แปลง formatDecimal เป็นตัวเลข
         return total + salePrice;
       }, 0);
 
@@ -1457,7 +2242,6 @@ export default {
     //function preview pdf call in table, the data in this function will send to pdfviewer for preview pdf
     handlePreview(row) {
       console.log("Preview item:", row);
-      this.viewformpdf("view", row);
       // this.isPopupPDFOpen = true;
       this.isAddingMode = false;
       this.isEditMode = true;
@@ -1485,29 +2269,39 @@ export default {
         billing_status: row.billing_status,
         billing_date: formattedBilling,
         payments: row.payments,
+        pay_bank: row.pay_bank,
+        pay_number: row.pay_number,
+        pay_branch: row.pay_branch,
+        pay_date: row.pay_date,
+        vatType: row.vatType || "VATexcluding",
       };
       //loop of product
-      this.productForms = (row.productForms || []).map((detail) => {
+      this.productForms = (row.productForms || row.details || []).map((detail) => {
         const selectedProduct = this.Products.find(
-          (product) => product.productname === detail.productID
+          (product) => product.productID === detail.productID || product.productname === detail.productID
         );
         let price = 0;
         if (selectedProduct) {
           price = this.formatDecimal(
             parseFloat(selectedProduct.price.toFixed(2))
           );
+        } else if (detail.price) {
+          price = detail.price;
         }
-        const salePrice = detail.sale_qty * parseFloat(price.replace(/,/g, ""));
-        let saleDiscount = detail.sale_discount;
+        
+        const currentPrice = String(price || "0").replace(/,/g, "");
+        const qty = parseFloat(detail.sale_qty) || 0;
+        const salePrice = qty * parseFloat(currentPrice);
+        let saleDiscount = parseFloat(detail.sale_discount) || 0;
         if (detail.discounttype === "percent") {
-          saleDiscount = (detail.sale_discount / 100) * salePrice;
+          saleDiscount = (saleDiscount / 100) * salePrice;
         }
         return {
           productID: detail.productID,
           price: price,
-          sale_qty: detail.sale_qty,
+          sale_qty: qty,
           sale_price: this.formatDecimal(salePrice - saleDiscount),
-          sale_discount: saleDiscount,
+          sale_discount: detail.sale_discount,
           discounttype: detail.discounttype || "amount",
         };
       });
@@ -1516,11 +2310,13 @@ export default {
       this.vat_price();
       this.total_pricesale();
       this.total_priceBeforeDiscount();
+
+      // IMPORTANT: Call PDF generation AFTER state is updated
+      this.viewformpdf("view", row);
     },
     //function download pdf call in table, the data in this function will send to pdfviewer for download
     handleDownload(row) {
       console.log("Edit item:", row);
-      this.viewformpdf("download", row);
       const formatDateForPicker = (date) => {
         if (!date) return null;
         const d = new Date(date);
@@ -1544,29 +2340,39 @@ export default {
         billing_status: row.billing_status,
         billing_date: row.billing_date,
         payments: row.payments,
+        pay_bank: row.pay_bank,
+        pay_number: row.pay_number,
+        pay_branch: row.pay_branch,
+        pay_date: row.pay_date,
+        vatType: row.vatType || "VATexcluding",
       };
       //loop of product
-      this.productForms = (row.details || []).map((detail) => {
+      this.productForms = (row.details || row.productForms || []).map((detail) => {
         const selectedProduct = this.Products.find(
-          (product) => product.productID === detail.productID
+          (product) => product.productID === detail.productID || product.productname === detail.productID
         );
         let price = 0;
         if (selectedProduct) {
           price = this.formatDecimal(
             parseFloat(selectedProduct.price.toFixed(2))
           );
+        } else if (detail.price) {
+          price = detail.price;
         }
-        const salePrice = detail.sale_qty * parseFloat(price.replace(/,/g, ""));
-        let saleDiscount = detail.sale_discount;
+        
+        const currentPrice = String(price || "0").replace(/,/g, "");
+        const qty = parseFloat(detail.sale_qty) || 0;
+        const salePrice = qty * parseFloat(currentPrice);
+        let saleDiscount = parseFloat(detail.sale_discount) || 0;
         if (detail.discounttype === "percent") {
-          saleDiscount = (detail.sale_discount / 100) * salePrice;
+          saleDiscount = (saleDiscount / 100) * salePrice;
         }
         return {
           productID: detail.productID,
           price: price,
-          sale_qty: detail.sale_qty,
+          sale_qty: qty,
           sale_price: this.formatDecimal(salePrice - saleDiscount),
-          sale_discount: saleDiscount,
+          sale_discount: detail.sale_discount,
           discounttype: detail.discounttype || "amount",
         };
       });
@@ -1575,6 +2381,9 @@ export default {
       this.vat_price();
       this.total_pricesale();
       this.total_priceBeforeDiscount();
+
+      // IMPORTANT: Call PDF generation AFTER state is updated
+      this.viewformpdf("download", row);
     },
     //handle delete call in table, data in this will send to popup delete
     handleDelete(item) {
@@ -1661,442 +2470,347 @@ export default {
       // this.formData.sale_totalprice = this.formatDecimal(net + vat);
     },
     //function for set pdf view
+    // ✅ New modular PDF generation method to match the requested design
     async viewformpdf(action, row) {
-      // console.log("Preview Item: ", row)
-      const productForms = row.productForms || [];
       const doc = new jsPDF();
+      const orangeColor = [255, 165, 0];
+      const lightGray = [240, 240, 240];
+      const blueColor = [0, 87, 183]; // Added blueColor definition
+      
+      // Load fonts
+      doc.addFileToVFS("Prompt-Bold.ttf", PromptBold);
+      doc.addFont("Prompt-Bold.ttf", "PromptBold", "bold");
+      doc.addFileToVFS("Prompt-Regular.ttf", PromptRegular);
+      doc.addFont("Prompt-Regular.ttf", "PromptRegular", "normal");
+      doc.addFileToVFS("Prompt-Light.ttf", PromptRegularLight);
+      doc.addFont("Prompt-Light.ttf", "PromptLight", "normal");
 
       const quotationData = await this.getQuotationByID(row.sale_id);
-      console.log(">>>>>>>>>>>>>>>>>", quotationData);
+      const filteredInvoicesPDF = this.Billings.filter(i => i.sale_id === row.sale_id);
+      
+      // Date formatting
+      let billingDate;
+      if (row.billing_date) {
+        billingDate = new Date(row.billing_date);
+        // Check if date is valid
+        if (isNaN(billingDate.getTime())) {
+          billingDate = new Date(); // Fallback to current date
+        }
+      } else {
+        billingDate = new Date();
+      }
+      
+      const day = billingDate.getDate().toString().padStart(2, "0");
+      const month = (billingDate.getMonth() + 1).toString().padStart(2, "0");
+      const buddhistYear = billingDate.getFullYear() + 543;
+      const displayDate = `${day}/${month}/${buddhistYear}`;
 
-      const filteredInvoicesPDF = this.Billings.filter(
-        (invoice) => invoice.sale_id === row.sale_id
-      );
+      // Helper function for Thai Baht Text
+      const toThaiBaht = (number) => {
+        if (!number || isNaN(number)) return "ศูนย์บาทถ้วน";
+        const numbers = ["ศูนย์", "หนึ่ง", "สอง", "สาม", "สี่", "ห้า", "หก", "เจ็ด", "แปด", "เก้า"];
+        const scales = ["", "สิบ", "ร้อย", "พัน", "หมื่น", "แสน", "ล้าน"];
+        let [integer, decimals] = number.toFixed(2).split(".");
+        let result = "";
+        
+        // Handle millions if number is very large
+        const handlePart = (numStr) => {
+          let partResult = "";
+          for (let i = 0; i < numStr.length; i++) {
+            let n = parseInt(numStr[i]);
+            let scaleIndex = numStr.length - i - 1;
+            if (n !== 0) {
+              if (scaleIndex === 0 && n === 1 && numStr.length > 1) partResult += "เอ็ด";
+              else if (scaleIndex === 1 && n === 2) partResult += "ยี่";
+              else if (scaleIndex === 1 && n === 1) partResult += "";
+              else partResult += numbers[n];
+              partResult += scales[scaleIndex];
+            }
+          }
+          return partResult;
+        };
 
-      const formatDate = { day: "2-digit", month: "short", year: "numeric" };
-      // const Qdate = new Date(row.sale_date);
-      // const Quo_date = Qdate.toLocaleDateString("en-GB", formatDate);
-      const Qdate = new Date(filteredInvoicesPDF[0].billing_date);
-      const Quo_date = Qdate.toLocaleDateString("en-GB", formatDate);
+        if (parseInt(integer) === 0) result = numbers[0];
+        else {
+          let parts = [];
+          while (integer.length > 0) {
+            parts.push(integer.substring(Math.max(0, integer.length - 6)));
+            integer = integer.substring(0, Math.max(0, integer.length - 6));
+          }
+          for (let i = parts.length - 1; i >= 0; i--) {
+            result += handlePart(parts[i]);
+            if (i > 0) result += "ล้าน";
+          }
+        }
+        result += "บาท";
+        
+        if (parseInt(decimals) === 0) result += "ถ้วน";
+        else {
+          result += handlePart(decimals) + "สตางค์";
+        }
+        return result;
+      };
 
-      const Expdate = new Date(row.credit_expired_date);
-      const ExpiredDate = Expdate.toLocaleDateString("en-GB", formatDate);
-      // const Qdate = new Date(row.invoice_date);
-      const IN_date = Quo_date;
-      //header of prodyct table
-      const headerText = [
-        "No.",
-        "Image",
-        "Product Name",
-        "Qty",
-        "Unit price",
-        "Discount",
-        "Total Price",
-      ];
-
-      const tableData = productForms.map((form, index) => {
-        // const product = this.Products.find(
-        //   (p) => p.productID === form.productID.toString()
-        // );
-        const product = this.Products.find(
-          (product) => product.productID === form.productID
-        );
-        // console.log(product);
+      // TABLE DATA
+      const productForms = row.productForms || [];
+      const tableData = productForms.map((item, index) => {
+        const prod = this.Products.find(p => p.productID === item.productID) || {};
         return [
           index + 1,
-          product && product.productImg ? product.productImg : "---", // ดึงรูปภาพสินค้าถ้ามี
-          product.productname +
-            (form.product_detail ? "\n" + form.product_detail : ""), // ดึงชื่อสินค้าถ้ามี
-          form.sale_qty,
-          this.formatDecimal(product ? product.price : ""),
-          this.formatDecimal(form.sale_discount),
-          this.formatDecimal(form.sale_price),
+          (prod.productname || item.productname || "") + (item.product_detail ? "\n" + item.product_detail : ""),
+          parseFloat(item.sale_qty).toLocaleString(),
+          this.formatDecimal(item.price || prod.price || 0),
+          this.formatDecimal(item.sale_price || 0)
         ];
       });
 
-      console.log("Table:", tableData);
-
-      const startY = 85;
-      const margin = 10;
-      const lineHeight = 15;
-      const pageSize = 6;
-      const pageCount = Math.ceil(tableData.length / pageSize);
-
-      for (let i = 0; i < pageCount; i++) {
-        const currentPageData = tableData.slice(
-          i * pageSize,
-          (i + 1) * pageSize
-        );
-
-        // doc.addPage();
-        if (i > 0) {
-          // ตรวจสอบหน้า PDF ที่ไม่ใช่หน้าแรกหรือ action เป็น 'download'
-          doc.addPage();
+      // RENDER LOGO & HEADER
+      const renderHeader = () => {
+        // Logo
+        if (this.Business.bus_logo) {
+          doc.addImage(this.Business.bus_logo, "JPEG", 10, 10, 25, 25);
         }
-        doc.setTextColor(0, 0, 0);
 
-        doc.setFontSize(16);
-
-        doc.addFileToVFS("Prompt-Bold.ttf", PromptBold);
-        doc.addFont("Prompt-Bold.ttf", "PromptBold", "bold");
-        // ตั้งค่าฟอนต์ที่ต้องการ
-        doc.setTextColor(0, 0, 0); // ตั้งสีดำสนิท (RGB 0,0,0)
+        // Company Info
         doc.setFont("PromptBold", "bold");
-        doc.setFontSize(20);
-        doc.text("Receipt", 174, 40);
-
-        doc.addFileToVFS("Prompt-Regular.ttf", PromptRegular);
-        doc.addFont("Prompt-Regular.ttf", "PromptRegular", "normal");
         doc.setFontSize(16);
+        doc.text(this.Business.bus_name || "บริษัท เอช แอนด์ ดี อิงค์ เจ็ท จำกัด", 40, 18);
+        
+        doc.setFont("PromptLight", "normal");
+        doc.setFontSize(9);
+        const addressLines = doc.splitTextToSize(this.Business.bus_address || "", 100);
+        doc.text(addressLines, 10, 40);
+        doc.text(`เลขประจำตัวผู้เสียภาษี  ${this.Business.bus_tax || "0105569006906"}`, 10, 48);
+        doc.text(`โทร  ${this.Business.bus_tel || "098-9315128"}`, 10, 52);
 
-        // ตั้งค่าฟอนต์ที่ต้องการ
-        doc.setFont("PromptRegular", "normal");
-
-        //{text, x,y}
-        doc.text(`${this.Business.bus_name}`, 10, 12);
-        // console.log("this.Business", this.Business.bank_id);
-
-        const bank_detail = this.AllBanks.filter(
-          (bank) => bank.bank_id === this.Business.bank_id
-        );
-        // console.log("bank_detail", bank_detail);
-
-        const FormBank = [
-          `${bank_detail[0].bank_name}`,
-          `${bank_detail[0].bank_account}`,
-          `${bank_detail[0].bank_number}`,
-        ];
-        doc.setFontSize(14);
-        doc.text(FormBank, 10, 275, {
-          align: "left",
-          valign: "left",
-          lineGap: 8,
-        });
-
-        doc.setFont("helvetica", "normal");
-        doc.setFontSize(12);
-        doc.setTextColor(0, 0, 0);
-        // เพิ่มฟอนต์
-        doc.addFileToVFS("Prompt-RegularLight.ttf", PromptRegularLight);
-        doc.addFont("Prompt-RegularLight.ttf", "PromptRegularLight", "normal");
-        doc.setFontSize(10);
-
-        // ตั้งค่าฟอนต์ที่ต้องการ
-        doc.setFont("PromptRegularLight", "normal");
-        doc.text(
-          `${this.Business.bus_name} ${this.Business.bus_website}`,
-          10,
-          19
-        );
-        doc.text(`${this.Business.bus_address}`, 10, 24);
-        doc.text(`Tax ID.${this.Business.bus_tax}`, 10, 29);
-        doc.text(`Tel.${this.Business.bus_tel}`, 10, 34);
-        doc.text("Signature", 110, 265);
-        doc.text("Name", 110, 275);
-        doc.text("Position", 110, 285);
-
-        // //line width
-        // doc.setLineWidth(0.2);
-        // //[start(x,y), end(x,y)]
-        // doc.line(130, 265, 200, 265);
-        // doc.line(130, 275, 200, 275);
-        // doc.line(130, 285, 200, 285);
-
-        // doc.setLineWidth(0.5);
-        // doc.line(10, 35, 120, 35);
-        // doc.line(10, 72, 200, 72);
-        // doc.line(10, 210, 200, 210);
-        // doc.line(10, 250, 200, 250);
-
-        doc.setFontSize(10);
-        doc.setTextColor(0, 0, 0);
-
-        doc.text(`Customer Name: ` + row.cus_name, 10, 50);
-
-        doc.text(`Address: ` + row.cus_address, 10, 55);
-
-        doc.text(`Contact: ` + row.cus_tel, 10, 60);
-        doc.text(`E-mail: ` + row.cus_email, 10, 65);
-        doc.text(`Contact No: ` + row.cus_tel, 10, 70);
-        doc.text(`Tax ID: ` + row.cus_tax, 10, 75);
-
-        // ===== Header Section (จัดระนาบ) =====
-        const startX_header_custom = 130;
-        const valueRightAlignX_custom = 200;
-        const startY_header_custom = 50;
-        const lineHeight_custom = 5;
-
-        let currentY = startY_header_custom;
-
-        function drawAlignedRow(label, value) {
-          doc.text(label, startX_header_custom, currentY);
-
-          const textWidth = doc.getTextWidth(value);
-          doc.text(value, valueRightAlignX_custom - textWidth, currentY);
-
-          currentY += lineHeight_custom;
-        }
-
-        // แสดงเฉพาะถึงบรรทัดนี้เท่านั้น
-        drawAlignedRow("Date:", IN_date);
-        drawAlignedRow(
-          "Receipt Number:",
-          row.billing_number || row.billing_number
-        );
-        drawAlignedRow(
-          "Tax Number:",
-          row.tax_invoice_number || row.tax_invoice_number
-        );
-        drawAlignedRow("Invoice Number:", row.invoice_number);
-        drawAlignedRow("Quotation Number:", row.quotation_num);
-
-        // const FormCustomer = [
-        // `${row.cus_name}`,
-        // `${row.cus_address}`,
-        // `${row.cus_purchase}`,
-        // `${row.cus_email}`,
-        // `${row.cus_tel}`,
-        // `${row.cus_tax}`,
-        // ];
-        // doc.text(FormCustomer, 50, 55, {
-        //   align: "left",
-        //   valign: "middle",
-        //   lineGap: 5,
-        // });
-
-        // doc.text(
-        //   `Payment: ${row.credit_date_number} days     Valid until: ${ExpiredDate}`,
-        //   200,
-        //   70,
-        //   { align: "right", valign: "middle" }
-        // );
-        // doc.text(`Payment:          ${row.credit_date_number} Day`, 150, 70);
-        // doc.text(`Valid until:  ${ExpiredDate}`, 150, 75);
-
-        doc.addFileToVFS("Prompt-RegularLight.ttf", PromptRegularLight);
-        doc.addFont("Prompt-RegularLight.ttf", "PromptRegularLight", "normal");
-        doc.setFontSize(10);
-
-        // ตั้งค่าฟอนต์ที่ต้องการ
-        doc.setFont("PromptRegularLight", "normal");
-        const employ = this.Employees.find(
-          (p) => p.employeeID === row.employeeID
-        );
-
-        // doc.text(`${employ.position}`, 10, 255);
-        doc.text(`Name: `, 10, 255);
-        doc.text(row.employeeName, 40, 255);
-        doc.text(`Email: `, 10, 260);
-        doc.text(employ.Email, 40, 260);
-        doc.text(`Contact No.: `, 10, 265);
-        doc.text(employ.Phone_num, 40, 265);
-        doc.text(`Remark: `, 10, 215);
-
-        doc.text(`Total Before Discount: `, 130, 215);
-        doc.text(`Total Before VAT: `, 130, 220);
-        doc.text(`Discount: `, 130, 225);
-        doc.text(`VAT 7%: `, 130, 230);
-        doc.text(`Net Price:  `, 130, 235);
-
-        const total_price = productForms.reduce((total, form) => {
-          return total + parseFloat(form.sale_price);
-        }, 0);
-
-        const total_discount = productForms.reduce((total, form) => {
-          return total + parseFloat(form.sale_discount || 0);
-        }, 0);
-
-        const net_price = total_price - row.discount_quotation;
-
-        const vat = (7 / 100) * net_price;
-
-        // const discount_pdf =
-        //   parseFloat(net_price) - parseFloat(row.discount_quotation);
-        // alert(discount_pdf);
-        let netCal = this.formatDecimal(total_price * 0.07);
-        let sale_data = this.formatDecimal(total_price + netCal);
-        // alert(netCal);
-        // const FormTotalprice = [];
-
-        if (quotationData.vatType === "VATincluding") {
-          //           this.formData.sale_totalprice = this.formatDecimal(
-          //   parseFloat(this.formData.Net_price.replace(/,/g, "")) / 1.07
-          // );
-          // this.formData.vat = this.formatDecimal(
-          //   parseFloat(this.formData.total_price.replace(/,/g, "")) -
-          //     parseFloat(this.formData.sale_totalprice.replace(/,/g, ""))
-          // );
-          let FormTotalprice = [
-            `${this.formatDecimal(total_price)}`,
-            `${(
-              this.formatDecimal(
-                total_price - quotationData.discount_quotation
-              ) / 1.07
-            ).toFixed(2)}`,
-            `${this.formatDecimal(quotationData.discount_quotation)}`,
-            `${this.formatDecimal(
-              total_price -
-                quotationData.discount_quotation -
-                (total_price - quotationData.discount_quotation) / 1.07
-            )}`,
-            `${this.formatDecimal(
-              total_price - quotationData.discount_quotation
-            )}`,
-          ];
-          // doc.text(FormTotalprice, 200, 215, {
-          //   align: "right",
-          //   valign: "middle",
-          //   lineGap: 5,
-          // });
-          let startY = 215;
-          const lineSpacing = 5; // ระยะห่างระหว่างบรรทัด
-
-          FormTotalprice.forEach((line) => {
-            doc.text(line, 200, startY, {
-              align: "right",
-              valign: "middle",
-            });
-            startY += lineSpacing; // เพิ่มพิกัด Y สำหรับแต่ละบรรทัด
-          });
-        } else {
-          let FormTotalprice = [
-            `${this.formatDecimal(total_price)}`,
-            `${this.formatDecimal(
-              total_price - quotationData.discount_quotation
-            )}`,
-            `${this.formatDecimal(quotationData.discount_quotation)}`,
-            `${this.formatDecimal(
-              (total_price - quotationData.discount_quotation) * 0.07
-            )}`,
-            `${this.formatDecimal(
-              total_price -
-                quotationData.discount_quotation +
-                (total_price - quotationData.discount_quotation) * 0.07
-            )}`,
-          ];
-          // doc.text(FormTotalprice, 200, 215, {
-          //   align: "right",
-          //   valign: "middle",
-          //   lineGap: 5,
-          // });
-          let startY = 215;
-          const lineSpacing = 5; // ระยะห่างระหว่างบรรทัด
-
-          FormTotalprice.forEach((line) => {
-            doc.text(line, 200, startY, {
-              align: "right",
-              valign: "middle",
-            });
-            startY += lineSpacing; // เพิ่มพิกัด Y สำหรับแต่ละบรรทัด
-          });
-        }
-
-        // doc.setFont("helvetica", "bold");
-        doc.addFileToVFS("Prompt-Regular.ttf", PromptRegular);
-        doc.addFont("Prompt-Regular.ttf", "PromptRegular", "normal");
-        doc.setFontSize(16);
-
-        // //line width
-        // doc.setLineWidth(0.2);
-        // //[start(x,y), end(x,y)]
-        // doc.line(130, 265, 200, 265);
-        // doc.line(130, 275, 200, 275);
-        // doc.line(130, 285, 200, 285);
-
+        // Title Box (Top Right)
+        doc.setDrawColor(orangeColor[0], orangeColor[1], orangeColor[2]);
         doc.setLineWidth(0.5);
-        doc.line(10, 210, 200, 210);
-        doc.line(10, 238, 200, 238);
-        doc.line(130, 265, 200, 265);
-        doc.line(130, 275, 200, 275);
-        doc.line(130, 285, 200, 285);
-
-        // ตั้งค่าฟอนต์ที่ต้องการ
+        doc.rect(140, 10, 60, 20); // Title frame
         doc.setFont("PromptRegular", "normal");
-        doc.text("Receipt Receiver", 110, 250);
-        doc.text("Buyer", 10, 42);
-        doc.setFontSize(14);
-        doc.text(`Sales Person`, 10, 248);
-        // เพิ่มฟอนต์
-        doc.addFileToVFS("Prompt-RegularLight.ttf", PromptRegularLight);
-        doc.addFont("Prompt-RegularLight.ttf", "PromptRegularLight", "normal");
-        doc.setFontSize(10);
+        doc.setFontSize(11);
+        doc.text("ใบกำกับภาษี/ใบเสร็จรับเงิน", 170, 22, { align: "center" });
+      };
 
-        const maxWidth = 90;
-        const maxWidth2 = 20;
-        const maxHeight = 20;
+      // RENDER SECTION BOXES
+      const renderSectionBoxes = () => {
+        // Customer Info Box
+        doc.setDrawColor(orangeColor[0], orangeColor[1], orangeColor[2]);
+        doc.rect(10, 60, 130, 35);
+        
+        doc.setFont("PromptRegular", "normal");
+        doc.setFontSize(9);
+        doc.text("ชื่อลูกค้า / Customers:", 12, 65);
+        doc.text("ที่อยู่ / Address:", 12, 75);
+        doc.text("เบอร์โทรศัพท์", 12, 85);
+        doc.text("เลขประจำตัวผู้เสียภาษี", 12, 90);
 
-        // ตั้งค่าฟอนต์ที่ต้องการ
-        doc.setFont("PromptRegularLight", "normal");
-        //set image (image , x,y,w,h)
+        // Customer Values
+        doc.setFont("PromptLight", "normal");
+        doc.text(row.cus_name || "", 45, 65);
+        const cusAddressLines = doc.splitTextToSize(row.cus_address || "", 90);
+        doc.text(cusAddressLines, 45, 75);
+        doc.text(row.cus_tel || "", 45, 85);
+        doc.text(row.cus_tax || "", 45, 90);
 
-        if (this.Business.bus_logo != null) {
-          const img = new Image();
-          img.src = `${this.Business.bus_logo}`;
+        // Billing Info Box
+        doc.rect(142, 60, 58, 35);
+        doc.setFont("PromptRegular", "normal");
+        doc.text("เลขที่ / No.", 145, 78);
+        doc.text("วันที่ / Date", 145, 88);
+        
+        doc.setFont("PromptLight", "normal");
+        doc.text(row.billing_number || "", 170, 78);
+        doc.text(displayDate, 175, 88);
+      };
 
-          await new Promise((resolve) => {
-            img.onload = resolve;
-          });
+      // RENDER PAYMENT & SUMMARY
+      const renderFooter = () => {
+        const finalY = doc.lastAutoTable.finalY + 2;
+        
+        // Final Prices Box (Right)
+        const summaryX = 142;
+        const summaryW = 58;
+        const totalAmount = parseFloat(row.sale_totalprice) || 0;
+        
+        const netPrice = this.calculatedNetPrice;
+        const vatPrice = this.calculatedVat;
+        const finalPrice = this.calculatedFinalPrice;
 
-          const maxBoxWidth = 35;
-          const maxBoxHeight = 20;
+        doc.setDrawColor(orangeColor[0], orangeColor[1], orangeColor[2]);
+        doc.setLineWidth(0.2);
+        
+        // TOTAL Row
+        doc.rect(summaryX, finalY, summaryW, 10);
+        doc.setFont("PromptRegular", "normal");
+        doc.text("รวมเงิน", summaryX + 2, finalY + 4);
+        doc.text("TOTAL", summaryX + 2, finalY + 8);
+        doc.text(this.formatDecimal(this.calculatedTotalPrice), summaryX + summaryW - 2, finalY + 7, { align: "right" });
 
-          let imgWidth = img.width;
-          let imgHeight = img.height;
+        // VAT Row
+        doc.rect(summaryX, finalY + 10, summaryW, 10);
+        doc.text("VAT", summaryX + 2, finalY + 14);
+        doc.text("7%", summaryX + 2, finalY + 18);
+        doc.text(this.formatDecimal(vatPrice), summaryX + summaryW - 2, finalY + 17, { align: "right" });
 
-          // คำนวณสัดส่วนให้ fit ภายในกล่อง 20x20 โดยไม่เสียสัดส่วน
-          const widthRatio = maxBoxWidth / imgWidth;
-          const heightRatio = maxBoxHeight / imgHeight;
-          const scaleRatio = Math.min(widthRatio, heightRatio);
+        // NET AMOUNT Row (Colored)
+        doc.setFillColor(255, 235, 204); // Light orange fill
+        doc.rect(summaryX, finalY + 20, 30, 15, "F"); 
+        doc.rect(summaryX, finalY + 20, summaryW, 15); // Frame
+        
+        doc.setFont("PromptBold", "bold");
+        doc.text("ยอดเงินสุทธิ", summaryX + 2, finalY + 26);
+        doc.text("NET AMOUNT", summaryX + 2, finalY + 32);
+        doc.setFontSize(12);
+        doc.text(this.formatDecimal(finalPrice), 198, finalY + 28, { align: "right" });
 
-          // คำนวณขนาดใหม่ที่ fit
-          const scaledWidth = imgWidth * scaleRatio;
-          const scaledHeight = imgHeight * scaleRatio;
+        // Payment Info (Left)
+        doc.setFontSize(9);
+        doc.text("รายการรับชำระเงิน :", 10, finalY + 5);
+        
+        const drawCheckbox = (x, y, label, checked = false) => {
+          doc.setDrawColor(0, 0, 0);
+          doc.rect(x, y - 3.5, 4, 4); 
+          if (checked) {
+            doc.line(x + 0.5, y - 1.5, x + 1.5, y + 0.5);
+            doc.line(x + 1.5, y + 0.5, x + 3.5, y - 3.5);
+          }
+          doc.text(label, x + 6, y);
+        };
 
-          // พิกัดกรอบบนขวา
-          const boxX = doc.internal.pageSize.width - 10 - maxBoxWidth; // ขอบขวา - margin - boxWidth
-          const boxY = 12; // ขอบบน
+        drawCheckbox(45, finalY + 5, "เงินสด", row.payments === "Cash" || row.payments === "เงินสด");
+        drawCheckbox(85, finalY + 5, "เงินโอน", row.payments === "MobileBank" || row.payments === "เงินโอน");
+        drawCheckbox(125, finalY + 5, "เช็ค", row.payments === "Cheque" || row.payments === "เช็ค");
 
-          // วางรูปในกรอบ โดยชิดขวา-บนของกล่อง (แต่ต้องเว้นให้ไม่เกินขอบ)
-          const imgX = boxX + (maxBoxWidth - scaledWidth); // ชิดขวาภายในกรอบ
-          const imgY = boxY; // ชิดบน
-
-          // วาดภาพ
-          doc.addImage(img, "JPEG", imgX, imgY, scaledWidth, scaledHeight);
+        const bankText = row.pay_bank || "";
+        const payNum = row.pay_number || "";
+        const branch = row.pay_branch || "";
+        let displayPayDate = "";
+        
+        if (row.pay_date) {
+            const pDate = new Date(row.pay_date);
+            const pDay = pDate.getDate().toString().padStart(2, "0");
+            const pMonth = (pDate.getMonth() + 1).toString().padStart(2, "0");
+            const pYear = pDate.getFullYear() + 543;
+            displayPayDate = `${pDay}/${pMonth}/${pYear}`;
         }
 
-        // doc.addImage(`${this.Business.bus_logo}`, "JPEG", 165, 12, 20, 20);
+        doc.setFont("PromptLight", "normal");
+        // Row 1: Bank and Chq No
+        doc.text("ธนาคาร/Bank", 12, finalY + 12);
+        doc.text(bankText, 38, finalY + 12);
+        doc.text("...............................................", 38, finalY + 12.5);
+        
+        doc.text("เลขที่/ Chq #", 75, finalY + 12);
+        doc.text(payNum, 98, finalY + 12);
+        doc.text("...............................................", 98, finalY + 12.5);
 
-        doc.setFont("helvetica", "normal");
-        // เพิ่มฟอนต์
-        // doc.addFileToVFS("THSarabunNew-normal.ttf", thSarabunFont);
-        // doc.addFont("THSarabunNew-normal.ttf", "THSarabunNew", "normal");
+        // Row 2: Branch and Date
+        doc.text("สาขา/Branch", 12, finalY + 22);
+        doc.text(branch, 38, finalY + 22);
+        doc.text("...............................................", 38, finalY + 22.5);
 
-        // // ตั้งค่าฟอนต์ที่ต้องการ
-        // doc.setFont("THSarabunNew", "normal");
-        doc.addFileToVFS("Prompt-RegularLight.ttf", PromptRegularLight);
-        doc.addFont("Prompt-RegularLight.ttf", "PromptRegularLight", "normal");
-        doc.setFontSize(10);
+        doc.text("วันที่ทำรายการ/Date", 75, finalY + 22);
+        doc.text(displayPayDate, 108, finalY + 22);
+        doc.text("...............................................", 108, finalY + 22.5);
+        
+        // Amount section (Top)
+        doc.setFont("PromptRegular", "normal");
+        doc.setFontSize(9);
+        doc.text("จำนวนเงิน /Amount", 10, finalY + 33);
+        doc.text(this.formatDecimal(finalPrice), 55, finalY + 33);
 
-        // ตั้งค่าฟอนต์ที่ต้องการ
-        doc.setFont("PromptRegularLight", "normal");
+        // Thai Baht Text Box (Bottom)
+        doc.setDrawColor(orangeColor[0], orangeColor[1], orangeColor[2]);
+        doc.rect(40, finalY + 38, 100, 10);
+        doc.text("ตัวอักษร", 10, finalY + 44);
+        doc.setTextColor(blueColor[0], blueColor[1], blueColor[2]);
+        doc.text(`( ${toThaiBaht(finalPrice)} )`, 90, finalY + 44, { align: "center" });
+        doc.setTextColor(0, 0, 0);
 
-        // doc.text(`${row.remark}`, 40, 235);
-        doc.text(`${row.remark}`, 40, 215, { maxWidth });
-        this.drawHeader(doc, headerText, startY, margin);
-        this.drawTable(doc, currentPageData, startY, margin, lineHeight);
-      }
+        // Signatures
+        const sigY = finalY + 55;
+        doc.rect(10, sigY, 188, 30);
+        doc.line(72, sigY, 72, sigY + 30);
+        doc.line(135, sigY, 135, sigY + 30);
+        
+        doc.setFont("PromptRegular", "normal");
+        doc.text("ลูกค้า/ผู้อนุมัติ", 41, sigY + 5, { align: "center" });
+        doc.text("ผู้ผลิต", 103, sigY + 5, { align: "center" });
+        doc.text(this.Business.bus_name || "เอช แอนด์ ดี อิงค์เจ็ท", 166, sigY + 5, { align: "center" });
+        
+        doc.text("วันที่ ...........................................", 25, sigY + 25);
+        doc.text("วันที่ ...........................................", 85, sigY + 25);
+        doc.text("ผู้มีอำนาจลงนาม", 166, sigY + 25, { align: "center" });
 
+        // Remarks Footer
+        doc.setTextColor(255, 0, 0);
+        doc.setFont("PromptBold", "bold");
+        doc.text('**หมายเหตุ : Remark', 10, sigY + 35);
+        
+        // Items 1-3 in black
+        doc.setTextColor(0, 0, 0);
+        doc.setFont("PromptLight", "normal");
+        doc.setFontSize(8);
+        doc.text("1. ราคาที่เสนอเป็นเงินบาทไทย และไม่มีภาษีมูลค่าเพิ่ม", 10, sigY + 40);
+        doc.text("2. มัดจำค่าสินค้า 60% ส่วนที่เหลือชำระทั้งหมดในวันที่ส่งของ หรือ ติดตั้งแล้วเสร็จ", 10, sigY + 44);
+        doc.text("3. ระยะเวลาดำเนินการ 1-2 วัน หลังจากได้รับ มัดจำ หรือระยะเวลาขึ้น อยู่กับปริมาณสินค้า ที่ลูกค้าสั่งซื้อ หรือตามเงื่อนไขอื่นๆ ตามที่ตกลงกัน", 10, sigY + 48);
+        
+        // Item 4 - text in black, account number in red
+        console.log("Business data:", this.Business);
+        const bankInfo = this.Business.banks && this.Business.banks.length > 0 ? this.Business.banks[0] : {};
+        const bankName = bankInfo.bank_name || "";
+        const bankAccount = bankInfo.bank_account || "";
+        const bankNumber = bankInfo.bank_number || "";
+        console.log("Bank info:", { bankName, bankAccount, bankNumber });
+        
+        const textBeforeNumber = `4. โอนเงินชำระค่าสินค้าที่ ${bankName} ( ${bankAccount} ) `;
+        doc.text(textBeforeNumber, 10, sigY + 52);
+        
+        // Calculate position for bank number dynamically
+        const textWidth = doc.getTextWidth(textBeforeNumber);
+        const numberX = 10 + textWidth;
+        
+        doc.setTextColor(255, 0, 0);
+        doc.text(bankNumber, numberX, sigY + 52);
+        doc.setTextColor(0, 0, 0); // Reset to black
+      };
+
+      // EXECUTE RENDERING
+      renderHeader();
+      renderSectionBoxes();
+
+      doc.autoTable({
+        startY: 100,
+        head: [["ลำดับที่\nItem", "รายการ\nDescription", "จำนวน\nQuantity", "ราคา/หน่วย\nUnit Price", "จำนวนเงิน\nAmount"]],
+        body: tableData,
+        theme: 'grid',
+        styles: { font: "PromptLight", fontSize: 9, cellPadding: 2, halign: 'center', valign: 'middle' },
+        headStyles: { fillColor: [255, 255, 255], textColor: [0, 0, 0], lineWidth: 0.1, halign: 'center', font: "PromptRegular" },
+        columnStyles: {
+          0: { cellWidth: 15 },
+          1: { cellWidth: 95, halign: 'left' },
+          2: { cellWidth: 20 },
+          3: { cellWidth: 28, halign: 'right' },
+          4: { cellWidth: 30, halign: 'right' },
+        },
+        margin: { left: 10, right: 10 },
+        tableLineColor: blueColor,
+        tableLineWidth: 0.1,
+      });
+
+      renderFooter();
+
+      // OUTPUT ACTION
       if (action === "view") {
         const pdfBlob = doc.output("blob");
         const pdfUrl = URL.createObjectURL(pdfBlob);
-        this.pdfUrl = pdfUrl;
-        // this.isPopupPDFOpen = true;
-        // เปิดในแท็บใหม่
         window.open(pdfUrl, "_blank");
       } else if (action === "download") {
-        doc.save(`quotation-${row.cus_name}-${row.sale_number}.pdf`);
+        doc.save(`Receipt-${row.billing_number || "Draft"}.pdf`);
       }
     },
+
     // async viewformpdf(action, row) {
     //   console.log("Preview Item: ", row);
     //   const productForms = row.productForms || [];
@@ -2704,6 +3418,10 @@ export default {
               ID: item.billing_id,
               billing_date: BillingDate,
               payments: item.payments,
+              pay_bank: item.pay_bank,
+              pay_number: item.pay_number,
+              pay_branch: item.pay_branch,
+              pay_date: item.pay_date,
               deleted_at: item.deleted_at,
               productForms: item.details.map((detail) => ({
                 productID: detail.productID,
@@ -2752,13 +3470,13 @@ export default {
               },
               body: JSON.stringify({
                 billing_date: this.formData.billing_date,
-                // billing_date:
-                //   this.t("lang") === "en"
-                //     ? date_billing_date
-                //     : this.formData.billing_date,
                 billing_number: this.formData.billing_number,
                 payments: this.formData.payments,
                 remark: this.formData.remark,
+                pay_bank: this.formData.pay_bank,
+                pay_number: this.formData.pay_number,
+                pay_branch: this.formData.pay_branch,
+                pay_date: this.formData.pay_date ? new Date(this.formData.pay_date).toISOString().split('T')[0] : "",
               }),
             }
           );
@@ -2855,6 +3573,7 @@ export default {
     async getProduct() {
       const accessToken = localStorage.getItem("@accessToken");
       this.isLoading = true;
+      console.log("🔍 getProduct() called");
       try {
         const response = await fetch(`${API_CALL}/product/getProduct`, {
           headers: {
@@ -2862,8 +3581,10 @@ export default {
           },
         });
         const json = await response.json();
+        console.log("📦 API Response:", json);
 
         if (json.statusCode === 200) {
+          console.log("✅ Products from API:", json.data.length);
           this.Products = json.data.map((item) => {
             return {
               productID: item.productID,
@@ -2876,14 +3597,17 @@ export default {
               productImg: item.productImg,
               productTypeID: item.productTypeID,
               categoryID: item.categoryID,
+              Status: item.Status || "Active", // ✅ Added Status field
+              pro_unti: item.pro_unti || "", // ✅ Added unit field
             };
           });
+          console.log("✅ Products array after mapping:", this.Products);
         } else {
           this.showPopup_error(json.data);
-          console.log("Product: ", json);
+          console.log("❌ Product API Error: ", json);
         }
       } catch (error) {
-        console.error("Error fetching data:", error);
+        console.error("❌ Error fetching products:", error);
       } finally {
         this.isLoading = false;
       }
@@ -2959,5 +3683,31 @@ export default {
 .show-only-desktop table thead tr th:nth-child(7),
 .show-only-desktop table tbody tr td:nth-child(7) {
   display: block !important;
+}
+
+/* Fix v-date-picker blue highlight issue - More aggressive approach */
+.vc-day-content {
+  background-color: transparent !important;
+}
+
+.vc-day.is-not-in-month .vc-day-content {
+  opacity: 0.4;
+}
+
+.vc-day:hover .vc-day-content {
+  background-color: #e5e7eb !important;
+}
+
+.vc-day.is-today .vc-day-content {
+  background-color: #3b82f6 !important;
+  color: white !important;
+}
+
+.vc-highlight {
+  display: none !important;
+}
+
+.vc-highlights {
+  display: none !important;
 }
 </style>

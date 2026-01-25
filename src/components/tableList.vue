@@ -17,9 +17,9 @@
             <th
               style="min-width: 100px !important"
               v-if="columnEditAndDelete || columnforManage"
-            ></th>
+            >แก้ไข</th>
             <!-- คอลัมน์ส่งออก -->
-            <th style="min-width: 100px !important" v-if="columnforExport"></th>
+            <th style="min-width: 100px !important" v-if="columnforExport">PDF</th>
 
             <!-- หัวตารางอื่นๆ -->
             <th v-for="header in tableHeaders" :key="header.key">
@@ -62,12 +62,6 @@
 
             <td class="align-middle button-table" v-if="columnEditAndDelete">
               <div class="icon-table">
-                <span
-                  v-if="item.showAllowButton"
-                  class="mdi mdi-check-circle-outline"
-                  @click="handleAllow(item)"
-                  style="margin-right: 10px !important; cursor: pointer"
-                ></span>
                 <div class="icon-edit me-4" @click="handleEdit(item)"></div>
                 <div
                   v-if="item.showAllowButton || showAllowButton"
@@ -79,12 +73,13 @@
 
             <!-- Column manage button -->
             <td class="align-middle button-table" v-if="columnforManage">
-              <button
-                class="btn btn-outline-secondary"
-                @click="handleManage(item)"
-              >
-                {{ t("managerbtn") }}
-              </button>
+               <div style="display: flex; justify-content: center;">
+                 <div
+                  class="icon-edit"
+                  @click="handleManage(item)"
+                  :title="t('managerbtn')"
+                ></div>
+               </div>
             </td>
 
             <!-- Column preview and export button -->
@@ -218,6 +213,10 @@ export default {
     columnforManage: Boolean,
     columnforCheckbox: Boolean,
     columnforExport: Boolean,
+    hiddenColumns: {
+      type: Array,
+      default: () => [],
+    },
   },
   //set language
   setup() {
@@ -420,6 +419,11 @@ export default {
     },
     //function for hide column in table table
     shouldHideColumn(value) {
+      // Check if value is in hiddenColumns prop
+      if (this.hiddenColumns && this.hiddenColumns.includes(value)) {
+        return true;
+      }
+
       const columnsToHide = [
         "billing_id",
         "productID",
@@ -435,8 +439,18 @@ export default {
         "productTypeID",
         "PositionID",
         "departmentID",
+        "tax_invoice_number",
+        "sale_number",
+        "invoice_number",
+        "pay_bank",
+        "pay_number",
+        "pay_branch",
+        "pay_date",
+        "showAllowButton",
+        "deleted_at",
+        "billing_status",
       ]; // เปลี่ยนเป็นชื่อคอลัมน์ที่ต้องการซ่อน
-      return columnsToHide.includes(value);
+      return columnsToHide.includes(value) || value === "" || !value;
     },
     toggleDropdown(key) {
       if (!this.dropdownVisible[key]) {
