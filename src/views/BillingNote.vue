@@ -391,7 +391,7 @@
           class="form-control"
           v-model="formData.cus_address"
           :class="{ error: isEmpty.cus_address }"
-          placeholder="กรุณากรอกที่อยู่"
+          :placeholder="t('customerPurchasePlaceholderAddress')"
         />
       </div>
       <div class="mb-3 div-for-formControl">
@@ -400,36 +400,20 @@
           class="form-control"
           v-model="formData.cus_tel"
           :class="{ error: isEmpty.cus_tel }"
-          placeholder="กรุณากรอกเบอร์โทรศัพท์"
+          :placeholder="t('customerPurchasePlaceholderPhoneNum')"
         />
       </div>
-      <div class="mb-3 div-for-formControl">
-        <label class="col-sm-5 col-md-6">{{ t("email") }}</label>
-        <input
-          class="form-control"
-          v-model="formData.cus_email"
-          :class="{ error: isEmpty.cus_email }"
-          placeholder="กรุณากรอกอีเมล"
-        />
-      </div>
+
       <div class="mb-3 div-for-formControl">
         <label class="col-sm-5 col-md-6">{{ t("taxID") }}</label>
         <input
           class="form-control"
           v-model="formData.cus_tax"
           :class="{ error: isEmpty.cus_tax }"
-          placeholder="กรุณากรอกเลขประจำตัวผู้เสียภาษี"
+          :placeholder="t('customerPurchasePlaceholderTaxID')"
         />
       </div>
-      <div class="mb-3 div-for-formControl">
-        <label class="col-sm-5 col-md-6">{{ t("customerPurchaseBy") }}</label>
-        <input
-          class="form-control"
-          v-model="formData.cus_purchase"
-          :class="{ error: isEmpty.cus_purchase }"
-          placeholder="กรุณากรอกผู้ติดต่อ"
-        />
-      </div>
+
     </div>
     <div class="mb-3">
       <div class="Register-contain" :class="{ error: isEmpty.productForms }" style="padding: 20px; width: unset">
@@ -1106,6 +1090,9 @@ export default {
         cus_email: "",
         cus_tax: "",
         cus_purchase: "",
+        cusPurchasePhone: "",
+        cusPurchaseEmail: "",
+        cusPurchaseRemark: "",
         sale_qty: "",
         sale_number: "",
         sale_date: "",
@@ -1521,6 +1508,9 @@ export default {
         cus_email: "",
         cus_tax: "",
         cus_purchase: "",
+        cusPurchasePhone: "",
+        cusPurchaseEmail: "",
+        cusPurchaseRemark: "",
         sale_totalprice: 0,
         total_price: 0,
         total_discount: 0,
@@ -1684,6 +1674,9 @@ export default {
         this.formData.cus_email = selectedCustomer.cus_email;
         this.formData.cus_tax = selectedCustomer.cus_tax;
         this.formData.cus_purchase = selectedCustomer.cus_purchase;
+        this.formData.cusPurchasePhone = selectedCustomer.cusPurchasePhone || "";
+        this.formData.cusPurchaseEmail = selectedCustomer.cusPurchaseEmail || "";
+        this.formData.cusPurchaseRemark = selectedCustomer.cusPurchaseRemark || "";
       }
     },
 
