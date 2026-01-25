@@ -295,7 +295,7 @@ th {
 .bg-img-login {
   background-image: url("./assets/nature-img.jpg");
   width: 100%;
-  height: 920px;
+  min-height: 100vh;
   background-position: center;
   background-repeat: no-repeat;
   background-size: cover;
