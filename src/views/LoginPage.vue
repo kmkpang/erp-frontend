@@ -1,6 +1,10 @@
 ﻿<template>
   <div class="bg-img-login">
     <div class="switch-lang-login">
+      <!-- User Manual Link -->
+      <div class="me-4" style="cursor: pointer" @click="$router.push('/manual')">
+        <a class="text-switch-lang-login"><i class="mdi mdi-book-open-variant"></i> คู่มือการใช้งาน</a>
+      </div>
       <div class="icon_language me-4"></div>
       <div class="me-3">
         <div style="cursor: pointer" @click="toggleLanguage(t('headerLang'))">

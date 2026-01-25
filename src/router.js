@@ -78,6 +78,11 @@ const routes = [
     meta: { requiresAuth: true, requiresAdmin: true, roles: ["SUPERUSER"] },
   },
   {
+    path: "/manual",
+    name: "UserManual",
+    component: () => import("./views/UserManual.vue"),
+  },
+  {
     path: "/:pathMatch(.*)*",
     redirect: "/home",
   },
