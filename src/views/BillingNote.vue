@@ -156,11 +156,11 @@
         <label class="col-sm-6 col-md-6">{{ t("customerName") }}</label>
         <div class="relative-wrapper">
           <!-- ✅ Add mode: Customer selection dropdown -->
-          <div v-if="!isEditMode" style="position: relative">
-            <input list="customerList" name="customerBrowser" class="form-control" v-model="selectedCusName"
-              @input="getDetailCustomer()" :class="{ error: isEmpty.cus_name }" autoComplete="off"
-              style="width: 100%; padding-right: 30px; font-size: 14px" :placeholder="t('customerNamePlaceholder')"
-              @click="resetError('cus_name')" />
+          <div v-if="!isEditMode" class="relative-wrapper">
+            <input class="form-control" v-model="selectedCusName" @input="onCustomerInput"
+              @focus="showCustomerDropdown = true" @blur="closeCustomerList" :class="{ error: isEmpty.cus_name }"
+              autoComplete="off" style="width: 100%; padding-right: 30px; font-size: 14px"
+              :placeholder="t('customerNamePlaceholder')" @click="resetError('cus_name')" />
             <span style="
                 position: absolute;
                 right: 16px;
@@ -168,12 +168,17 @@
                 transform: translateY(-50%) scaleX(1.5);
                 font-size: 8px;
                 color: #888;
+                pointer-events: none;
               ">
               ▼
             </span>
-            <datalist id="customerList">
-              <option v-for="item in Customers" :key="item.cus_id" :value="item.cus_name"></option>
-            </datalist>
+
+            <div v-if="showCustomerDropdown && filteredCustomers.length > 0" class="custom-datalist-options show">
+              <div v-for="item in filteredCustomers" :key="item.cus_id" class="custom-datalist-option"
+                @mousedown.prevent="selectCustomer(item)">
+                {{ item.cus_name }}
+              </div>
+            </div>
           </div>
           <!-- Edit mode: Readonly -->
           <input v-else class="form-control readonly" v-model="formData.cus_name" :class="{ error: inputError }"
@@ -226,8 +231,9 @@
                   <!-- ✅ Add mode: Product selection -->
                   <div v-if="!isEditMode" class="relative-wrapper">
                     <div style="position: relative">
-                      <input :list="'productList' + index" class="form-control" v-model="form.productName"
-                        @input="getDetailProduct(form, index)" :class="{ error: inputError }" autoComplete="off"
+                      <input class="form-control" v-model="form.productName" @input="onProductInput(form, index)"
+                        @focus="form.showProductDropdown = true" @blur="closeProductList(form)"
+                        :class="{ error: inputError }" autoComplete="off"
                         style="width: 100%; padding-right: 30px; font-size: 14px" :placeholder="t('selectProduct')" />
                       <span style="
                           position: absolute;
@@ -236,13 +242,19 @@
                           transform: translateY(-50%) scaleX(1.5);
                           font-size: 8px;
                           color: #888;
+                          pointer-events: none;
                         ">
                         ▼
                       </span>
+
+                      <div v-if="form.showProductDropdown && getFilteredProducts(form.productName).length > 0"
+                        class="custom-datalist-options show">
+                        <div v-for="item in getFilteredProducts(form.productName)" :key="item.productID"
+                          class="custom-datalist-option" @mousedown.prevent="selectProduct(form, item, index)">
+                          {{ item.productname }}
+                        </div>
+                      </div>
                     </div>
-                    <datalist :id="'productList' + index">
-                      <option v-for="item in Products" :key="item.productID" :value="item.productname"></option>
-                    </datalist>
 
                     <a class="text-muted ng-star-inserted text-start" href="javascript:void(0)"
                       @click="toggleProductDetail(form)">
@@ -728,9 +740,16 @@ export default {
         cus_tax: false,
         pay_bank: false,
       },
+      showCustomerDropdown: false,
     };
   },
   computed: {
+    filteredCustomers() {
+      if (!this.selectedCusName) return this.Customers;
+      return this.Customers.filter(c =>
+        c.cus_name.toLowerCase().includes(this.selectedCusName.toLowerCase())
+      );
+    },
     allExpanded() {
       return this.expandedItems.size === this.Billings.length; // ถ้าทั้งหมดขยาย ให้ return true
     },
@@ -1080,6 +1099,47 @@ export default {
       this.expandedItems = new Set(this.expandedItems); // อัปเดต reactivity
     },
 
+    // Custom Dropdown Logic
+    onCustomerInput() {
+      this.showCustomerDropdown = true;
+      // You can trigger extra logic here if needed, but getDetailCustomer is on selection now
+      this.getDetailCustomer(); // Keep existing behavior of detail fetching on input? 
+      // If getDetailCustomer relies on exact match, it might be better to call it only on select, 
+      // BUT if the user types an exact name without clicking, we still want it.
+    },
+    selectCustomer(customer) {
+      this.selectedCusName = customer.cus_name;
+      this.showCustomerDropdown = false;
+      this.getDetailCustomer();
+    },
+    closeCustomerList() {
+      // Delay closing to allow click event to register
+      setTimeout(() => {
+        this.showCustomerDropdown = false;
+      }, 200);
+    },
+
+    getFilteredProducts(query) {
+      if (!query) return this.Products;
+      return this.Products.filter(p =>
+        p.productname.toLowerCase().includes(query.toLowerCase())
+      );
+    },
+    onProductInput(form, index) {
+      form.showProductDropdown = true;
+      this.getDetailProduct(form, index); // Keep strict match check if user types exact name
+    },
+    selectProduct(form, product, index) {
+      form.productName = product.productname;
+      form.showProductDropdown = false;
+      this.getDetailProduct(form, index);
+    },
+    closeProductList(form) {
+      setTimeout(() => {
+        form.showProductDropdown = false;
+      }, 200);
+    },
+
     // ✅ ========== NEW METHODS FOR DIRECT BILLING CREATION ==========
 
     // Open popup for creating new billing
@@ -1296,6 +1356,7 @@ export default {
         showDetails: false,
         isReadonly2: true,
         isDisabled2: true,
+        showProductDropdown: false,
       });
     },
 
