@@ -1252,7 +1252,8 @@ export default {
         const json = await response.json();
 
         if (json.statusCode === 200) {
-          this.Customers = json.data;
+          const data = json.data.filter((item) => item.Status !== "not active");
+          this.Customers = data;
         }
       } catch (error) {
         console.error("Error fetching customers:", error);
