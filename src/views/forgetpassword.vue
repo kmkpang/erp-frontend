@@ -243,6 +243,9 @@ export default {
         categoryID: item.ID,
       };
     },
+    closeErrorPopup() {
+      this.isPopupVisible_error = false;
+    },
     // Show success popup with a message
     showPopup(message) {
       this.popupMessage = message;

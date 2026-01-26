@@ -7,7 +7,7 @@
         <h2>{{ t("headerDepartment") }}</h2>
       </div>
       <div class="add-btn mb-3">
-        <a class="btn btn-success size-font-sm" @click="openPopup">{{
+        <a class="btn btn-success size-font-md" @click="openPopup">{{
           t("addDepartment")
         }}</a>
       </div>
@@ -49,6 +49,8 @@
           type="text"
           id="input-text"
           :class="{ error: isEmpty.departmentName }"
+          :placeholder="t('enterDepartmentName')"
+          @click="resetError('departmentName')"
           required
         />
       </div>
@@ -216,6 +218,12 @@ export default {
   },
   methods: {
     closeErrorPopup() {
+      this.isPopupVisible_error = false;
+    },
+    resetError(field) {
+      if (field && this.isEmpty[field] !== undefined) {
+        this.isEmpty[field] = false;
+      }
       this.isPopupVisible_error = false;
     },
     async validateFormData() {

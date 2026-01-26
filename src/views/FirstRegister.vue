@@ -32,6 +32,7 @@
               v-model="formData.user_title"
               required
               :class="{ error: isEmpty.user_title }"
+              @click="resetError('user_title')"
             >
               <option value="Mr.">{{ t("mister") }}</option>
               <option value="Mrs.">{{ t("missis") }}</option>
@@ -49,6 +50,7 @@
               required
               maxlength="50"
               :class="{ error: isEmpty.userF_name }"
+              @click="resetError('userF_name')"
             />
           </div>
           <div class="col-md-6">
@@ -60,6 +62,7 @@
               type="text"
               class="form-control"
               :class="{ error: isEmpty.userL_name }"
+              @click="resetError('userL_name')"
             />
           </div>
           <div class="col-6">
@@ -73,6 +76,7 @@
               :class="{ error: isEmpty.userPhone }"
               @keypress="validateInput"
               maxlength="10"
+              @click="resetError('userPhone')"
             />
           </div>
           <div class="col-6">
@@ -84,6 +88,7 @@
               type="text"
               class="form-control"
               :class="{ error: isEmpty.userEmail }"
+              @click="resetError('userEmail')"
             />
           </div>
           <div class="col-md-6">
@@ -98,6 +103,7 @@
                 aria-label="Password"
                 aria-describedby="basic-addon2"
                 v-model="formData.userPassword"
+                @click="resetError('userPassword')"
               />
               <button
                 class="btn btn-outline-secondary"
@@ -128,6 +134,7 @@
                 aria-label="Comfirm Password"
                 aria-describedby="basic-addon2"
                 v-model="formData.userPassword2"
+                @click="resetError('userPassword2')"
               />
               <button
                 class="btn btn-outline-secondary"
@@ -154,6 +161,7 @@
               class="form-control"
               v-model="formData.bus_name"
               :class="{ error: isEmpty.bus_name }"
+              @click="resetError('bus_name')"
             />
           </div>
           <div class="col-md-6">
@@ -162,6 +170,7 @@
               class="form-control"
               v-model="formData.bus_website"
               :class="{ error: isEmpty.bus_website }"
+              @click="resetError('bus_website')"
             />
           </div>
           <div class="col-md-12">
@@ -172,6 +181,7 @@
               class="form-control"
               v-model="formData.bus_address"
               :class="{ error: isEmpty.bus_address }"
+              @click="resetError('bus_address')"
             />
           </div>
           <div class="col-md-6">
@@ -184,6 +194,7 @@
               :class="{ error: isEmpty.bus_tel }"
               @keypress="validateInput"
               maxlength="10"
+              @click="resetError('bus_tel')"
             />
           </div>
           <div class="col-md-6">
@@ -194,6 +205,7 @@
               :class="{ error: isEmpty.bus_tax }"
               @keypress="validateInput"
               maxlength="13"
+              @click="resetError('bus_tax')"
             />
           </div>
           <div class="col-md-6">
@@ -262,6 +274,7 @@
               aria-label="Default select example"
               v-model="formData.bank_name"
               :class="{ error: isEmpty.bank_name }"
+              @click="resetError('bank_name')"
             >
               <option value="ธนาคารกรุงเทพ">ธนาคารกรุงเทพ (BBL)</option>
               <option value="ธนาคารกสิกรไทย">ธนาคารกสิกรไทย (KBANK)</option>
@@ -297,6 +310,7 @@
               class="form-control"
               v-model="formData.bank_account"
               :class="{ error: isEmpty.bank_account }"
+              @click="resetError('bank_account')"
             />
           </div>
           <div class="col-md-6">
@@ -307,6 +321,7 @@
               :class="{ error: isEmpty.bank_number }"
               @keypress="validateInput"
               maxlength="15"
+              @click="resetError('bank_number')"
             />
           </div>
         </form>
@@ -783,6 +798,12 @@ export default {
     },
 
     closeErrorPopup() {
+      this.isPopupVisible_error = false;
+    },
+    resetError(field) {
+      if (field && this.isEmpty[field] !== undefined) {
+        this.isEmpty[field] = false;
+      }
       this.isPopupVisible_error = false;
     },
     validateInput(event) {

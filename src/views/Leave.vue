@@ -9,7 +9,7 @@
       <div class="row mb-3">
         <div class="col-4 col-sm-4 col-md-2 col-lg-2">
           <select
-            class="form-control form-select size-font-sm"
+            class="form-control form-select size-font-md"
             v-model="formData.status"
           >
             <option
@@ -27,19 +27,19 @@
           <input
             v-model="searchQuery"
             type="text"
-            class="form-control me-3 size-font-sm"
+            class="form-control me-3 size-font-md"
             :placeholder="$t('Search')"
           />
         </div>
          <div class="col-1 col-sm-1 col-md-7 col-lg-7"></div> -->
       <!-- <div class="col-7 col-sm-6 col-md-9 col-lg-9 text-end">
           <a
-            class="btn btn-success me-3 size-font-sm me-2"
+            class="btn btn-success me-3 size-font-md me-2"
             @click="openPopup"
             >{{ t("addEmployee") }}</a
           >
           <button
-            class="btn btn-outline-secondary mdi mdi-export-variant size-font-sm"
+            class="btn btn-outline-secondary mdi mdi-export-variant size-font-md"
             @click="exportEmployee"
           ></button>
         </div>
@@ -96,10 +96,10 @@
       </div>
       <div class="row mb-3">
         <div class="col-6 col-sm-6 col-md-3 col-lg-3">
-          <label class="me-1 size-font-sm">{{ t("month") }}</label>
+          <label class="me-1 size-font-md">{{ t("month") }}</label>
           <select
             v-model="selectedMonthFilter"
-            class="me-3 form-control form-select size-font-sm"
+            class="me-3 form-control form-select size-font-md"
             :class="{ error: inputError } + ' form-control'"
           >
             <option v-for="month in months" :value="month" :key="month">
@@ -108,10 +108,10 @@
           </select>
         </div>
         <!-- <div class="col-6 col-sm-6 col-md-3 col-lg-3">
-          <label class="me-1 size-font-sm">{{ t("year") }}</label>
+          <label class="me-1 size-font-md">{{ t("year") }}</label>
           <select
             v-model="selectedYearFilter"
-            class="me-3 form-control form-select size-font-sm"
+            class="me-3 form-control form-select size-font-md"
             :class="{ error: inputError } + ' form-control'"
           >
             <option v-for="year in years" :key="year" :value="year">
@@ -120,11 +120,11 @@
           </select>
         </div> -->
         <div class="col-6 col-sm-6 col-md-3 col-lg-3">
-          <label class="me-1 size-font-sm">{{ t("year") }}</label>
+          <label class="me-1 size-font-md">{{ t("year") }}</label>
 
           <select
             v-model="selectedYearFilter"
-            class="me-3 form-control form-select size-font-sm"
+            class="me-3 form-control form-select size-font-md"
             :class="{ error: inputError } + ' form-control'"
           >
             <!-- <option v-for="year in years" :key="year" :value="year">
@@ -141,13 +141,13 @@
           <input
             v-model="searchQueryLeave"
             type="text"
-            class="form-control me-3 size-font-sm"
+            class="form-control me-3 size-font-md"
             :placeholder="$t('SearchLeve')"
           />
         </div>
         <div class="col-1 col-sm-1 col-md-7 col-lg-7"></div>
         <div class="col-5 col-sm-5 col-md-2 col-lg-2 text-end">
-          <button class="btn btn-primary size-font-sm" @click="openPopupLeave">
+          <button class="btn btn-primary size-font-md" @click="openPopupLeave">
             {{ t("manageLeave") }}
           </button>
         </div>
@@ -233,6 +233,7 @@
           v-model="formData.title"
           required
           :class="{ error: isEmpty.title }"
+          @click="resetError('title')"
         >
           <option value="Mr.">{{ t("mister") }}</option>
           <option value="Mrs.">{{ t("missis") }}</option>
@@ -247,6 +248,7 @@
           type="text"
           required
           :class="{ error: isEmpty.F_name }"
+          @click="resetError('F_name')"
         />
       </div>
       <div class="mb-3 div-for-formControl">
@@ -257,6 +259,7 @@
           type="text"
           required
           :class="{ error: isEmpty.L_name }"
+          @click="resetError('L_name')"
         />
       </div>
       <div class="mb-3 div-for-formControl">
@@ -274,6 +277,7 @@
             :lang="currentLocale"
             :disabled-date="disabledBeforeToday"
             :class="{ error: isEmpty.Birthdate }"
+            @click="resetError('Birthdate')"
           />
         </div>
       </div>
@@ -285,6 +289,7 @@
           type="text"
           required
           :class="{ error: isEmpty.Address }"
+          @click="resetError('Address')"
         />
       </div>
       <div class="mb-3 div-for-formControl">
@@ -297,6 +302,7 @@
           :class="{ error: isEmpty.Phone_num }"
           @keypress="validateInput"
           maxlength="10"
+          @click="resetError('Phone_num')"
         />
       </div>
       <div class="mb-3 div-for-formControl">
@@ -309,6 +315,7 @@
           :class="{ error: isEmpty.NID_num }"
           @keypress="validateInput"
           maxlength="13"
+          @click="resetError('NID_num')"
         />
       </div>
       <div class="mb-3 div-for-formControl">
@@ -319,6 +326,7 @@
           type="text"
           required
           :class="{ error: isEmpty.Email }"
+          @click="resetError('Email')"
         />
       </div>
       <h6>{{ t("headerAboutJob") }}</h6>
@@ -329,6 +337,7 @@
           v-model="formData.employeeType"
           required
           :class="{ error: isEmpty.employeeType }"
+          @click="resetError('employeeType')"
         >
           <option value="Full-time">{{ t("fulltime") }}</option>
           <option value="Part-time">{{ t("parttime") }}</option>
@@ -342,6 +351,7 @@
           v-model="formData.departmentID"
           required
           :class="{ error: isEmpty.departmentID }"
+          @click="resetError('departmentID')"
         >
           <option
             v-for="employ in Departments"
@@ -359,6 +369,7 @@
           v-model="formData.PositionID"
           required
           :class="{ error: isEmpty.PositionID }"
+          @click="resetError('PositionID')"
         >
           <option
             v-for="employ in Positions"
@@ -376,6 +387,7 @@
           v-model="formData.PositionID"
           required
           :class="{ error: isEmpty.PositionID }"
+          @click="resetError('PositionID')"
         >
           <option
             v-for="employ in Positions"
@@ -395,6 +407,7 @@
           required
           :class="{ error: isEmpty.Salary }"
           @keypress="validateInput"
+          @click="resetError('Salary')"
         />
       </div>
       <div class="mb-3 div-for-formControl">
@@ -413,6 +426,7 @@
             :lang="currentLocale"
             :disabled-date="disabledBeforeToday"
             :class="{ error: isEmpty.start_working_date }"
+            @click="resetError('start_working_date')"
           ></DatePicker>
         </div>
       </div>
@@ -487,6 +501,7 @@
           type="text"
           required
           :class="{ error: isEmpty.employeeID }"
+          @click="resetError('employeeID')"
         >
           <option
             v-for="employ in employees"
@@ -505,6 +520,7 @@
           type="text"
           required
           :class="{ error: isEmpty.detail }"
+          @click="resetError('detail')"
         >
           <option>{{ t("SickLeave") }}</option>
           <option>{{ t("BusinessLeave") }}</option>
@@ -1460,6 +1476,17 @@ export default {
       return `${day}/${month}/${buddhistYear}`; // 🔸 แสดงเป็น พ.ศ.
     },
     closeErrorPopup() {
+      this.isPopupVisible_error = false;
+      this.isPopupVisible_error2 = false;
+    },
+    resetError(field) {
+      if (field) {
+        if (this.isEmpty && this.isEmpty[field] !== undefined) {
+          this.isEmpty[field] = false;
+        }
+      }
+      this.inputError = false;
+      this.isPopupVisible_error = false;
       this.isPopupVisible_error2 = false;
     },
     generateYears(start, end) {

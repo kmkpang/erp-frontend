@@ -14,12 +14,7 @@
       </div>
       <div class="row mb-3">
         <div class="col-6 col-sm-6 col-md-6 col-lg-3">
-          <input
-            v-model="searchQuery"
-            type="text"
-            class="form-control me-3 size-font-sm"
-            :placeholder="$t('Search')"
-          />
+          <input v-model="searchQuery" type="text" class="form-control me-3 size-font-md" :placeholder="$t('Search')" />
         </div>
         <div class="col-6 col-sm-6 col-md-6 col-lg-9"></div>
       </div>
@@ -28,229 +23,85 @@
         <div class="container">
           <div class="text-start">
             {{ allExpanded ? t("CollapseItemsAll") : t("expandedItemsAll") }}
-            <span
-              :class="
-                allExpanded ? 'mdi mdi-chevron-up' : 'mdi mdi-chevron-down'
-              "
-              @click="toggleAll"
-            >
+            <span :class="allExpanded ? 'mdi mdi-chevron-up' : 'mdi mdi-chevron-down'
+              " @click="toggleAll">
             </span>
           </div>
         </div>
         <div class="row">
-          <div
-            class="col-md-4 mt-3"
-            v-for="quotation in filteredBill"
-            :key="quotation.sale_id"
-          >
-            <div class="card d-flex flex-column" style="font-size: 12px">
-              <div class="card-header d-flex">
-                <div class="col-5">{{ quotation.billing_number }}</div>
-                <div
-                  class="col-5 text-end"
-                  :class="{
-                    'text-success': ['Complete', 'สมบูรณ์'].includes(
-                      quotation.billing_status
-                    ),
-                    'text-danger': quotation.billing_status === 'ยกเลิก',
-                  }"
-                >
-                  {{ quotation.billing_status }}
-                </div>
-                <div class="col-1 text-end">
-                  <span
-                    class="mdi mdi-pencil-outline"
-                    @click="handleEdit(quotation)"
-                  ></span>
-                </div>
-                <div class="col-1 text-end">
-                  <span
-                    class="mdi mdi-trash-can-outline"
-                    style="color: red"
-                    @click="handleDelete(quotation)"
-                  ></span>
+          <div v-for="quotation in filteredBill" :key="quotation.sale_id">
+            <div class="card d-flex flex-column" style="font-size: 16px">
+              <div class="card-header d-flex justify-content-between align-items-center"
+                style="background-color: transparent; border-bottom: none;">
+                <div class="fw-bold">{{ quotation.billing_number }}</div>
+                <div class="d-flex gap-3">
+                  <span class="mdi mdi-pencil-outline" @click="handleEdit(quotation)" style="cursor: pointer;"></span>
+                  <span class="mdi mdi-trash-can-outline text-danger" @click="handleDelete(quotation)"
+                    style="cursor: pointer;"></span>
                 </div>
               </div>
-              <div class="card-body" style="line-height: 1.75">
-                <div class="container">
-                  <div class="row">
-                    <div class="col-6">
-                      <p class="card-text">{{ t("cusNameHeaderTable") }}</p>
-                    </div>
-                    <div class="col-6 text-end">
-                      <p class="card-text">{{ quotation.cus_name }}</p>
-                    </div>
-                    <div class="col-6">
-                      <p class="card-text">
-                        {{ t("employeeNameHeaderTable") }}
-                      </p>
-                    </div>
-                    <div class="col-6 text-end">
-                      <p class="card-text">{{ quotation.employeeName }}</p>
-                    </div>
-                    <div class="col-6">
-                      <p class="card-text">
-                        {{ t("saleTotalpriceHeaderTable") }}
-                      </p>
-                    </div>
-                    <div class="col-6 text-end">
-                      <p class="card-text">{{ quotation.sale_totalprice }}</p>
-                    </div>
 
-                    <div class="col-6" v-if="isExpanded(quotation.sale_id)">
-                      <p class="card-text">{{ t("netpriceHeaderTable") }}</p>
-                    </div>
-                    <div
-                      class="col-6 text-end"
-                      v-if="isExpanded(quotation.sale_id)"
-                    >
-                      <p class="card-text">{{ quotation.net_price }}</p>
-                    </div>
-                    <div class="col-6" v-if="isExpanded(quotation.sale_id)">
-                      <p class="card-text">
-                        {{ t("cusAddressHeaderTable") }}
-                      </p>
-                    </div>
-                    <div
-                      class="col-6 text-end"
-                      v-if="isExpanded(quotation.sale_id)"
-                    >
-                      <p class="card-text">{{ quotation.cus_address }}</p>
-                    </div>
-                    <div class="col-6" v-if="isExpanded(quotation.sale_id)">
-                      <p class="card-text">
-                        {{ t("cusTelHeaderTable") }}
-                      </p>
-                    </div>
-                    <div
-                      class="col-6 text-end"
-                      v-if="isExpanded(quotation.sale_id)"
-                    >
-                      <p class="card-text">{{ quotation.cus_tel }}</p>
-                    </div>
-                    <div class="col-5" v-if="isExpanded(quotation.sale_id)">
-                      <p class="card-text">
-                        {{ t("cusEmailHeaderTable") }}
-                      </p>
-                    </div>
-                    <div
-                      class="col-7 text-end"
-                      v-if="isExpanded(quotation.sale_id)"
-                    >
-                      <p class="card-text">{{ quotation.cus_email }}</p>
-                    </div>
-                    <div class="col-6" v-if="isExpanded(quotation.sale_id)">
-                      <p class="card-text">
-                        {{ t("cusTaxHeaderTable") }}
-                      </p>
-                    </div>
-                    <div
-                      class="col-6 text-end"
-                      v-if="isExpanded(quotation.sale_id)"
-                    >
-                      <p class="card-text">{{ quotation.cus_tax }}</p>
-                    </div>
-                    <div class="col-6" v-if="isExpanded(quotation.sale_id)">
-                      <p class="card-text">
-                        {{ t("cusPurchaseHeaderTable") }}
-                      </p>
-                    </div>
-                    <div
-                      class="col-6 text-end"
-                      v-if="isExpanded(quotation.sale_id)"
-                    >
-                      <p class="card-text">{{ quotation.cus_purchase }}</p>
-                    </div>
-                    <div class="col-6" v-if="isExpanded(quotation.sale_id)">
-                      <p class="card-text">
-                        {{ t("billingDateHeaderTable") }}
-                      </p>
-                    </div>
-                    <div
-                      class="col-6 text-end"
-                      v-if="isExpanded(quotation.sale_id)"
-                    >
-                      <p class="card-text">{{ quotation.billing_date }}</p>
-                    </div>
-                    <div class="col-6" v-if="isExpanded(quotation.sale_id)">
-                      <p class="card-text">
-                        {{ t("paymentsHeaderTable") }}
-                      </p>
-                    </div>
-                    <div
-                      class="col-6 text-end"
-                      v-if="isExpanded(quotation.sale_id)"
-                    >
-                      <p class="card-text">
-                        {{ quotation.payments }}
-                      </p>
-                    </div>
-                    <!-- <div class="col-6" v-if="isExpanded(quotation.sale_id)">
-                      <p class="card-text">
-                        {{ t("expiredHeaderTable") }}
-                      </p>
-                    </div>
-                    <div
-                      class="col-6 text-end"
-                      v-if="isExpanded(quotation.sale_id)"
-                    >
-                      <p class="card-text">
-                        {{ quotation.credit_expired_date }}
-                      </p>
-                    </div>
-                    <div class="col-6" v-if="isExpanded(quotation.sale_id)">
-                      <p class="card-text">
-                        {{ t("invoiceStatusHeaderTable") }}
-                      </p>
-                    </div>
-                    <div
-                      class="col-6 text-end"
-                      v-if="isExpanded(quotation.sale_id)"
-                    >
-                      <p class="card-text">{{ quotation.invoice }}</p>
-                    </div>
-                    <div class="col-6" v-if="isExpanded(quotation.sale_id)">
-                      <p class="card-text"></p>
-                    </div> -->
+              <div class="card-body pt-0" style="line-height: 1.8;">
+                <div class="d-flex justify-content-between">
+                  <span>{{ t("cusNameHeaderTable") }}</span>
+                  <span class="text-end text-break">{{ quotation.cus_name }}</span>
+                </div>
+                <div class="d-flex justify-content-between">
+                  <span>{{ t("employeeNameHeaderTable") }}</span>
+                  <span class="text-end">{{ quotation.employeeName }}</span>
+                </div>
+                <div class="d-flex justify-content-between">
+                  <span>{{ t("saleTotalpriceHeaderTable") }}</span>
+                  <span class="text-end">{{ quotation.sale_totalprice }}</span>
+                </div>
+                <div class="d-flex justify-content-between">
+                  <span>{{ t("netpriceHeaderTable") }}</span>
+                  <span class="text-end">{{ quotation.net_price }}</span>
+                </div>
+
+                <div v-show="isExpanded(quotation.sale_id)">
+                  <div class="d-flex justify-content-between">
+                    <span>{{ t("cusAddressHeaderTable") }}</span>
+                    <div class="text-end text-break" style="max-width: 60%;">{{ quotation.cus_address }}</div>
+                  </div>
+                  <div class="d-flex justify-content-between">
+                    <span>{{ t("cusTelHeaderTable") }}</span>
+                    <span class="text-end">{{ quotation.cus_tel }}</span>
+                  </div>
+                  <div class="d-flex justify-content-between">
+                    <span>{{ t("cusEmailHeaderTable") }}</span>
+                    <span class="text-end text-break">{{ quotation.cus_email }}</span>
+                  </div>
+                  <div class="d-flex justify-content-between">
+                    <span>{{ t("cusTaxHeaderTable") }}</span>
+                    <span class="text-end">{{ quotation.cus_tax }}</span>
+                  </div>
+                  <div class="d-flex justify-content-between">
+                    <span>{{ t("cusPurchaseHeaderTable") }}</span>
+                    <span class="text-end">{{ quotation.cus_purchase }}</span>
+                  </div>
+                  <div class="d-flex justify-content-between">
+                    <span>{{ t("billingDateHeaderTable") }}</span>
+                    <span class="text-end">{{ quotation.billing_date }}</span>
+                  </div>
+                  <div class="d-flex justify-content-between">
+                    <span>{{ t("paymentsHeaderTable") }}</span>
+                    <span class="text-end">{{ quotation.payments }}</span>
+                  </div>
+
+                  <div class="d-flex justify-content-end gap-3 mt-2">
+                    <span class="mdi mdi-eye-outline" @click="handlePreview(quotation)"
+                      style="cursor: pointer; font-size: 20px;"></span>
+                    <span class="mdi mdi-tray-arrow-down" @click="handleDownload(quotation)"
+                      style="cursor: pointer; font-size: 20px;"></span>
                   </div>
                 </div>
               </div>
-              <div
-                class="card-header d-flex"
-                style="background: white; border: none; margin-top: -15px"
-                v-if="isExpanded(quotation.sale_id)"
-              >
-                <div class="col-7"></div>
-                <div class="col-3 text-end"></div>
-                <div class="col-1 text-end">
-                  <span
-                    class="mdi mdi-eye-outline"
-                    @click="handlePreview(quotation)"
-                  ></span>
-                </div>
-                <div class="col-1 text-end">
-                  <span
-                    class="mdi mdi-tray-arrow-down"
-                    @click="handleDownload(quotation)"
-                  ></span>
-                </div>
-              </div>
 
-              <!-- Footer (กดแล้วขยายเฉพาะ Card ที่กด) -->
-              <div
-                class="card-footer text-center"
-                style="padding-bottom: 0.75rem !important"
-              >
-                <span
-                  :class="
-                    isExpanded(quotation.sale_id)
-                      ? 'mdi mdi-chevron-up'
-                      : 'mdi mdi-chevron-down'
-                  "
-                  class="icon-toggle"
-                  @click="toggleCollapse(quotation.sale_id)"
-                >
-                </span>
+              <div class="card-footer text-center bg-transparent border-0 pt-0"
+                @click="toggleCollapse(quotation.sale_id)">
+                <span :class="isExpanded(quotation.sale_id) ? 'mdi mdi-chevron-up' : 'mdi mdi-chevron-down'"
+                  style="font-size: 24px; cursor: pointer;"></span>
               </div>
             </div>
           </div>
@@ -258,26 +109,13 @@
       </div>
       <div class="show-only-desktop sale_hide">
         <!-- table billing -->
-        <BillingList
-          :initialTableData="filteredBill"
-          :tableHeaders="tableHeaders"
-          :columnforExport="true"
-          :columnEditAndDelete="true"
-          @handleEdit="handleEdit"
-          @handleDelete="handleDelete"
-          @handleExport="handleDownload"
-          @handlePreview="handlePreview"
-          @handleAllow="handleAllow"
-          :isLoading="isLoading"
-          :documentName="documentName"
-          :showAllowButton="false"
-        />
+        <BillingList :initialTableData="filteredBill" :tableHeaders="tableHeaders" :columnforExport="true"
+          :columnEditAndDelete="true" @handleEdit="handleEdit" @handleDelete="handleDelete"
+          @handleExport="handleDownload" @handlePreview="handlePreview" @handleAllow="handleAllow"
+          :isLoading="isLoading" :documentName="documentName" :showAllowButton="false" />
       </div>
     </div>
-    <div
-      v-if="isLoading"
-      class="d-flex justify-content-center align-items-center"
-    >
+    <div v-if="isLoading" class="d-flex justify-content-center align-items-center">
       <div class="spinner-border text-primary" role="status">
         <span class="visually-hidden">Loading...</span>
       </div>
@@ -289,12 +127,7 @@
     <div class="border p-4 mb-3">
       <div class="mb-3 div-for-formControl">
         <label class="col-sm-5 col-md-6">{{ t("numberBilling") }}</label>
-        <input
-          class="form-control readonly"
-          v-model="formData.billing_number"
-          readonly
-          disabled
-        />
+        <input class="form-control readonly" v-model="formData.billing_number" readonly disabled />
       </div>
       <div class="mb-3 div-for-formControl">
         <label class="col-sm-6 col-md-6">{{ t("dateBilling") }}</label>
@@ -307,31 +140,12 @@
           :formatter="momentFormat"
           :lang="currentLocale"
         /> -->
-        <v-date-picker
-          v-model="formData.billing_date"
-          locale="th-TH"
-          :format="formatDatePicker"
-        >
+        <v-date-picker v-model="formData.billing_date" locale="th-TH" :format="formatDatePicker">
           <template v-slot="{ togglePopover }">
-            <input
-              class="custom-input"
-              :value="formatDatePicker(formData.billing_date)"
-              @focus="togglePopover"
-              readonly
-              placeholder="เลือกวันที่"
-              style="width: 100%; cursor: pointer"
-            />
+            <input class="custom-input" :value="formatDatePicker(formData.billing_date)" @focus="togglePopover" readonly
+              :placeholder="t('selectDate')" style="cursor: pointer" />
           </template>
         </v-date-picker>
-      </div>
-      <div class="mb-3 div-for-formControl">
-        <label class="col-sm-6 col-md-6">{{ t("employeeName") }}</label>
-        <input
-          class="form-control dropdown_selector readonly"
-          v-model="formData.employeeName"
-          readonly
-          disabled
-        />
       </div>
     </div>
     <div class="border p-4 mb-3">
@@ -343,75 +157,44 @@
         <div class="relative-wrapper">
           <!-- ✅ Add mode: Customer selection dropdown -->
           <div v-if="!isEditMode" style="position: relative">
-            <input
-              list="customerList"
-              name="customerBrowser"
-              class="form-control"
-              v-model="selectedCusName"
-              @input="getDetailCustomer()"
-              :class="{ error: isEmpty.cus_name }"
-              autoComplete="off"
-              style="width: 100%; padding-right: 30px; font-size: 14px"
-              :placeholder="t('customerNamePlaceholder')"
-            />
-            <span
-              style="
+            <input list="customerList" name="customerBrowser" class="form-control" v-model="selectedCusName"
+              @input="getDetailCustomer()" :class="{ error: isEmpty.cus_name }" autoComplete="off"
+              style="width: 100%; padding-right: 30px; font-size: 14px" :placeholder="t('customerNamePlaceholder')"
+              @click="resetError('cus_name')" />
+            <span style="
                 position: absolute;
                 right: 16px;
                 top: 50%;
                 transform: translateY(-50%) scaleX(1.5);
                 font-size: 8px;
                 color: #888;
-              "
-            >
+              ">
               ▼
             </span>
             <datalist id="customerList">
-              <option
-                v-for="item in Customers"
-                :key="item.cus_id"
-                :value="item.cus_name"
-              ></option>
+              <option v-for="item in Customers" :key="item.cus_id" :value="item.cus_name"></option>
             </datalist>
           </div>
           <!-- Edit mode: Readonly -->
-          <input
-            v-else
-            class="form-control readonly"
-            v-model="formData.cus_name"
-            :class="{ error: inputError }"
-            readonly
-            disabled
-          />
+          <input v-else class="form-control readonly" v-model="formData.cus_name" :class="{ error: inputError }"
+            readonly disabled />
         </div>
       </div>
       <div class="mb-3 div-for-formControl">
         <label class="col-sm-5 col-md-6">{{ t("customerAddress") }}</label>
-        <input
-          class="form-control"
-          v-model="formData.cus_address"
-          :class="{ error: isEmpty.cus_address }"
-          :placeholder="t('customerPurchasePlaceholderAddress')"
-        />
+        <input class="form-control" v-model="formData.cus_address" :class="{ error: isEmpty.cus_address }"
+          :placeholder="t('customerPurchasePlaceholderAddress')" @click="resetError('cus_address')" />
       </div>
       <div class="mb-3 div-for-formControl">
         <label class="col-sm-5 col-md-6">{{ t("phoneNum") }}</label>
-        <input
-          class="form-control"
-          v-model="formData.cus_tel"
-          :class="{ error: isEmpty.cus_tel }"
-          :placeholder="t('customerPurchasePlaceholderPhoneNum')"
-        />
+        <input class="form-control" v-model="formData.cus_tel" :class="{ error: isEmpty.cus_tel }"
+          :placeholder="t('customerPurchasePlaceholderPhoneNum')" @click="resetError('cus_tel')" />
       </div>
 
       <div class="mb-3 div-for-formControl">
         <label class="col-sm-5 col-md-6">{{ t("taxID") }}</label>
-        <input
-          class="form-control"
-          v-model="formData.cus_tax"
-          :class="{ error: isEmpty.cus_tax }"
-          :placeholder="t('customerPurchasePlaceholderTaxID')"
-        />
+        <input class="form-control" v-model="formData.cus_tax" :class="{ error: isEmpty.cus_tax }"
+          :placeholder="t('customerPurchasePlaceholderTaxID')" @click="resetError('cus_tax')" />
       </div>
 
     </div>
@@ -421,11 +204,8 @@
           <h5 style="text-decoration-line: underline">{{ t("product") }}</h5>
           <!-- ✅ Add Product Button (only in Add mode) -->
           <div v-if="!isEditMode" class="mb-3">
-            <button
-              class="round-button btn btn-primary"
-              @click="showingAddProduct"
-            >
-              +
+            <button @click="showingAddProduct" class="add-product-btn">
+              {{ t("addProduct") }}
             </button>
           </div>
           <table class="table">
@@ -446,114 +226,60 @@
                   <!-- ✅ Add mode: Product selection -->
                   <div v-if="!isEditMode" class="relative-wrapper">
                     <div style="position: relative">
-                      <input
-                        :list="'productList' + index"
-                        class="form-control"
-                        v-model="form.productName"
-                        @input="getDetailProduct(form, index)"
-                        :class="{ error: inputError }"
-                        autoComplete="off"
-                        style="width: 100%; padding-right: 30px; font-size: 14px"
-                        placeholder="เลือกสินค้า"
-                      />
-                      <span
-                        style="
+                      <input :list="'productList' + index" class="form-control" v-model="form.productName"
+                        @input="getDetailProduct(form, index)" :class="{ error: inputError }" autoComplete="off"
+                        style="width: 100%; padding-right: 30px; font-size: 14px" :placeholder="t('selectProduct')" />
+                      <span style="
                           position: absolute;
                           right: 16px;
                           top: 50%;
                           transform: translateY(-50%) scaleX(1.5);
                           font-size: 8px;
                           color: #888;
-                        "
-                      >
+                        ">
                         ▼
                       </span>
                     </div>
                     <datalist :id="'productList' + index">
-                      <option
-                        v-for="item in Products"
-                        :key="item.productID"
-                        :value="item.productname"
-                      ></option>
+                      <option v-for="item in Products" :key="item.productID" :value="item.productname"></option>
                     </datalist>
 
-                    <a
-                      class="text-muted ng-star-inserted text-start"
-                      href="javascript:void(0)"
-                      @click="toggleProductDetail(form)"
-                    >
+                    <a class="text-muted ng-star-inserted text-start" href="javascript:void(0)"
+                      @click="toggleProductDetail(form)">
                       <div class="description-row">
-                        เพิ่มรายละเอียดสินค้า
+                        {{ t('addProductDetail') }}
                       </div>
                     </a>
-                    <textarea
-                      v-if="form.showDetails || form.product_detail !== ''"
-                      class="form-control"
-                      v-model="form.product_detail"
-                      rows="3"
-                    ></textarea>
+                    <textarea v-if="form.showDetails || form.product_detail !== ''" class="form-control"
+                      v-model="form.product_detail" rows="3"></textarea>
                   </div>
                   <!-- Edit mode: Readonly -->
                   <div v-else>
-                    <input
-                      class="form-control readonly"
-                      v-model="form.productname"
-                      readonly
-                      disabled
-                    />
-                    <textarea
-                      v-if="form.showDetails || form.product_detail !== ''"
-                      class="form-control"
-                      v-model="form.product_detail"
-                      rows="3"
-                      readonly
-                      disabled
-                    ></textarea>
+                    <input class="form-control readonly" v-model="form.productname" readonly disabled />
+                    <textarea v-if="form.showDetails || form.product_detail !== ''" class="form-control"
+                      v-model="form.product_detail" rows="3" readonly disabled></textarea>
                   </div>
                 </td>
                 <td class="price-column">
-                  <input
-                    class="form-control readonly"
-                    v-model="form.price"
-                    type="number"
-                    min="0"
-                    @input="updatePrice2(form, index)"
-                    :readonly="isEditMode || form.isReadonly2"
-                    :disabled="isEditMode || form.isDisabled2"
-                  />
+                  <input class="form-control readonly" v-model="form.price" type="number" min="0"
+                    @input="updatePrice2(form, index)" :readonly="isEditMode || form.isReadonly2"
+                    :disabled="isEditMode || form.isDisabled2" />
                 </td>
                 <td class="quantity-column">
-                  <input
-                    class="form-control"
-                    v-model="form.sale_qty"
-                    type="number"
-                    min="1"
-                    @input="updatePrice2(form, index)"
-                    :readonly="isEditMode"
-                    :disabled="isEditMode"
-                  />
+                  <input class="form-control" v-model="form.sale_qty" type="number" min="1"
+                    @input="updatePrice2(form, index)" :readonly="isEditMode" :disabled="isEditMode" />
                 </td>
                 <td class="unit-column">
-                  <input
-                    class="form-control"
-                    v-model="form.pro_unti"
-                    :readonly="isEditMode"
-                    :disabled="isEditMode"
-                  />
+                  <input class="form-control" v-model="form.pro_unti" :readonly="isEditMode" :disabled="isEditMode" />
                 </td>
 
                 <td class="discount-column">
                   <div class="discount-type">
-                    <select
-                      class="form-control form-select"
-                      v-model="form.discounttype"
-                      @change="updatePrice2(form, index)"
-                      :disabled="isEditMode"
-                      style="
+                    <select class="form-control form-select" v-model="form.discounttype"
+                      @change="updatePrice2(form, index)" :disabled="isEditMode" style="
                         border-top-right-radius: 0px;
                         border-bottom-right-radius: 0px;
-                      "
-                    >
+                      ">
                       <option value="amount">
                         {{ t("productDiscountTypeAmount") }}
                       </option>
@@ -561,38 +287,22 @@
                         {{ t("productDiscountTypePercent") }}
                       </option>
                     </select>
-                    <input
-                      style="
+                    <input style="
                         min-width: 100px;
                         border-top-left-radius: 0px;
                         border-bottom-left-radius: 0px;
                         border-left: 1px solid rgba(0, 0, 0, 0) !important;
-                      "
-                      class="form-control"
-                      v-model="form.sale_discount"
-                      type="number"
-                      min="0"
-                      @input="limitDiscount(form)"
-                      @change="updatePrice2(form, index)"
-                      :readonly="isEditMode"
-                      :disabled="isEditMode"
-                    />
+                      " class="form-control" v-model="form.sale_discount" type="number" min="0"
+                      @input="limitDiscount(form)" @change="updatePrice2(form, index)" :readonly="isEditMode"
+                      :disabled="isEditMode" />
                   </div>
                 </td>
                 <td class="total-price-column">
-                  <input
-                    class="form-control readonly"
-                    v-model="form.sale_price"
-                    readonly
-                    disabled
-                  />
+                  <input class="form-control readonly" v-model="form.sale_price" readonly disabled />
                 </td>
                 <!-- ✅ Delete button (only in Add mode) -->
                 <td v-if="!isEditMode" class="action-column">
-                  <button
-                    class="btn btn-danger btn-sm"
-                    @click="closingProduct(index)"
-                  >
+                  <button class="btn btn-danger btn-sm" @click="closingProduct(index)">
                     <i class="mdi mdi-delete"></i>
                   </button>
                 </td>
@@ -605,64 +315,31 @@
     <div class="border p-4 mb-3">
       <div class="mb-3 div-for-formControl">
         <label class="col-sm-5 col-md-6">{{ t("totalDiscount") }}</label>
-        <input
-          class="form-control readonly"
-          :value="calculatedTotalDiscount.toFixed(2)"
-          readonly
-          disabled
-          :class="{ error: inputError }"
-        />
+        <input class="form-control readonly" :value="calculatedTotalDiscount.toFixed(2)" readonly disabled
+          :class="{ error: inputError }" />
       </div>
       <div class="mb-3 div-for-formControl">
         <!-- ราคารวม (ก่อนหัก VAT หรือหลังหัก VAT ขึ้นอยู่กับประเภท) -->
-        <label
-          v-if="this.formData.vatType === 'VATincluding'"
-          class="col-sm-5 col-md-6"
-          >{{ t("consluPrice") }}</label
-        >
+        <label v-if="this.formData.vatType === 'VATincluding'" class="col-sm-5 col-md-6">{{ t("consluPrice") }}</label>
         <label v-else class="col-sm-5 col-md-6">{{ t("consluPrice") }}</label>
-        <input
-          v-if="this.formData.vatType === 'VATincluding'"
-          class="form-control readonly"
-          :value="calculatedFinalPrice.toFixed(2)"
-          readonly
-          :class="{ error: inputError }"
-          disabled
-        />
-        <input
-          v-else
-          class="form-control readonly"
-          :value="calculatedNetPrice.toFixed(2)"
-          readonly
-          :class="{ error: inputError }"
-          disabled
-        />
+        <input v-if="this.formData.vatType === 'VATincluding'" class="form-control readonly"
+          :value="calculatedFinalPrice.toFixed(2)" readonly :class="{ error: inputError }" disabled />
+        <input v-else class="form-control readonly" :value="calculatedNetPrice.toFixed(2)" readonly
+          :class="{ error: inputError }" disabled />
       </div>
       <div class="row mb-3">
         <label class="col-sm-5 col-md-6">{{ t("typeVat") }}</label>
         <div class="col-md-6">
           <div class="form-check form-check-inline">
-            <input
-              class="form-check-input"
-              type="radio"
-              value="VATexcluding"
-              v-model="formData.vatType"
-              @change="vatTypeChange()"
-              :disabled="isEditMode"
-            />
+            <input class="form-check-input" type="radio" value="VATexcluding" v-model="formData.vatType"
+              @change="vatTypeChange()" :disabled="isEditMode" />
             <label class="form-check-label" for="inlineCheckbox1">{{
               t("vatType1")
             }}</label>
           </div>
           <div class="form-check form-check-inline">
-            <input
-              class="form-check-input"
-              type="radio"
-              value="VATincluding"
-              v-model="formData.vatType"
-              @change="vatTypeChange()"
-              :disabled="isEditMode"
-            />
+            <input class="form-check-input" type="radio" value="VATincluding" v-model="formData.vatType"
+              @change="vatTypeChange()" :disabled="isEditMode" />
             <label class="form-check-label" for="inlineCheckbox2">{{
               t("vatType2")
             }}</label>
@@ -671,38 +348,16 @@
       </div>
       <div class="mb-3 div-for-formControl">
         <label class="col-sm-5 col-md-6">{{ t("vatPrice") }}</label>
-        <input
-          placeholder="vat price 7%"
-          :value="calculatedVat.toFixed(2)"
-          class="form-control readonly"
-          readonly
-          disabled
-          :class="{ error: inputError }"
-        />
+        <input :placeholder="t('vatPricePlaceholder')" :value="calculatedVat.toFixed(2)" class="form-control readonly"
+          readonly disabled :class="{ error: inputError }" />
       </div>
       <div class="mb-3 div-for-formControl">
-        <label
-          v-if="this.formData.vatType === 'VATincluding'"
-          class="col-sm-5 col-md-6"
-          >{{ t("netPrice") }}</label
-        >
+        <label v-if="this.formData.vatType === 'VATincluding'" class="col-sm-5 col-md-6">{{ t("netPrice") }}</label>
         <label v-else class="col-sm-5 col-md-6">{{ t("netPrice") }}</label>
-        <input
-          v-if="this.formData.vatType === 'VATincluding'"
-          class="form-control readonly"
-          :value="calculatedNetPrice.toFixed(2)"
-          readonly
-          :class="{ error: inputError }"
-          disabled
-        />
-        <input
-          v-else
-          class="form-control readonly"
-          :value="calculatedFinalPrice.toFixed(2)"
-          readonly
-          :class="{ error: inputError }"
-          disabled
-        />
+        <input v-if="this.formData.vatType === 'VATincluding'" class="form-control readonly"
+          :value="calculatedNetPrice.toFixed(2)" readonly :class="{ error: inputError }" disabled />
+        <input v-else class="form-control readonly" :value="calculatedFinalPrice.toFixed(2)" readonly
+          :class="{ error: inputError }" disabled />
       </div>
       <!-- <div class="mb-3 div-for-formControl">
       <label class="col-sm-5 col-md-6">{{ t("consluPrice") }}</label>
@@ -715,11 +370,7 @@
     </div> -->
       <div class="mb-3 div-for-formControl">
         <label class="col-sm-5 col-md-6">{{ t("payments") }}</label>
-        <select
-          class="form-control form-select"
-          v-model="formData.payments"
-          :class="{ error: inputError }"
-        >
+        <select class="form-control form-select" v-model="formData.payments" :class="{ error: inputError }">
           <option value="Cash">{{ t("cash") }}</option>
           <option value="MobileBank">{{ t("mobileBanking") }}</option>
           <option value="Cheque">{{ t("cheque") }}</option>
@@ -727,14 +378,12 @@
       </div>
 
       <!-- ✅ New: Payment details for Bank/Cheque -->
-      <div v-if="formData.payments === 'MobileBank' || formData.payments === 'Cheque'" class="border p-3 mb-3 bg-light rounded">
+      <div v-if="formData.payments === 'MobileBank' || formData.payments === 'Cheque'"
+        class="border p-3 mb-3 bg-light rounded">
         <div class="mb-2 div-for-formControl">
           <label class="col-sm-5 col-md-6">{{ t("pay_bank") }}</label>
-          <select
-            class="form-select"
-            v-model="formData.pay_bank"
-            :class="{ error: inputError }"
-          >
+          <select class="form-select" v-model="formData.pay_bank" :class="{ error: inputError }"
+            @click="resetError('pay_bank')">
             <option value="" disabled selected>{{ t("select_bank") }}</option>
             <option value="ธนาคารกรุงเทพ">ธนาคารกรุงเทพ (BBL)</option>
             <option value="ธนาคารกสิกรไทย">ธนาคารกสิกรไทย (KBANK)</option>
@@ -756,28 +405,19 @@
         </div>
         <div class="mb-2 div-for-formControl">
           <label class="col-sm-5 col-md-6">{{ t("pay_number") }}</label>
-          <input class="form-control" v-model="formData.pay_number" :placeholder="formData.payments === 'Cheque' ? 'เลขที่เช็ค' : 'เลขที่รายการ'" />
+          <input class="form-control" v-model="formData.pay_number"
+            :placeholder="formData.payments === 'Cheque' ? t('checkNumber') : t('transactionNumber')" />
         </div>
         <div class="mb-2 div-for-formControl">
           <label class="col-sm-5 col-md-6">{{ t("pay_branch") }}</label>
-          <input class="form-control" v-model="formData.pay_branch" placeholder="สาขาธนาคาร" />
+          <input class="form-control" v-model="formData.pay_branch" :placeholder="t('bankBranchPlaceholder')" />
         </div>
         <div class="mb-2 div-for-formControl">
           <label class="col-sm-5 col-md-6">{{ t("pay_date") }}</label>
-          <v-date-picker
-            v-model="formData.pay_date"
-            locale="th-TH"
-            :format="formatDatePicker"
-          >
+          <v-date-picker v-model="formData.pay_date" locale="th-TH" :format="formatDatePicker">
             <template v-slot="{ togglePopover }">
-              <input
-                class="custom-input bg-white"
-                :value="formatDatePicker(formData.pay_date)"
-                @click="togglePopover"
-                readonly
-                placeholder="เลือกวันที่"
-                style="width: 100%; cursor: pointer"
-              />
+              <input class="custom-input bg-white" :value="formatDatePicker(formData.pay_date)" @click="togglePopover"
+                readonly :placeholder="t('selectDate')" style="width: 100%; cursor: pointer" />
             </template>
           </v-date-picker>
         </div>
@@ -787,13 +427,8 @@
           t("quotationRemark")
         }}</label>
         <div class="text-editor">
-          <textarea
-            v-model="formData.remark"
-            class="form-control"
-            maxlength="105"
-            rows="3"
-            @input="onInput"
-          ></textarea>
+          <textarea v-model="formData.remark" class="form-control" maxlength="105" rows="3"
+            :placeholder="t('remarkPlaceholder')" @input="onInput"></textarea>
           <p>
             {{ 105 - (formData.remark ? formData.remark.length : 0) }}
             {{ t("characters") }}
@@ -803,33 +438,13 @@
     </div>
     <div class="modal-footer">
       <!-- ✅ Add mode: Save button -->
-      <button
-        v-if="!isEditMode"
-        :disabled="isLoading"
-        class="btn btn-primary me-3"
-        @click="saveBilling"
-      >
-        <span
-          v-if="isLoading"
-          class="spinner-border spinner-border-sm"
-          role="status"
-          aria-hidden="true"
-        ></span>
+      <button v-if="!isEditMode" :disabled="isLoading" class="btn btn-primary me-3" @click="saveBilling">
+        <span v-if="isLoading" class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
         <span v-else>{{ t("buttonSave") }}</span>
       </button>
       <!-- Edit mode: Edit button -->
-      <button
-        v-else
-        :disabled="isLoading"
-        class="btn btn-primary me-3"
-        @click="editBilling"
-      >
-        <span
-          v-if="isLoading"
-          class="spinner-border spinner-border-sm"
-          role="status"
-          aria-hidden="true"
-        ></span>
+      <button v-else :disabled="isLoading" class="btn btn-primary me-3" @click="editBilling">
+        <span v-if="isLoading" class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
         <span v-else>{{ t("buttonSave") }}</span>
       </button>
       <button class="btn btn-secondary" @click="closePopup">
@@ -846,10 +461,7 @@
     </div>
   </popup>
   <div class="delete-popup">
-    <Popup
-      :isOpen="isDeleteConfirmPopupOpen"
-      :closePopup="closeDeleteConfirmPopup"
-    >
+    <Popup :isOpen="isDeleteConfirmPopupOpen" :closePopup="closeDeleteConfirmPopup">
       <div class="mb-5">
         <a>{{ t("deleteConfirmSentence") }}</a>
       </div>
@@ -864,10 +476,7 @@
     </Popup>
   </div>
   <div class="delete-popup">
-    <Popup
-      :isOpen="isAllowConfirmPopupOpen"
-      :closePopup="closeAllowConfirmPopup"
-    >
+    <Popup :isOpen="isAllowConfirmPopupOpen" :closePopup="closeAllowConfirmPopup">
       <div class="mb-5">
         <a>{{ t("AllowConfirmSentence") }}</a>
       </div>
@@ -882,14 +491,8 @@
     </Popup>
   </div>
   <div class="delete-popup">
-    <Popup
-      :isOpen="isCutStockConfirmPopupOpen"
-      :closePopup="closeCutStockConfirmPopup"
-    >
-      <div
-        v-if="formData.deleted_at === '' || formData.deleted_at === null"
-        class="mb-5"
-      >
+    <Popup :isOpen="isCutStockConfirmPopupOpen" :closePopup="closeCutStockConfirmPopup">
+      <div v-if="formData.deleted_at === '' || formData.deleted_at === null" class="mb-5">
         <a>{{ t("CutStockConfirmSentence") }}</a>
       </div>
       <div v-else-if="formData.deleted_at !== ''" class="mb-5">
@@ -919,23 +522,15 @@
     </div> -->
     <div v-if="isPopupVisible_error" class="popup-error2">
       <div class="text-end">
-        <button
-          type="button"
-          class="btn-close"
-          aria-label="Close"
-          @click="closeErrorPopup"
-          style="color: #9f9999"
-        ></button>
+        <button type="button" class="btn-close" aria-label="Close" @click="closeErrorPopup"
+          style="color: #9f9999"></button>
       </div>
       <div class="popup-content-error2">
         <a>{{ popupMessage_error }}</a>
       </div>
     </div>
   </div>
-  <div
-    v-if="isLoading"
-    class="d-flex justify-content-center align-items-center"
-  >
+  <div v-if="isLoading" class="d-flex justify-content-center align-items-center">
     <div class="spinner-border text-primary" role="status">
       <span class="visually-hidden">Loading...</span>
     </div>
@@ -954,13 +549,8 @@
   </transition>
   <div v-if="isPopupVisible_error" class="popup-error2">
     <div class="text-end">
-      <button
-        type="button"
-        class="btn-close"
-        aria-label="Close"
-        @click="closeErrorPopup"
-        style="color: #9f9999"
-      ></button>
+      <button type="button" class="btn-close" aria-label="Close" @click="closeErrorPopup"
+        style="color: #9f9999"></button>
     </div>
     <div class="popup-content-error2">
       <ul>
@@ -1204,15 +794,15 @@ export default {
 
       if (this.t("headerLang") === "TH") {
         filteredInvoices = filteredInvoices.map((inv) => {
-          const { 
-            tax_invoice_number, 
-            sale_number, 
-            invoice_number, 
+          const {
+            tax_invoice_number,
+            sale_number,
+            invoice_number,
             quotation_num,
             bus_id,
             created_at,
             updated_at,
-            ...rest 
+            ...rest
           } = inv;
           return {
             ...rest,
@@ -1227,10 +817,10 @@ export default {
               inv.payments === "Cash"
                 ? this.t("CashLG")
                 : inv.payments === "Card"
-                ? this.t("CardLG")
-                : inv.payments === "MobileBank"
-                ? this.t("MobileBankLG")
-                : inv.payments, // ถ้าไม่ตรงเงื่อนไขใด ๆ ใช้ค่าเดิม
+                  ? this.t("CardLG")
+                  : inv.payments === "MobileBank"
+                    ? this.t("MobileBankLG")
+                    : inv.payments, // ถ้าไม่ตรงเงื่อนไขใด ๆ ใช้ค่าเดิม
           };
         });
 
@@ -1266,9 +856,9 @@ export default {
     // ✅ Added for product filtering
     filteredProducts() {
       return this.Products.filter(
-        (product) => 
+        (product) =>
           !product.Status || // If Status is null/undefined, include it
-          product.Status === "Active" || 
+          product.Status === "Active" ||
           product.Status === "OpenSale"
       );
     },
@@ -1345,6 +935,12 @@ export default {
       this.shortcutAllow = false;
       this.isPopupVisible_error = false;
     },
+    resetError(field) {
+      if (field && this.isEmpty[field] !== undefined) {
+        this.isEmpty[field] = false;
+      }
+      this.isPopupVisible_error = false;
+    },
     closeCutStockConfirmPopup() {
       this.isCutStockConfirmPopupOpen = false;
       this.shortcutAllow = false;
@@ -1371,12 +967,12 @@ export default {
           );
 
           if (!productData) {
-            alert(`ไม่พบข้อมูลสินค้า ${form.productID}`);
+            this.errorMessages.push(`ไม่พบข้อมูลสินค้า ${form.productID}`);
             return;
           }
 
           if (!form.sale_qty || form.sale_qty <= 0) {
-            alert(
+            this.errorMessages.push(
               `กรุณาระบุจำนวนของสินค้า "${productData.productname}" ให้มากกว่า 0`
             );
             return;
@@ -1388,12 +984,13 @@ export default {
             this.errorMessages.push(
               `ไม่สามารถตัดสต็อกสินค้า "${productData.productname}" ได้\nจำนวนขาย (${form.sale_qty}) มากกว่าจำนวนในคลัง (${productData.Amount})`
             );
-            this.showPopup_validate(this.errorMessages);
-            // alert(
-            //   `ไม่สามารถตัดสต็อกสินค้า "${productData.productname}" ได้\nจำนวนขาย (${form.sale_qty}) มากกว่าจำนวนในคลัง (${productData.Amount})`
-            // );
             return;
           }
+        }
+
+        if (this.errorMessages.length > 0) {
+          this.showPopup_validate(this.errorMessages);
+          return;
         }
 
         // ✅ STEP 2: ถ้าผ่านหมด → ค่อยส่ง API
@@ -1418,16 +1015,17 @@ export default {
           console.log(json);
 
           if (json.statusCode !== 200) {
-            alert(
-              `ไม่สามารถดำเนินการกับสินค้า ${form.productID} ได้: ${
-                json.message || "เกิดข้อผิดพลาด"
+            this.errorMessages.push(
+              `ไม่สามารถดำเนินการกับสินค้า ${form.productID} ได้: ${json.message || "เกิดข้อผิดพลาด"
               }`
             );
-            // alert(
-            //   `ไม่สามารถตัดสต็อกสินค้า "${productData.productname}" ได้\nจำนวนขาย (${form.sale_qty}) มากกว่าจำนวนในคลัง (${productData.Amount})`
-            // );
             return;
           }
+        }
+
+        if (this.errorMessages.length > 0) {
+          this.showPopup_validate(this.errorMessages);
+          return;
         }
 
         // 🎉 ทุกอย่างผ่าน
@@ -1440,7 +1038,8 @@ export default {
         }, 3000);
       } catch (error) {
         console.error("Error fetching data:", error);
-        alert("เกิดข้อผิดพลาดในการติดต่อกับเซิร์ฟเวอร์");
+        this.errorMessages.push("เกิดข้อผิดพลาดในการติดต่อกับเซิร์ฟเวอร์");
+        this.showPopup_validate(this.errorMessages);
       } finally {
         this.isLoading = false;
         this.shortcutAllow = false;
@@ -1482,20 +1081,20 @@ export default {
     },
 
     // ✅ ========== NEW METHODS FOR DIRECT BILLING CREATION ==========
-    
+
     // Open popup for creating new billing
     async openPopup() {
       this.isEditMode = false;
       this.isPopupOpen = true;
       this.selectedCusName = "";
       this.productForms = [];
-      
+
       // Get employee info from localStorage
       const employeeID = localStorage.getItem("user_id");
       const employeeName = localStorage.getItem("user_name");
-      
+
       console.log("Employee from localStorage:", { employeeID, employeeName });
-      
+
       // Reset formData
       this.formData = {
         bus_id: localStorage.getItem("@bus_id"),
@@ -1553,7 +1152,7 @@ export default {
       }
       console.log("Products loaded:", this.Products.length);
       console.log("Filtered products:", this.filteredProducts.length);
-      
+
       // ✅ Initialize price calculations
       this.updateTotalDiscount();
     },
@@ -1603,7 +1202,7 @@ export default {
 
           // Parse latest number: HDyyyyMMdd-xx (removed BL- prefix)
           const match = latestNumber.match(/HD(\d{8})-(\d{2})/);
-          
+
           if (match) {
             const lastDate = match[1];
             const lastSeq = parseInt(match[2], 10);
@@ -1724,11 +1323,11 @@ export default {
         form.price = selectedProduct.price;
         form.pro_unti = selectedProduct.pro_unti || "";
         form.product_detail = selectedProduct.Detail || "";
-        
+
         // Allow editing all fields except total price
         form.isReadonly2 = false;
         form.isDisabled2 = false;
-        
+
         // Calculate initial price
         this.updatePrice2(form, index);
         // Force update total
@@ -1738,16 +1337,16 @@ export default {
       } else {
         // ✅ Product not found: Allow manual input
         console.log("⚠️ Product not found, allowing manual input:", form.productName);
-        
+
         // Clear auto-filled data but keep user input
         form.productID = "";
         // Keep form.productName as user typed
         // Keep form.price, form.pro_unti, form.product_detail if user entered
-        
+
         // Allow editing all fields
         form.isReadonly2 = false;
         form.isDisabled2 = false;
-        
+
         // Recalculate if there's already price and quantity
         if (form.price && form.sale_qty) {
           this.updatePrice2(form, index);
@@ -1775,7 +1374,7 @@ export default {
 
       form.sale_price = Math.max(0, totalPrice);
       console.log("💰 Product sale_price:", form.sale_price);
-      
+
       console.log("🔍 About to call updateTotalDiscount...");
       try {
         this.updateTotalDiscount();
@@ -1809,7 +1408,7 @@ export default {
       console.log("🔄 updateTotalDiscount called");
       console.log("📦 productForms:", this.productForms);
       console.log("📋 formData:", this.formData);
-      
+
       // Calculate total before discount
       this.formData.total_price = this.productForms.reduce((total, form) => {
         return total + (parseFloat(form.price) || 0) * (parseFloat(form.sale_qty) || 0);
@@ -1898,19 +1497,53 @@ export default {
         isValid = false;
       }
 
+      if (!this.formData.cus_name) {
+        this.isEmpty.cus_name = true;
+        isValid = false;
+        this.errorMessages.push(this.t("validation.cus_name"));
+      }
+
+      if (!this.formData.cus_address) {
+        this.isEmpty.cus_address = true;
+        this.errorMessages.push(this.t("validation.cus_address"));
+      }
+
+      if (!this.formData.cus_tel) {
+        this.isEmpty.cus_tel = true;
+        this.errorMessages.push(this.t("validation.cus_tel"));
+      }
+
+      if (!this.formData.cus_email) {
+        this.isEmpty.cus_email = true;
+        this.errorMessages.push(this.t("validation.cus_email"));
+      }
+
+      if (!this.formData.cus_purchase) {
+        this.isEmpty.cus_purchase = true;
+        this.errorMessages.push(this.t("validation.cus_purchase"));
+      }
+
+      if (!this.formData.cus_tax) {
+        this.isEmpty.cus_tax = true;
+        this.errorMessages.push(this.t("validation.cus_tax"));
+      }
+
       if (this.productForms.length === 0) {
         this.isEmpty.productForms = true;
-        isValid = false;
-        alert(this.t("validation.productForms"));
+        this.errorMessages.push(this.t("validation.productForms"));
       }
 
       // Validate each product has quantity > 0
       for (let i = 0; i < this.productForms.length; i++) {
         if (!this.productForms[i].sale_qty || this.productForms[i].sale_qty <= 0) {
-          alert(`${this.t("validation.productForms")} ${i + 1}: ${this.t("validation.quantity")}`);
-          isValid = false;
+          this.errorMessages.push(`${this.t("validation.productForms")} ${i + 1}: ${this.t("validation.quantity")}`);
           break;
         }
+      }
+
+      if (this.errorMessages.length > 0) {
+        this.showPopup_validate(this.errorMessages);
+        isValid = false;
       }
 
       return isValid;
@@ -1945,9 +1578,9 @@ export default {
           payments: this.formData.payments,
           pay_bank: this.formData.pay_bank,
           pay_number: this.formData.pay_number,
-        pay_branch: this.formData.pay_branch,
-        pay_date: this.formData.pay_date ? new Date(this.formData.pay_date).toISOString().split('T')[0] : "",
-        remark: this.formData.remark,
+          pay_branch: this.formData.pay_branch,
+          pay_date: this.formData.pay_date ? new Date(this.formData.pay_date).toISOString().split('T')[0] : "",
+          remark: this.formData.remark,
           sale_totalprice: this.formData.sale_totalprice,
           total_discount: this.formData.total_discount,
           vatType: this.formData.vatType,
@@ -2196,18 +1829,18 @@ export default {
       if (this.formData.vatType === "VATincluding") {
         const netPriceRaw = String(this.formData.Net_price || "0").replace(/,/g, "");
         const netVal = parseFloat(netPriceRaw);
-        
+
         this.formData.sale_totalprice = this.formatDecimal(netVal / 1.07);
         const saleTotalPriceRaw = String(this.formData.sale_totalprice || "0").replace(/,/g, "");
-        
+
         this.formData.vat = this.formatDecimal(netVal - parseFloat(saleTotalPriceRaw));
       } else {
         const netPriceRaw = String(this.formData.Net_price || "0").replace(/,/g, "");
         const netVal = parseFloat(netPriceRaw);
-        
+
         this.formData.vat = this.formatDecimal(netVal * 0.07);
         const vatRaw = String(this.formData.vat || "0").replace(/,/g, "");
-        
+
         this.formData.sale_totalprice = this.formatDecimal(netVal + parseFloat(vatRaw));
       }
       this.calculateNat(quotationData.discount_quotation);
@@ -2281,7 +1914,7 @@ export default {
         } else if (detail.price) {
           price = detail.price;
         }
-        
+
         const currentPrice = String(price || "0").replace(/,/g, "");
         const qty = parseFloat(detail.sale_qty) || 0;
         const salePrice = qty * parseFloat(currentPrice);
@@ -2352,7 +1985,7 @@ export default {
         } else if (detail.price) {
           price = detail.price;
         }
-        
+
         const currentPrice = String(price || "0").replace(/,/g, "");
         const qty = parseFloat(detail.sale_qty) || 0;
         const salePrice = qty * parseFloat(currentPrice);
@@ -2469,7 +2102,7 @@ export default {
       const orangeColor = [255, 165, 0];
       const lightGray = [240, 240, 240];
       const blueColor = [0, 87, 183]; // Added blueColor definition
-      
+
       // Load fonts
       doc.addFileToVFS("Prompt-Bold.ttf", PromptBold);
       doc.addFont("Prompt-Bold.ttf", "PromptBold", "bold");
@@ -2480,7 +2113,7 @@ export default {
 
       const quotationData = await this.getQuotationByID(row.sale_id);
       const filteredInvoicesPDF = this.Billings.filter(i => i.sale_id === row.sale_id);
-      
+
       // Date formatting
       let billingDate;
       if (row.billing_date) {
@@ -2492,7 +2125,7 @@ export default {
       } else {
         billingDate = new Date();
       }
-      
+
       const day = billingDate.getDate().toString().padStart(2, "0");
       const month = (billingDate.getMonth() + 1).toString().padStart(2, "0");
       const buddhistYear = billingDate.getFullYear() + 543;
@@ -2505,7 +2138,7 @@ export default {
         const scales = ["", "สิบ", "ร้อย", "พัน", "หมื่น", "แสน", "ล้าน"];
         let [integer, decimals] = number.toFixed(2).split(".");
         let result = "";
-        
+
         // Handle millions if number is very large
         const handlePart = (numStr) => {
           let partResult = "";
@@ -2536,7 +2169,7 @@ export default {
           }
         }
         result += "บาท";
-        
+
         if (parseInt(decimals) === 0) result += "ถ้วน";
         else {
           result += handlePart(decimals) + "สตางค์";
@@ -2568,7 +2201,7 @@ export default {
         doc.setFont("PromptBold", "bold");
         doc.setFontSize(16);
         doc.text(this.Business.bus_name || "บริษัท เอช แอนด์ ดี อิงค์ เจ็ท จำกัด", 40, 18);
-        
+
         doc.setFont("PromptLight", "normal");
         doc.setFontSize(9);
         const addressLines = doc.splitTextToSize(this.Business.bus_address || "", 100);
@@ -2590,7 +2223,7 @@ export default {
         // Customer Info Box
         doc.setDrawColor(orangeColor[0], orangeColor[1], orangeColor[2]);
         doc.rect(10, 60, 130, 35);
-        
+
         doc.setFont("PromptRegular", "normal");
         doc.setFontSize(9);
         doc.text("ชื่อลูกค้า / Customers:", 12, 65);
@@ -2611,7 +2244,7 @@ export default {
         doc.setFont("PromptRegular", "normal");
         doc.text("เลขที่ / No.", 145, 78);
         doc.text("วันที่ / Date", 145, 88);
-        
+
         doc.setFont("PromptLight", "normal");
         doc.text(row.billing_number || "", 170, 78);
         doc.text(displayDate, 175, 88);
@@ -2620,19 +2253,19 @@ export default {
       // RENDER PAYMENT & SUMMARY
       const renderFooter = () => {
         const finalY = doc.lastAutoTable.finalY + 2;
-        
+
         // Final Prices Box (Right)
         const summaryX = 142;
         const summaryW = 58;
         const totalAmount = parseFloat(row.sale_totalprice) || 0;
-        
+
         const netPrice = this.calculatedNetPrice;
         const vatPrice = this.calculatedVat;
         const finalPrice = this.calculatedFinalPrice;
 
         doc.setDrawColor(orangeColor[0], orangeColor[1], orangeColor[2]);
         doc.setLineWidth(0.2);
-        
+
         // TOTAL Row
         doc.rect(summaryX, finalY, summaryW, 10);
         doc.setFont("PromptRegular", "normal");
@@ -2648,9 +2281,9 @@ export default {
 
         // NET AMOUNT Row (Colored)
         doc.setFillColor(255, 235, 204); // Light orange fill
-        doc.rect(summaryX, finalY + 20, 30, 15, "F"); 
+        doc.rect(summaryX, finalY + 20, 30, 15, "F");
         doc.rect(summaryX, finalY + 20, summaryW, 15); // Frame
-        
+
         doc.setFont("PromptBold", "bold");
         doc.text("ยอดเงินสุทธิ", summaryX + 2, finalY + 26);
         doc.text("NET AMOUNT", summaryX + 2, finalY + 32);
@@ -2660,10 +2293,10 @@ export default {
         // Payment Info (Left)
         doc.setFontSize(9);
         doc.text("รายการรับชำระเงิน :", 10, finalY + 5);
-        
+
         const drawCheckbox = (x, y, label, checked = false) => {
           doc.setDrawColor(0, 0, 0);
-          doc.rect(x, y - 3.5, 4, 4); 
+          doc.rect(x, y - 3.5, 4, 4);
           if (checked) {
             doc.line(x + 0.5, y - 1.5, x + 1.5, y + 0.5);
             doc.line(x + 1.5, y + 0.5, x + 3.5, y - 3.5);
@@ -2679,13 +2312,13 @@ export default {
         const payNum = row.pay_number || "";
         const branch = row.pay_branch || "";
         let displayPayDate = "";
-        
+
         if (row.pay_date) {
-            const pDate = new Date(row.pay_date);
-            const pDay = pDate.getDate().toString().padStart(2, "0");
-            const pMonth = (pDate.getMonth() + 1).toString().padStart(2, "0");
-            const pYear = pDate.getFullYear() + 543;
-            displayPayDate = `${pDay}/${pMonth}/${pYear}`;
+          const pDate = new Date(row.pay_date);
+          const pDay = pDate.getDate().toString().padStart(2, "0");
+          const pMonth = (pDate.getMonth() + 1).toString().padStart(2, "0");
+          const pYear = pDate.getFullYear() + 543;
+          displayPayDate = `${pDay}/${pMonth}/${pYear}`;
         }
 
         doc.setFont("PromptLight", "normal");
@@ -2693,7 +2326,7 @@ export default {
         doc.text("ธนาคาร/Bank", 12, finalY + 12);
         doc.text(bankText, 38, finalY + 12);
         doc.text("...............................................", 38, finalY + 12.5);
-        
+
         doc.text("เลขที่/ Chq #", 75, finalY + 12);
         doc.text(payNum, 98, finalY + 12);
         doc.text("...............................................", 98, finalY + 12.5);
@@ -2706,7 +2339,7 @@ export default {
         doc.text("วันที่ทำรายการ/Date", 75, finalY + 22);
         doc.text(displayPayDate, 108, finalY + 22);
         doc.text("...............................................", 108, finalY + 22.5);
-        
+
         // Amount section (Top)
         doc.setFont("PromptRegular", "normal");
         doc.setFontSize(9);
@@ -2726,12 +2359,12 @@ export default {
         doc.rect(10, sigY, 188, 30);
         doc.line(72, sigY, 72, sigY + 30);
         doc.line(135, sigY, 135, sigY + 30);
-        
+
         doc.setFont("PromptRegular", "normal");
         doc.text("ลูกค้า/ผู้อนุมัติ", 41, sigY + 5, { align: "center" });
         doc.text("ผู้ผลิต", 103, sigY + 5, { align: "center" });
         doc.text(this.Business.bus_name || "เอช แอนด์ ดี อิงค์เจ็ท", 166, sigY + 5, { align: "center" });
-        
+
         doc.text("วันที่ ...........................................", 25, sigY + 25);
         doc.text("วันที่ ...........................................", 85, sigY + 25);
         doc.text("ผู้มีอำนาจลงนาม", 166, sigY + 25, { align: "center" });
@@ -2740,7 +2373,7 @@ export default {
         doc.setTextColor(255, 0, 0);
         doc.setFont("PromptBold", "bold");
         doc.text('**หมายเหตุ : Remark', 10, sigY + 35);
-        
+
         // Items 1-3 in black
         doc.setTextColor(0, 0, 0);
         doc.setFont("PromptLight", "normal");
@@ -2748,7 +2381,7 @@ export default {
         doc.text("1. ราคาที่เสนอเป็นเงินบาทไทย และไม่มีภาษีมูลค่าเพิ่ม", 10, sigY + 40);
         doc.text("2. มัดจำค่าสินค้า 60% ส่วนที่เหลือชำระทั้งหมดในวันที่ส่งของ หรือ ติดตั้งแล้วเสร็จ", 10, sigY + 44);
         doc.text("3. ระยะเวลาดำเนินการ 1-2 วัน หลังจากได้รับ มัดจำ หรือระยะเวลาขึ้น อยู่กับปริมาณสินค้า ที่ลูกค้าสั่งซื้อ หรือตามเงื่อนไขอื่นๆ ตามที่ตกลงกัน", 10, sigY + 48);
-        
+
         // Item 4 - text in black, account number in red
         console.log("Business data:", this.Business);
         const bankInfo = this.Business.banks && this.Business.banks.length > 0 ? this.Business.banks[0] : {};
@@ -2756,14 +2389,14 @@ export default {
         const bankAccount = bankInfo.bank_account || "";
         const bankNumber = bankInfo.bank_number || "";
         console.log("Bank info:", { bankName, bankAccount, bankNumber });
-        
+
         const textBeforeNumber = `4. โอนเงินชำระค่าสินค้าที่ ${bankName} ( ${bankAccount} ) `;
         doc.text(textBeforeNumber, 10, sigY + 52);
-        
+
         // Calculate position for bank number dynamically
         const textWidth = doc.getTextWidth(textBeforeNumber);
         const numberX = 10 + textWidth;
-        
+
         doc.setTextColor(255, 0, 0);
         doc.text(bankNumber, numberX, sigY + 52);
         doc.setTextColor(0, 0, 0); // Reset to black
@@ -3644,32 +3277,44 @@ export default {
 <style scoped>
 /* ปรับขนาดของแต่ละคอลัมน์ */
 .product-name-column {
-  width: 30%; /* กำหนดพื้นที่มากที่สุดสำหรับชื่อสินค้า */
+  width: 30%;
+  /* กำหนดพื้นที่มากที่สุดสำหรับชื่อสินค้า */
   min-width: 150px !important;
 }
+
 .price-column {
-  width: 15%; /* รองรับข้อมูลยาวสำหรับ Price */
+  width: 15%;
+  /* รองรับข้อมูลยาวสำหรับ Price */
   min-width: 130px !important;
 }
+
 .quantity-column {
   width: 5%;
   min-width: 100px !important;
 }
+
 .unit-column {
   width: 5%;
   min-width: 120px !important;
 }
+
 .discount-column {
-  width: auto; /* ให้ขนาดปรับตามเนื้อหา */
-  white-space: nowrap; /* บังคับให้ข้อความอยู่บรรทัดเดียว */
+  width: auto;
+  /* ให้ขนาดปรับตามเนื้อหา */
+  white-space: nowrap;
+  /* บังคับให้ข้อความอยู่บรรทัดเดียว */
   text-align: center;
 }
+
 .total-price-column {
-  width: 15%; /* รองรับข้อมูลยาวสำหรับ Price */
+  width: 15%;
+  /* รองรับข้อมูลยาวสำหรับ Price */
   min-width: 130px !important;
 }
+
 .action-column {
-  width: 10%; /* คอลัมน์ปุ่มลบ */
+  width: 10%;
+  /* คอลัมน์ปุ่มลบ */
   min-width: 10px !important;
 }
 
@@ -3702,5 +3347,27 @@ export default {
 
 .vc-highlights {
   display: none !important;
+}
+
+.add-product-btn {
+  width: 100px;
+  background-color: #007bff;
+  color: white;
+  border-radius: 8px;
+  border: 1px solid #007bff;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.add-product-btn:hover {
+  background-color: white;
+  color: #007bff;
+  border: 1px solid #007bff;
+}
+
+.add-product-btn:active {
+  background-color: white;
+  color: #007bff;
+  border: 1px solid #007bff;
 }
 </style>

@@ -1,8 +1,18 @@
 /* Custom input styling to replace Tailwind classes */
+
+input {
+  height: 40px;
+}
+
+::placeholder {
+  color: #999 !important;
+  font-size: 16px;
+}
+
 .custom-input {
   padding: 0.25rem 0.5rem;
   border: 1px solid #cfcfcf;
-  border-radius: 0.375rem;
+  border-radius: 8px;
   transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
 }
 
@@ -33,7 +43,7 @@ th {
   font-size: 1rem !important;
   letter-spacing: 0.009375em;
   max-width: 100%;
-  border-radius: 0.375rem !important;
+  border-radius: 8px !important;
   contain: layout;
   flex: 1 0;
   grid-area: control;
@@ -89,7 +99,7 @@ th {
   color: var(--bs-body-color);
   background-repeat: no-repeat;
   background-position: right 0.75rem center;
-  border-radius: 0.375rem;
+  border-radius: 8px;
   transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
   -webkit-appearance: none;
   -moz-appearance: none;
@@ -474,7 +484,7 @@ th {
 
 .Register-contain {
   overflow: auto;
-  border-radius: 4px;
+  border-radius: 8px;
   border: 1px solid #cfcfcf;
   padding: 40px;
   background-color: #ffffff;
@@ -484,7 +494,7 @@ th {
 
 .about-business-contain {
   overflow: auto;
-  border-radius: 4px;
+  border-radius: 8px;
   border: 1px solid #cfcfcf;
   padding: 40px;
   background-color: #ffffff;
@@ -500,7 +510,7 @@ th {
   width: 450px;
   padding: 50px;
   background-color: white;
-  border-radius: 4px;
+  border-radius: 8px;
   margin: 0;
 }
 
@@ -510,14 +520,14 @@ th {
 
 h2 {
   border: 1px solid #cfcfcf;
-  border-radius: 4px;
+  border-radius: 8px;
   background-color: #ffffff;
   padding: 10px;
   box-shadow: 2px 2px 4px #cfcfcf;
 }
 
 .table-form {
-  border-radius: 4px;
+  border-radius: 8px;
   background-color: #ffffff;
   padding: 30px;
   margin-bottom: 20px;
@@ -739,7 +749,7 @@ a {
   background-color: #66bb32;
   color: #ffffff;
   border: 1px solid #ffffff;
-  border-radius: 4px;
+  border-radius: 8px;
   left: 0;
 }
 
@@ -963,7 +973,7 @@ td {
   display: flex;
   flex-direction: row;
   border: 1px solid #cfcfcf;
-  border-radius: 4px;
+  border-radius: 8px;
   background-color: #ffffff;
 }
 
@@ -1185,6 +1195,14 @@ thead th {
     text-overflow: ellipsis;
     /* width: 180px; */
   }
+
+  .card-view-customs {
+    display: block !important;
+  }
+
+  .show-only-desktop.sale_hide {
+    display: none;
+  }
 }
 
 /* Mobile (< 768px) */
@@ -1302,8 +1320,13 @@ thead th {
     width: 20% !important;
   }
 
-  .size-font-sm {
-    font-size: 12px;
+  .size-font-md {
+    font-size: 16px;
+  }
+
+
+  .size-font-md {
+    font-size: 14px;
   }
 
   .popup-content {
@@ -1421,16 +1444,6 @@ p.date-period-dash {
 
 td[color_code="L"] {
   color: red;
-}
-
-.btn-primary:hover {
-  border: 2px solid #0d6efd;
-  /* เพิ่มความหนาขอบ */
-  color: #0d6efd !important;
-  background-color: rgba(255, 255, 255, 0);
-  /* พื้นหลังโปร่งใส */
-  font-weight: bold;
-  /* ตัวหนา */
 }
 
 .sub-sidebar {

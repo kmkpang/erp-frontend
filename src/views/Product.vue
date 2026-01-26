@@ -9,30 +9,18 @@
       </div>
       <div style="width: 100%; display: flex; justify-content: center">
         <div class="mb-3 btn-group btn-group-size custome-tab">
-          <button
-            class="btn btn-primary"
-            :class="{ active: selectedType === 'A' }"
-            @click="setProductType('A')"
-          >
+          <button class="btn btn-primary" :class="{ active: selectedType === 'A' }" @click="setProductType('A')">
             {{ t("product") }}
           </button>
-          <button
-            class="btn btn-primary"
-            :class="{ active: selectedType === 'B' }"
-            @click="setProductType('B')"
-          >
+          <button class="btn btn-primary" :class="{ active: selectedType === 'B' }" @click="setProductType('B')">
             {{ t("service") }}
           </button>
         </div>
       </div>
       <div class="row mb-3">
         <div class="col-4 col-sm-4 col-md-2 col-lg-2">
-          <select
-            v-if="selectedType === 'A'"
-            class="form-control form-select size-font-sm"
-            v-model="dropDownStatus"
-            aria-label="Status select"
-          >
+          <select v-if="selectedType === 'A'" class="form-control form-select size-font-md" v-model="dropDownStatus"
+            aria-label="Status select">
             <option value="" selected hidden>{{ t("filter") }}</option>
             <option value="active">{{ t("statusOpenSale") }}</option>
             <!-- <option value="not_active">{{ t("DiscontinuedLG") }}</option> -->
@@ -40,7 +28,7 @@
           </select>
           <!-- <select
             v-if="selectedType === 'B'"
-            class="form-control form-select size-font-sm"
+            class="form-control form-select size-font-md"
             v-model="dropDownStatus"
             aria-label="Status select"
           >
@@ -50,7 +38,7 @@
             <option value="discon">{{ t("discon") }}</option>
           </select> -->
           <!-- <select
-            class="form-control form-select size-font-sm"
+            class="form-control form-select size-font-md"
             v-model="formData.status"
           >
             <option
@@ -75,31 +63,15 @@
       </div>
       <div class="row mb-3">
         <div class="col-6 col-sm-6 col-md-3 col-lg-3">
-          <input
-            v-model="searchQuery"
-            type="text"
-            class="form-control me-3 size-font-sm"
-            :placeholder="$t('Search')"
-          />
+          <input v-model="searchQuery" type="text" class="form-control me-3 size-font-md" :placeholder="$t('Search')" />
         </div>
         <!-- <div class="col-1 col-sm-1 col-md-7 col-lg-7"></div> -->
         <div class="col-6 col-sm-6 col-md-9 col-lg-9 text-end">
-          <a
-            v-if="selectedType === 'A'"
-            class="btn btn-success me-3 size-font-sm me-2"
-            @click="openPopup"
-            >{{ t("addProduct") }}</a
-          >
-          <a
-            v-else-if="selectedType === 'B'"
-            class="btn btn-success me-3 size-font-sm me-2"
-            @click="openPopup"
-            >{{ t("addService") }}</a
-          >
-          <a
-            class="btn btn-outline-secondary mdi mdi-export-variant size-font-sm"
-            @click="exportProduct"
-          ></a>
+          <a v-if="selectedType === 'A'" class="btn btn-success me-3 size-font-md me-2" @click="openPopup">{{
+            t("addProduct") }}</a>
+          <a v-else-if="selectedType === 'B'" class="btn btn-success me-3 size-font-md me-2" @click="openPopup">{{
+            t("addService") }}</a>
+          <a class="btn btn-outline-secondary mdi mdi-export-variant size-font-md" @click="exportProduct"></a>
         </div>
       </div>
       <!-- <div class="top-table-for-filter">
@@ -153,23 +125,70 @@
           ></a>
         </div>
       </div> -->
-      <div class="show-only-desktop">
-        <productList
-          :tableHeaders="tableHeaders"
-          :initialTableData="filteredProducts"
-          :columnEditAndDelete="true"
-          @handleEdit="handleEdit"
-          @handleDelete="handleDelete"
-          v-if="currentTableData"
-          :isLoading="isLoading"
-          :documentName="selectedType === 'A' ? documentName : documentName2"
-          :showAllowButton="true"
-        />
+      <div class="card-view-customs">
+        <!-- ปุ่ม Expand/Collapse All -->
+        <div class="container">
+          <div class="text-start">
+            {{ allExpanded ? t("CollapseItemsAll") : t("expandedItemsAll") }}
+            <span :class="allExpanded ? 'mdi mdi-chevron-up' : 'mdi mdi-chevron-down'" @click="toggleAll">
+            </span>
+          </div>
+        </div>
+        <div class="row">
+          <div v-for="product in filteredProducts" :key="product.ID" class="col-12 mb-3">
+            <div class="card d-flex flex-column" style="font-size: 16px">
+              <div class="card-header d-flex justify-content-between align-items-center"
+                style="background-color: transparent; border-bottom: none">
+                <div class="fw-bold">{{ product.productname }}</div>
+                <div class="d-flex gap-3">
+                  <span class="mdi mdi-pencil-outline" @click="handleEdit(product)"
+                    style="cursor: pointer; font-size: 20px"></span>
+                  <span class="mdi mdi-trash-can-outline text-danger" @click="handleDelete(product)"
+                    style="cursor: pointer; font-size: 20px"></span>
+                </div>
+              </div>
+
+              <div class="card-body pt-0" style="line-height: 1.8">
+                <div class="d-flex justify-content-between">
+                  <span>{{ t("categoryNameHeaderTable") }}</span>
+                  <span class="text-end">{{ product.Category }}</span>
+                </div>
+                <!-- <div class="d-flex justify-content-between">
+                  <span>{{
+                    selectedType === "A"
+                      ? t("productHeaderTable")
+                      : t("serviceHeaderTable")
+                  }}</span>
+                  <span class="text-end">{{ product.productname }}</span>
+                </div> -->
+                <div class="d-flex justify-content-between">
+                  <span>{{ t("priceHeaderTable") }}</span>
+                  <span class="text-end">{{ product.price }}</span>
+                </div>
+                <div v-show="isExpanded(product.ID)">
+                  <div class="d-flex justify-content-between">
+                    <span>{{ t("productDetailHeaderTable") }}</span>
+                    <span class="text-end text-break">{{ product.productdetail }}</span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="card-footer text-center bg-transparent border-0 pt-0" @click="toggleCollapse(product.ID)">
+                <span :class="isExpanded(product.ID)
+                  ? 'mdi mdi-chevron-up'
+                  : 'mdi mdi-chevron-down'
+                  " style="font-size: 24px; cursor: pointer"></span>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
-      <div
-        v-if="isLoading"
-        class="d-flex justify-content-center align-items-center"
-      >
+      <div class="show-only-desktop sale_hide">
+        <productList :tableHeaders="tableHeaders" :initialTableData="filteredProducts" :columnEditAndDelete="true"
+          @handleEdit="handleEdit" @handleDelete="handleDelete" v-if="currentTableData" :isLoading="isLoading"
+          :documentName="selectedType === 'A' ? documentName : documentName2" :showAllowButton="true" />
+      </div>
+      <div v-if="isLoading" class="d-flex justify-content-center align-items-center">
         <div class="spinner-border text-primary" role="status">
           <span class="visually-hidden">Loading...</span>
         </div>
@@ -195,18 +214,11 @@
       <div class="mb-3 div-for-formControl" hidden>
         <label class="col-sm-3 col-md-6" for="productTypeID">{{
           t("productType")
-        }}</label>
-        <select
-          class="form-control col-sm-7 col-md-6 form-select"
-          v-model="formData.productTypeID"
-          id="productTypeID"
-          :class="{ error: isEmpty.productTypeID }"
-        >
-          <option
-            v-for="productType in productTypes"
-            :key="productType.productTypeID"
-            :value="productType.productTypeID"
-          >
+          }}</label>
+        <select class="form-control col-sm-7 col-md-6 form-select" v-model="formData.productTypeID" id="productTypeID"
+          :class="{ error: isEmpty.productTypeID }" @click="resetError('productTypeID')">
+          <option v-for="productType in productTypes" :key="productType.productTypeID"
+            :value="productType.productTypeID">
             {{ displayProductType(productType.productTypeName) }}
           </option>
         </select>
@@ -214,68 +226,36 @@
       <div class="mb-3 div-for-formControl">
         <label class="col-sm-3 col-md-6" for="categoryID">{{
           t("productCategory")
-        }}</label>
-        <select
-          class="form-control col-sm-7 col-md-6 form-select"
-          v-model="formData.categoryID"
-          id="categoryID"
-          :class="{ error: isEmpty.categoryID }"
-        >
-          <option
-            v-for="category in Categories"
-            :key="category.categoryID"
-            :value="category.categoryID"
-          >
+          }}</label>
+        <select class="form-control col-sm-7 col-md-6 form-select" v-model="formData.categoryID" id="categoryID"
+          :class="{ error: isEmpty.categoryID }" @click="resetError('categoryID')">
+          <option v-for="category in Categories" :key="category.categoryID" :value="category.categoryID">
             {{ category.categoryName }}
           </option>
         </select>
       </div>
       <div class="mb-3 div-for-formControl">
-        <label
-          for="productname"
-          class="col-sm-3 col-md-6"
-          v-if="selectedType === 'A'"
-          ><span style="color: red">*</span>{{ t("productNameProduct") }}</label
-        >
-        <label
-          for="productname"
-          class="col-sm-3 col-md-6"
-          v-else-if="selectedType === 'B'"
-          ><span style="color: red">*</span>{{ t("productNameService") }}</label
-        >
-        <input
-          class="form-control col-sm-7 col-md-6"
-          v-model="formData.productname"
-          type="text"
-          id="productname"
-          :class="{ error: isEmpty.productname }"
-        />
+        <label for="productname" class="col-sm-3 col-md-6" v-if="selectedType === 'A'"><span
+            style="color: red">*</span>{{ t("productNameProduct") }}</label>
+        <label for="productname" class="col-sm-3 col-md-6" v-else-if="selectedType === 'B'"><span
+            style="color: red">*</span>{{ t("productNameService") }}</label>
+        <input class="form-control col-sm-7 col-md-6" v-model="formData.productname" type="text" id="productname"
+          :class="{ error: isEmpty.productname }" :placeholder="t('enterProductName')"
+          @click="resetError('productname')" />
       </div>
       <div class="mb-3 div-for-formControl">
         <label class="col-sm-3 col-md-6" for="productdetail">{{
           t("productDetail")
-        }}</label>
-        <input
-          class="form-control col-sm-7 col-md-6"
-          v-model="formData.productdetail"
-          type="text"
-          id="productdetail"
-          :class="{ error: inputError }"
-        />
+          }}</label>
+        <input class="form-control col-sm-7 col-md-6" v-model="formData.productdetail" type="text" id="productdetail"
+          :placeholder="t('enterDetail')" :class="{ error: inputError }" />
       </div>
       <div class="mb-3 div-for-formControl">
-        <label class="col-sm-3 col-md-6" for="price"
-          ><span style="color: red">*</span>{{ t("productPriceSale") }}</label
-        >
-        <input
-          class="form-control col-sm-7 col-md-6"
-          v-model="formattedPrice"
-          type="text"
-          id="price"
-          @input="updatePrice"
-          @keypress="onlyNumber"
-          :class="{ error: isEmpty.price }"
-        />
+        <label class="col-sm-3 col-md-6" for="price"><span style="color: red">*</span>{{ t("productPriceSale")
+          }}</label>
+        <input class="form-control col-sm-7 col-md-6" v-model="formattedPrice" type="text" id="price"
+          @input="updatePrice" @keypress="onlyNumber" :class="{ error: isEmpty.price }" :placeholder="t('enterPrice')"
+          @click="resetError('price')" />
       </div>
       <!-- <div class="mb-3 div-for-formControl">
         <label class="col-sm-3 col-md-6" for="productcost">{{
@@ -294,83 +274,39 @@
       <div class="mb-3 div-for-formControl" v-if="formData.productTypeID === 1">
         <label class="col-sm-3 col-md-6" for="amount">{{
           t("productAmount")
-        }}</label>
-        <input
-          class="form-control col-sm-7 col-md-6"
-          v-model="formData.amount"
-          type="number"
-          id="amount"
-          :readonly="this.isEditMode"
-          :disabled="this.isEditMode"
-          :class="{ error: isEmpty.amount }"
-        />
+          }}</label>
+        <input class="form-control col-sm-7 col-md-6" v-model="formData.amount" type="number" id="amount"
+          :readonly="this.isEditMode" :disabled="this.isEditMode" :class="{ error: isEmpty.amount }"
+          :placeholder="t('enterAmount')" @click="resetError('amount')" />
       </div>
       <div class="mb-3 div-for-formControl">
         <div class="mb-6 col-6">
-          <input
-            class="form-control"
-            type="file"
-            @change="handleFileUpload"
-            accept="image/png, image/gif, image/jpeg"
-            :class="{ error: isEmpty.productImg }"
-            ref="fileInput"
-            style="width: 100%"
-          />
+          <input class="form-control" type="file" @change="handleFileUpload" accept="image/png, image/gif, image/jpeg"
+            :class="{ error: isEmpty.productImg }" ref="fileInput" style="width: 100%" />
           <a v-if="showError" class="text-danger">{{ errorMessage }}</a>
           <a v-if="showInfo" class="text-secondary">{{
             t("warningsizeproductImage")
-          }}</a>
+            }}</a>
           <a v-if="showApprove" class="text-success">{{ approveMessage }}</a>
         </div>
         <div class="mb-3 col-6">
-          <img
-            v-if="exp_files != ''"
-            :src="exp_files || formData.productImg"
-            alt="Uploaded Image"
-            class="image_exp"
-          />
+          <img v-if="exp_files != ''" :src="exp_files || formData.productImg" alt="Uploaded Image" class="image_exp" />
         </div>
       </div>
-      <div
-        class="mb-3 div-for-formControl"
-        v-if="formData.status === 'not active'"
-      >
+      <div class="mb-3 div-for-formControl" v-if="formData.status === 'not active'">
         <label class="col-sm-3 col-md-6">{{ t("Status") }}</label>
-        <select
-          class="form-control col-sm-7 col-md-6 form-select"
-          v-model="formData.status"
-        >
+        <select class="form-control col-sm-7 col-md-6 form-select" v-model="formData.status">
           <option value="active">Active</option>
           <option value="not active">Not Active</option>
         </select>
       </div>
       <div class="mb-3 modal-footer">
-        <button
-          :disabled="isLoading"
-          class="btn btn-primary me-3"
-          v-if="isAddingMode"
-          @click="addProduct"
-        >
-          <span
-            v-if="isLoading"
-            class="spinner-border spinner-border-sm"
-            role="status"
-            aria-hidden="true"
-          ></span>
+        <button :disabled="isLoading" class="btn btn-primary me-3" v-if="isAddingMode" @click="addProduct">
+          <span v-if="isLoading" class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
           <span v-else>{{ t("buttonAdd") }}</span>
         </button>
-        <button
-          :disabled="isLoading"
-          class="btn btn-primary me-3"
-          v-if="isEditMode"
-          @click="editProduct"
-        >
-          <span
-            v-if="isLoading"
-            class="spinner-border spinner-border-sm"
-            role="status"
-            aria-hidden="true"
-          ></span>
+        <button :disabled="isLoading" class="btn btn-primary me-3" v-if="isEditMode" @click="editProduct">
+          <span v-if="isLoading" class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
           <span v-else>{{ t("buttonSave") }}</span>
         </button>
         <button class="btn btn-secondary" @click="closePopup">
@@ -379,10 +315,7 @@
       </div>
     </Popup>
     <div class="delete-popup">
-      <Popup
-        :isOpen="isDeleteConfirmPopupOpen"
-        :closePopup="closeDeleteConfirmPopup"
-      >
+      <Popup :isOpen="isDeleteConfirmPopupOpen" :closePopup="closeDeleteConfirmPopup">
         <div class="mb-5">
           <a>{{ t("deleteConfirmSentence") }}</a>
         </div>
@@ -411,13 +344,8 @@
     </div> -->
     <div v-if="isPopupVisible_error" class="popup-error2">
       <div class="text-end">
-        <button
-          type="button"
-          class="btn-close"
-          aria-label="Close"
-          @click="closeErrorPopup"
-          style="color: #9f9999"
-        ></button>
+        <button type="button" class="btn-close" aria-label="Close" @click="closeErrorPopup"
+          style="color: #9f9999"></button>
       </div>
       <div class="popup-content-error2">
         <ul>
@@ -509,6 +437,8 @@ export default {
         productcost: false,
       },
       searchQuery: "",
+      expandedItems: [],
+      allExpanded: false,
     };
   },
   computed: {
@@ -745,7 +675,34 @@ export default {
     },
   },
   methods: {
+    toggleCollapse(id) {
+      if (this.expandedItems.includes(id)) {
+        this.expandedItems = this.expandedItems.filter((itemId) => itemId !== id);
+      } else {
+        this.expandedItems.push(id);
+      }
+    },
+    isExpanded(id) {
+      if (this.allExpanded) {
+        return true;
+      }
+      return this.expandedItems.includes(id);
+    },
+    toggleAll() {
+      this.allExpanded = !this.allExpanded;
+      if (this.allExpanded) {
+        this.expandedItems = this.filteredProducts.map((item) => item.ID);
+      } else {
+        this.expandedItems = [];
+      }
+    },
     closeErrorPopup() {
+      this.isPopupVisible_error = false;
+    },
+    resetError(field) {
+      if (field && this.isEmpty[field] !== undefined) {
+        this.isEmpty[field] = false;
+      }
       this.isPopupVisible_error = false;
     },
     onlyNumber(event) {

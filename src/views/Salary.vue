@@ -13,10 +13,10 @@
       </div> -->
       <div class="row mb-3">
         <div class="col-6 col-sm-6 col-md-3 col-lg-3">
-          <label class="me-1 size-font-sm">{{ t("month") }}</label>
+          <label class="me-1 size-font-md">{{ t("month") }}</label>
           <select
             v-model="selectedMonthFilter"
-            class="me-3 form-control form-select size-font-sm"
+            class="me-3 form-control form-select size-font-md"
             :class="{ error: inputError } + ' form-control'"
           >
             <option v-for="month in months" :value="month" :key="month">
@@ -26,11 +26,11 @@
         </div>
 
         <div class="col-6 col-sm-6 col-md-3 col-lg-3">
-          <label class="me-1 size-font-sm">{{ t("year") }}</label>
+          <label class="me-1 size-font-md">{{ t("year") }}</label>
 
           <select
             v-model="selectedYearFilter"
-            class="me-3 form-control form-select size-font-sm"
+            class="me-3 form-control form-select size-font-md"
             :class="{ error: inputError } + ' form-control'"
           >
             <!-- <option v-for="year in years" :key="year" :value="year">
@@ -47,17 +47,17 @@
           <input
             v-model="searchQuery"
             type="text"
-            class="form-control size-font-sm"
+            class="form-control size-font-md"
             :placeholder="$t('Search')"
           />
         </div>
         <!-- <div class="col-1 col-sm-1 col-md-7 col-lg-7"></div> -->
         <div class="col-6 col-sm-6 col-md-9 col-lg-9 text-end">
-          <a class="btn btn-success me-3 size-font-sm me-2" @click="openPopup">
+          <a class="btn btn-success me-3 size-font-md me-2" @click="openPopup">
             {{ t("addPaySalary") }}
           </a>
           <button
-            class="btn btn-outline-secondary mdi mdi-export-variant size-font-sm"
+            class="btn btn-outline-secondary mdi mdi-export-variant size-font-md"
             @click="exportSalary"
           ></button>
         </div>
@@ -138,6 +138,7 @@
             v-model="selectedMonth"
             class="me-3"
             :class="{ error: isEmpty.selectedMonth, 'form-control': true }"
+            @click="resetError('selectedMonth')"
           >
             <option v-for="month in months" :value="month" :key="month">
               {{ month }}
@@ -150,6 +151,7 @@
             v-model="selectedYear"
             class="me-3"
             :class="{ error: isEmpty.selectedYear, 'form-control': true }"
+            @click="resetError('selectedYear')"
           >
             <option
               v-for="year in years"
@@ -166,6 +168,7 @@
           <select
             v-model="selectedRound"
             :class="{ error: isEmpty.selectedRound, 'form-control': true }"
+            @click="resetError('selectedRound')"
           >
             <option v-for="round in rounds" :key="round" :value="round">
               {{ round }}
@@ -281,6 +284,7 @@
           placeholder="DD/MM/YYYY"
           class="form-control"
           :class="{ error: inputError }"
+          @click="resetError()"
         />
       </div>
       <div class="mb-3 div-for-formControl">
@@ -293,6 +297,7 @@
           class="form-control"
           @change="updateOvertimeHours"
           :class="{ error: inputError }"
+          @click="resetError()"
         />
       </div>
       <div class="mb-3 div-for-formControl">
@@ -305,6 +310,7 @@
           class="form-control"
           @change="updateOvertimeHours"
           :class="{ error: inputError }"
+          @click="resetError()"
         />
       </div>
       <div class="mb-3 div-for-formControl">
@@ -317,6 +323,7 @@
           @change="updateOvertimeTotal"
           :class="{ error: inputError }"
           disabled
+          @click="resetError()"
         />
       </div>
       <div class="mb-3 div-for-formControl" style="align-items: flex-start">
@@ -328,6 +335,8 @@
           required
           :class="{ error: inputError }"
           maxlength="255"
+          :placeholder="t('enterDetail')"
+          @click="resetError()"
         ></textarea>
       </div>
       <div class="mb-3 div-for-formControl">
@@ -338,8 +347,11 @@
           type="text"
           id="input-text"
           @change="updateOvertimeTotal"
+
           :class="{ error: inputError }"
           required
+          :placeholder="t('enterRate')"
+          @click="resetError()"
         />
       </div>
       <div class="mb-3 div-for-formControl">
@@ -351,6 +363,7 @@
           id="input-text"
           :class="{ error: inputError }"
           disabled
+          @click="resetError()"
         />
       </div>
       <div class="modal-footer mb-3">
@@ -871,6 +884,14 @@ export default {
       this.isPopupVisible_error = false;
     },
     closeErrorPopup2() {
+      this.isPopupVisible_error2 = false;
+    },
+    resetError(field) {
+      if (field && this.isEmpty[field] !== undefined) {
+        this.isEmpty[field] = false;
+      }
+      this.inputError = false;
+      this.isPopupVisible_error = false;
       this.isPopupVisible_error2 = false;
     },
     async validateFormData() {

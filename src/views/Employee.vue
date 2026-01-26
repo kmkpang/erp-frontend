@@ -9,7 +9,7 @@
       <div class="row mb-3">
         <div class="col-4 col-sm-4 col-md-2 col-lg-2">
           <!-- <select
-            class="form-control form-select size-font-sm"
+            class="form-control form-select size-font-md"
             v-model="formData.status"
           >
             <option
@@ -20,12 +20,8 @@
               {{ t(status === "active" ? "statusActive" : "statusNotActive") }}
             </option>
           </select> -->
-          <select
-            class="form-control form-select size-font-sm"
-            v-model="dropDownStatus"
-            aria-label="Status select"
-            hidden
-          >
+          <select class="form-control form-select size-font-md" v-model="dropDownStatus" aria-label="Status select"
+            hidden>
             <option value="">{{ t("filter") }}</option>
             <option value="active">{{ t("statusActive") }}</option>
             <option value="not_active">{{ t("statusNotActive") }}</option>
@@ -34,24 +30,13 @@
       </div>
       <div class="row mb-3">
         <div class="col-5 col-sm-6 col-md-3 col-lg-3">
-          <input
-            v-model="searchQuery"
-            type="text"
-            class="form-control me-3 size-font-sm"
-            :placeholder="$t('Search')"
-          />
+          <input v-model="searchQuery" type="text" class="form-control me-3 size-font-md" :placeholder="$t('Search')" />
         </div>
         <!-- <div class="col-1 col-sm-1 col-md-7 col-lg-7"></div> -->
         <div class="col-7 col-sm-6 col-md-9 col-lg-9 text-end">
-          <a
-            class="btn btn-success me-3 size-font-sm me-2"
-            @click="openPopup"
-            >{{ t("addEmployee") }}</a
-          >
-          <button
-            class="btn btn-outline-secondary mdi mdi-export-variant size-font-sm"
-            @click="exportEmployee"
-          ></button>
+          <a class="btn btn-success me-3 size-font-md me-2" @click="openPopup">{{ t("addEmployee") }}</a>
+          <button class="btn btn-outline-secondary mdi mdi-export-variant size-font-md"
+            @click="exportEmployee"></button>
         </div>
       </div>
       <!-- <div class="top-table-for-filter">
@@ -82,23 +67,69 @@
           </button>
         </div>
       </div> -->
-      <div class="show-only-desktop">
-        <employeeList
-          :initialTableData="filteredEmp"
-          :tableHeaders="tableHeaders"
-          :columnEditAndDelete="true"
-          @handleEdit="handleEdit"
-          @handleDelete="handleDelete"
-          v-if="employees"
-          :isLoading="isLoading"
-          :documentName="documentName"
-          :showAllowButton="true"
-        />
+      <div class="card-view-customs">
+        <!-- Expand/Collapse All -->
+        <div class="container">
+          <div class="text-start">
+            {{ allExpanded ? t("CollapseItemsAll") : t("expandedItemsAll") }}
+            <span :class="allExpanded ? 'mdi mdi-chevron-up' : 'mdi mdi-chevron-down'" @click="toggleAll">
+            </span>
+          </div>
+        </div>
+        <div class="row">
+          <div v-for="item in filteredEmp" :key="item.ID" class="col-12 mb-3">
+            <div class="card d-flex flex-column" style="font-size: 16px">
+              <div class="card-header d-flex justify-content-between align-items-center"
+                style="background-color: transparent; border-bottom: none">
+                <div class="fw-bold">{{ item.Name }}</div>
+                <div class="d-flex gap-3">
+                  <span class="mdi mdi-pencil-outline" @click="handleEdit(item)"
+                    style="cursor: pointer; font-size: 20px"></span>
+                  <span class="mdi mdi-trash-can-outline text-danger" @click="handleDelete(item)"
+                    style="cursor: pointer; font-size: 20px"></span>
+                </div>
+              </div>
+              <div class="card-body pt-0" style="line-height: 1.8">
+                <div class="d-flex justify-content-between">
+                  <span>{{ t("positionHeaderTable") }}</span>
+                  <span class="text-end">{{ item.Position }}</span>
+                </div>
+                <div class="d-flex justify-content-between">
+                  <span>{{ t("departmentHeaderTable") }}</span>
+                  <span class="text-end">{{ item.Department }}</span>
+                </div>
+                <div class="d-flex justify-content-between">
+                  <span>{{ t("onlystatusHeaderTable") }}</span>
+                  <span class="text-end"
+                    :class="{ 'text-success': item.status === 'Active' || item.status === 'เปิดใช้งาน', 'text-danger': item.status !== 'Active' && item.status !== 'เปิดใช้งาน' }">{{
+                    item.status }}</span>
+                </div>
+
+                <div v-show="isExpanded(item.ID)">
+                  <div class="d-flex justify-content-between">
+                    <span>{{ t("phoneNumHeaderTable") }}</span>
+                    <span class="text-end">{{ item["Phone Number"] }}</span>
+                  </div>
+                  <div class="d-flex justify-content-between">
+                    <span>{{ t("emailHeaderTable") }}</span>
+                    <span class="text-end text-break">{{ item.Email }}</span>
+                  </div>
+                </div>
+              </div>
+              <div class="card-footer text-center bg-transparent border-0 pt-0" @click="toggleCollapse(item.ID)">
+                <span :class="isExpanded(item.ID) ? 'mdi mdi-chevron-up' : 'mdi mdi-chevron-down'"
+                  style="font-size: 24px; cursor: pointer"></span>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
-      <div
-        v-if="isLoading"
-        class="d-flex justify-content-center align-items-center"
-      >
+      <div class="show-only-desktop sale_hide">
+        <employeeList :initialTableData="filteredEmp" :tableHeaders="tableHeaders" :columnEditAndDelete="true"
+          @handleEdit="handleEdit" @handleDelete="handleDelete" v-if="employees" :isLoading="isLoading"
+          :documentName="documentName" :showAllowButton="true" />
+      </div>
+      <div v-if="isLoading" class="d-flex justify-content-center align-items-center">
         <div class="spinner-border text-primary" role="status">
           <span class="visually-hidden">Loading...</span>
         </div>
@@ -108,10 +139,10 @@
       </div>
       <div class="row mb-3">
         <div class="col-6 col-sm-6 col-md-3 col-lg-3">
-          <label class="me-1 size-font-sm">{{ t("month") }}</label>
+          <label class="me-1 size-font-md">{{ t("month") }}</label>
           <select
             v-model="selectedMonthFilter"
-            class="me-3 form-control form-select size-font-sm"
+            class="me-3 form-control form-select size-font-md"
             :class="{ error: inputError } + ' form-control'"
           >
             <option v-for="month in months" :value="month" :key="month">
@@ -120,10 +151,10 @@
           </select>
         </div>
         <div class="col-6 col-sm-6 col-md-3 col-lg-3">
-          <label class="me-1 size-font-sm">{{ t("year") }}</label>
+          <label class="me-1 size-font-md">{{ t("year") }}</label>
           <select
             v-model="selectedYearFilter"
-            class="me-3 form-control form-select size-font-sm"
+            class="me-3 form-control form-select size-font-md"
             :class="{ error: inputError } + ' form-control'"
           >
             <option v-for="year in years" :key="year" :value="year">
@@ -137,13 +168,13 @@
           <input
             v-model="searchQueryLeave"
             type="text"
-            class="form-control me-3 size-font-sm"
+            class="form-control me-3 size-font-md"
             :placeholder="$t('Search')"
           />
         </div>
         <div class="col-1 col-sm-1 col-md-7 col-lg-7"></div>
         <div class="col-5 col-sm-5 col-md-2 col-lg-2 text-end">
-          <button class="btn btn-primary size-font-sm" @click="openPopupLeave">
+          <button class="btn btn-primary size-font-md" @click="openPopupLeave">
             {{ t("manageLeave") }}
           </button>
         </div>
@@ -221,49 +252,27 @@
       </div>
       <h5 style="text-decoration: underline">{{ t("employeeInformation") }}</h5>
       <div class="mb-3 div-for-formControl">
-        <label class="col-sm-5 col-md-6"
-          ><span style="color: red">*</span>{{ t("title") }}</label
-        >
-        <select
-          class="form-control col-sm-9 col-md-6 form-select"
-          v-model="formData.title"
-          required
-          :class="{ error: isEmpty.title }"
-        >
+        <label class="col-sm-5 col-md-6"><span style="color: red">*</span>{{ t("title") }}</label>
+        <select class="form-control col-sm-9 col-md-6 form-select" v-model="formData.title" required
+          :class="{ error: isEmpty.title }" @click="resetError('title')">
           <option value="Mr.">{{ t("mister") }}</option>
           <option value="Mrs.">{{ t("missis") }}</option>
           <option value="Miss">{{ t("miss") }}</option>
         </select>
       </div>
       <div class="mb-3 div-for-formControl">
-        <label class="col-sm-5 col-md-6"
-          ><span style="color: red">*</span>{{ t("firstname") }}</label
-        >
-        <input
-          class="form-control col-sm-9 col-md-6"
-          v-model="formData.F_name"
-          type="text"
-          required
-          :class="{ error: isEmpty.F_name }"
-        />
+        <label class="col-sm-5 col-md-6"><span style="color: red">*</span>{{ t("firstname") }}</label>
+        <input class="form-control col-sm-9 col-md-6" v-model="formData.F_name" type="text" required
+          :class="{ error: isEmpty.F_name }" :placeholder="t('enterFirstName')" @click="resetError('F_name')" />
       </div>
       <div class="mb-3 div-for-formControl">
-        <label class="col-sm-5 col-md-6"
-          ><span style="color: red">*</span>{{ t("lastname") }}</label
-        >
-        <input
-          class="form-control col-sm-9 col-md-6"
-          v-model="formData.L_name"
-          type="text"
-          required
-          :class="{ error: isEmpty.L_name }"
-        />
+        <label class="col-sm-5 col-md-6"><span style="color: red">*</span>{{ t("lastname") }}</label>
+        <input class="form-control col-sm-9 col-md-6" v-model="formData.L_name" type="text" required
+          :class="{ error: isEmpty.L_name }" :placeholder="t('enterLastName')" @click="resetError('L_name')" />
       </div>
       <div class="mb-3 div-for-formControl">
         <div class="col-6 col-sm-6 col-md-6">
-          <label class="col-sm-6 col-md-6"
-            ><span style="color: red">*</span>{{ t("birthdate") }}</label
-          >
+          <label class="col-sm-6 col-md-6"><span style="color: red">*</span>{{ t("birthdate") }}</label>
         </div>
         <div class="col-6 col-sm-6 col-md-6">
           <!-- <DatePicker
@@ -277,108 +286,53 @@
             :disabled-date="disabledBeforeToday"
             :class="{ error: isEmpty.Birthdate }"
           /> -->
-          <v-date-picker
-            v-model="formData.Birthdate"
-            locale="th-TH"
-            :format="formatDatePicker"
-          >
+          <v-date-picker v-model="formData.Birthdate" locale="th-TH" :format="formatDatePicker">
             <template v-slot="{ inputEvents }">
-              <input
-                class="custom-input"
-                :value="formatDatePicker(formData.Birthdate)"
-                v-on="inputEvents"
-                placeholder="เลือกวันที่"
-                style="width: 100%"
-              />
+              <input class="custom-input" :value="formatDatePicker(formData.Birthdate)" v-on="inputEvents"
+                :placeholder="t('selectDate')" style="width: 100%" />
             </template>
           </v-date-picker>
         </div>
       </div>
       <div class="mb-3 div-for-formControl">
-        <label class="col-sm-5 col-md-6"
-          ><span style="color: red">*</span>{{ t("address") }}</label
-        >
-        <input
-          class="form-control col-sm-9 col-md-6"
-          v-model="formData.Address"
-          type="text"
-          required
-          :class="{ error: isEmpty.Address }"
-        />
+        <label class="col-sm-5 col-md-6"><span style="color: red">*</span>{{ t("address") }}</label>
+        <input class="form-control col-sm-9 col-md-6" v-model="formData.Address" type="text" required
+          :class="{ error: isEmpty.Address }" :placeholder="t('customerPurchasePlaceholderAddress')" />
       </div>
       <div class="mb-3 div-for-formControl">
-        <label class="col-sm-5 col-md-6"
-          ><span style="color: red">*</span>{{ t("phoneNum") }}</label
-        >
-        <input
-          class="form-control col-sm-9 col-md-6"
-          v-model="formData.Phone_num"
-          type="text"
-          required
-          :class="{ error: isEmpty.Phone_num }"
-          @keypress="validateInput"
-          maxlength="10"
-        />
+        <label class="col-sm-5 col-md-6"><span style="color: red">*</span>{{ t("phoneNum") }}</label>
+        <input class="form-control col-sm-9 col-md-6" v-model="formData.Phone_num" type="text" required
+          :class="{ error: isEmpty.Phone_num }" @keypress="validateInput" maxlength="10"
+          :placeholder="t('customerPurchasePlaceholderPhoneNum')" @click="resetError('Phone_num')" />
       </div>
       <div class="mb-3 div-for-formControl">
-        <label class="col-sm-5 col-md-6"
-          ><span style="color: red">*</span>{{ t("NID") }}</label
-        >
-        <input
-          class="form-control col-sm-9 col-md-6"
-          v-model="formData.NID_num"
-          type="text"
-          required
-          :class="{ error: isEmpty.NID_num }"
-          @keypress="validateInput"
-          maxlength="13"
-        />
+        <label class="col-sm-5 col-md-6"><span style="color: red">*</span>{{ t("NID") }}</label>
+        <input class="form-control col-sm-9 col-md-6" v-model="formData.NID_num" type="text" required
+          :class="{ error: isEmpty.NID_num }" @keypress="validateInput" maxlength="13" :placeholder="t('enterNID')"
+          @click="resetError('NID_num')" />
       </div>
       <div class="mb-3 div-for-formControl">
-        <label class="col-sm-5 col-md-6"
-          ><span style="color: red">*</span>{{ t("email") }}</label
-        >
-        <input
-          class="form-control col-sm-9 col-md-6"
-          v-model="formData.Email"
-          type="text"
-          required
-          :class="{ error: isEmpty.Email }"
-        />
+        <label class="col-sm-5 col-md-6"><span style="color: red">*</span>{{ t("email") }}</label>
+        <input class="form-control col-sm-9 col-md-6" v-model="formData.Email" type="text" required
+          :class="{ error: isEmpty.Email }" :placeholder="t('enterEmail')" @click="resetError('Email')" />
       </div>
       <h5 style="text-decoration: underline">{{ t("headerAboutJob") }}</h5>
       <div class="mb-3 div-for-formControl">
-        <label class="col-sm-5 col-md-6"
-          ><span style="color: red">*</span>{{ t("empType") }}</label
-        >
-        <select
-          class="form-control col-sm-9 col-md-6 form-select"
-          v-model="formData.employeeType"
-          required
-          :class="{ error: isEmpty.employeeType }"
-        >
+        <label class="col-sm-5 col-md-6"><span style="color: red">*</span>{{ t("empType") }}</label>
+        <select class="form-control col-sm-9 col-md-6 form-select" v-model="formData.employeeType" required
+          :class="{ error: isEmpty.employeeType }" @click="resetError('employeeType')">
           <option value="Full-time">{{ t("fulltime") }}</option>
           <option value="Part-time">{{ t("parttime") }}</option>
           <option value="Contract">{{ t("contract") }}</option>
         </select>
       </div>
       <div class="mb-3 div-for-formControl">
-        <label class="col-sm-5 col-md-6"
-          ><span style="color: red">*</span>{{ t("department") }}</label
-        >
+        <label class="col-sm-5 col-md-6"><span style="color: red">*</span>{{ t("department") }}</label>
         <div class="col-sm-9 col-md-6">
-          <select
-            class="form-control form-select"
-            v-model="formData.departmentID"
-            :disabled="Departments.length === 0"
-            :class="{ error: isEmpty.departmentID || Departments.length === 0 }"
-            style="width: 100%"
-          >
-            <option
-              v-for="employ in Departments"
-              :key="employ.departmentID"
-              :value="employ.departmentID"
-            >
+          <select class="form-control form-select" v-model="formData.departmentID" :disabled="Departments.length === 0"
+            :class="{ error: isEmpty.departmentID || Departments.length === 0 }" style="width: 100%"
+            @click="resetError('departmentID')">
+            <option v-for="employ in Departments" :key="employ.departmentID" :value="employ.departmentID">
               {{ employ.departmentName }}
             </option>
           </select>
@@ -390,23 +344,12 @@
         </div>
       </div>
       <div class="mb-3 div-for-formControl">
-        <label class="col-sm-5 col-md-6"
-          ><span style="color: red">*</span>{{ t("position") }}</label
-        >
+        <label class="col-sm-5 col-md-6"><span style="color: red">*</span>{{ t("position") }}</label>
         <div class="col-sm-9 col-md-6">
-          <select
-            class="form-control form-select"
-            v-model="formData.PositionID"
-            required
-            :disabled="Positions.length === 0"
-            :class="{ error: isEmpty.PositionID || Positions.length === 0 }"
-            style="width: 100%"
-          >
-            <option
-              v-for="employ in Positions"
-              :key="employ.PositionID"
-              :value="employ.PositionID"
-            >
+          <select class="form-control form-select" v-model="formData.PositionID" required
+            :disabled="Positions.length === 0" :class="{ error: isEmpty.PositionID || Positions.length === 0 }"
+            style="width: 100%" @click="resetError('PositionID')">
+            <option v-for="employ in Positions" :key="employ.PositionID" :value="employ.PositionID">
               {{ employ.Position }}
             </option>
           </select>
@@ -444,14 +387,9 @@
       <!-- </div> -->
       <div class="mb-3 div-for-formControl">
         <label class="col-sm-5 col-md-6">{{ t("salary") }}</label>
-        <input
-          class="form-control col-sm-9 col-md-6"
-          v-model="formData.Salary"
-          type="text"
-          required
-          :class="{ error: isEmpty.Salary }"
-          @keypress="validateInput"
-        />
+        <input class="form-control col-sm-9 col-md-6" v-model="formData.Salary" type="text" required
+          :class="{ error: isEmpty.Salary }" :placeholder="t('enterSalary')" @keypress="validateInput"
+          @click="resetError('Salary')" />
       </div>
       <div class="mb-3 div-for-formControl">
         <div class="col-6 col-sm-6 col-md-6">
@@ -470,19 +408,10 @@
             :disabled-date="disabledBeforeToday"
             :class="{ error: isEmpty.start_working_date }"
           ></DatePicker> -->
-          <v-date-picker
-            v-model="formData.start_working_date"
-            locale="th-TH"
-            :format="formatDatePicker"
-          >
+          <v-date-picker v-model="formData.start_working_date" locale="th-TH" :format="formatDatePicker">
             <template v-slot="{ inputEvents }">
-              <input
-                class="custom-input"
-                :value="formatDatePicker(formData.start_working_date)"
-                v-on="inputEvents"
-                placeholder="เลือกวันที่"
-                style="width: 100%"
-              />
+              <input class="custom-input" :value="formatDatePicker(formData.start_working_date)" v-on="inputEvents"
+                :placeholder="t('selectDate')" style="width: 100%" />
             </template>
           </v-date-picker>
         </div>
@@ -490,53 +419,22 @@
       <h5 style="text-decoration: underline">{{ t("headerAboutBank") }}</h5>
       <div class="mb-3 div-for-formControl">
         <label class="col-sm-5 col-md-6">{{ t("bankname") }}</label>
-        <input
-          class="form-control col-sm-9 col-md-6"
-          v-model="formData.bankName"
-          type="text"
-          required
-          :class="{ error: isEmpty.bankName }"
-        />
+        <input class="form-control col-sm-9 col-md-6" v-model="formData.bankName" type="text" required
+          :class="{ error: isEmpty.bankName }" :placeholder="t('enterBankName')" @click="resetError('bankName')" />
       </div>
       <div class="mb-3 div-for-formControl">
         <label class="col-sm-5 col-md-6">{{ t("bankaccount") }}</label>
-        <input
-          class="form-control col-sm-9 col-md-6"
-          v-model="formData.bankAccountID"
-          type="text"
-          required
-          :class="{ error: isEmpty.bankAccountID }"
-          maxlength="15"
-          @keypress="validateInput"
-        />
+        <input class="form-control col-sm-9 col-md-6" v-model="formData.bankAccountID" type="text" required
+          :class="{ error: isEmpty.bankAccountID }" maxlength="15" :placeholder="t('enterBankAccount')"
+          @keypress="validateInput" @click="resetError('bankAccountID')" />
       </div>
       <div class="mb-3 modal-footer">
-        <button
-          :disabled="isLoading"
-          class="btn btn-primary me-3"
-          v-if="isAddingMode"
-          @click="addEmployee"
-        >
-          <span
-            v-if="isLoading"
-            class="spinner-border spinner-border-sm"
-            role="status"
-            aria-hidden="true"
-          ></span>
+        <button :disabled="isLoading" class="btn btn-primary me-3" v-if="isAddingMode" @click="addEmployee">
+          <span v-if="isLoading" class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
           <span v-else>{{ t("buttonAdd") }}</span>
         </button>
-        <button
-          :disabled="isLoading"
-          class="btn btn-primary me-3"
-          v-if="isEditMode"
-          @click="editEmployee"
-        >
-          <span
-            v-if="isLoading"
-            class="spinner-border spinner-border-sm"
-            role="status"
-            aria-hidden="true"
-          ></span>
+        <button :disabled="isLoading" class="btn btn-primary me-3" v-if="isEditMode" @click="editEmployee">
+          <span v-if="isLoading" class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
           <span v-else>{{ t("buttonSave") }}</span>
         </button>
         <button class="btn btn-secondary" @click="closePopup">
@@ -550,31 +448,17 @@
       </div>
       <div class="mb-3 div-for-formControl">
         <label class="col-sm-5 col-md-6">{{ t("empname") }}</label>
-        <select
-          class="form-control col-sm-9 col-md-6 form-select"
-          v-model="formDataLeave.employeeID"
-          type="text"
-          required
-          :class="{ error: isEmpty.employeeID }"
-        >
-          <option
-            v-for="employ in employeesSalaries"
-            :key="employ.ID"
-            :value="employ.ID"
-          >
+        <select class="form-control col-sm-9 col-md-6 form-select" v-model="formDataLeave.employeeID" type="text"
+          required :class="{ error: isEmpty.employeeID }" @click="resetError('employeeID')">
+          <option v-for="employ in employeesSalaries" :key="employ.ID" :value="employ.ID">
             {{ employ.Name }}
           </option>
         </select>
       </div>
       <div class="mb-3 div-for-formControl">
         <label class="col-sm-5 col-md-6">{{ t("leavetype") }}</label>
-        <select
-          class="form-control col-sm-9 col-md-6 form-select"
-          v-model="formDataLeave.detail"
-          type="text"
-          required
-          :class="{ error: isEmpty.detail }"
-        >
+        <select class="form-control col-sm-9 col-md-6 form-select" v-model="formDataLeave.detail" type="text" required
+          :class="{ error: isEmpty.detail }" @click="resetError('detail')">
           <option>ลาป่วย</option>
           <option>ลากิจ</option>
           <option>ลาพักร้อน</option>
@@ -585,44 +469,21 @@
         <label class="col-6 col-sm-6 col-md-6">{{ t("date") }}</label>
         <div class="row">
           <div class="col-md-5">
-            <DatePicker
-              v-model:value="formDataLeave.date"
-              format="DD/MM/YYYY"
-              value-type="date"
-              placeholder="DD/MM/YYYY"
-              class="form-control"
-              :class="{ error: isEmpty.date }"
-              :formatter="momentFormat"
-              :lang="currentLocale"
-            />
+            <DatePicker v-model:value="formDataLeave.date" format="DD/MM/YYYY" value-type="date"
+              placeholder="DD/MM/YYYY" class="form-control" :class="{ error: isEmpty.date }" :formatter="momentFormat"
+              :lang="currentLocale" />
           </div>
           -
           <div class="col-md-5">
-            <DatePicker
-              v-model:value="formDataLeave.dateEnd"
-              format="DD/MM/YYYY"
-              value-type="date"
-              placeholder="DD/MM/YYYY"
-              class="form-control"
-              :class="{ error: isEmpty.dateEnd }"
-              :formatter="momentFormat"
-              :lang="currentLocale"
-            />
+            <DatePicker v-model:value="formDataLeave.dateEnd" format="DD/MM/YYYY" value-type="date"
+              placeholder="DD/MM/YYYY" class="form-control" :class="{ error: isEmpty.dateEnd }"
+              :formatter="momentFormat" :lang="currentLocale" />
           </div>
         </div>
       </div>
       <div class="mb-3 modal-footer">
-        <button
-          :disabled="isLoading"
-          class="btn btn-primary me-3"
-          @click="AddLeave"
-        >
-          <span
-            v-if="isLoading"
-            class="spinner-border spinner-border-sm"
-            role="status"
-            aria-hidden="true"
-          ></span>
+        <button :disabled="isLoading" class="btn btn-primary me-3" @click="AddLeave">
+          <span v-if="isLoading" class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
           <span v-else>{{ t("buttonSave") }}</span>
         </button>
         <button class="btn btn-secondary" @click="closePopupLeave">
@@ -637,67 +498,32 @@
 
       <div class="mb-3 div-for-formControl">
         <label class="col-sm-5 col-md-6">{{ t("empname") }}</label>
-        <select
-          class="form-control col-sm-9 col-md-6 form-select"
-          v-model="formDataOvertime.employeeID"
-          type="text"
-          required
-          :class="{ error: inputError }"
-        >
-          <option
-            v-for="employ in employeesSalaries"
-            :key="employ.ID"
-            :value="employ.ID"
-          >
+        <select class="form-control col-sm-9 col-md-6 form-select" v-model="formDataOvertime.employeeID" type="text"
+          required :class="{ error: inputError }" @click="resetError()">
+          <option v-for="employ in employeesSalaries" :key="employ.ID" :value="employ.ID">
             {{ employ.Name }}
           </option>
         </select>
       </div>
       <div class="mb-3 div-for-formControl">
         <label class="col-sm-5 col-md-6">{{ t("quotationRemark") }}</label>
-        <textarea
-          class="col-sm-5 col-md-6 label-textarea"
-          v-model="formDataOvertime.detail"
-          type="text"
-          required
-          :class="{ error: inputError }"
-          maxlength="255"
-        />
+        <textarea class="col-sm-5 col-md-6 label-textarea" v-model="formDataOvertime.detail" type="text" required
+          :class="{ error: inputError }" maxlength="255" @click="resetError()" />
       </div>
       <div class="mb-3 div-for-formControl">
         <label class="col-sm-5 col-md-6">{{ t("date") }}</label>
-        <DatePicker
-          v-model:value="formDataOvertime.date"
-          format="DD/MM/YYYY"
-          value-type="date"
-          placeholder="DD/MM/YYYY"
-          class="form-control"
-          :class="{ error: inputError }"
-        />
+        <DatePicker v-model:value="formDataOvertime.date" format="DD/MM/YYYY" value-type="date" placeholder="DD/MM/YYYY"
+          class="form-control" :class="{ error: inputError }" />
       </div>
       <div class="mb-3 div-for-formControl">
         <label class="col-sm-5 col-md-6">จำนวนชั่วโมง: </label>
-        <input
-          class="form-control col-sm-9 col-md-6"
-          v-model="formDataOvertime.hours"
-          type="text"
-          required
-          :class="{ error: inputError }"
-        />
+        <input class="form-control col-sm-9 col-md-6" v-model="formDataOvertime.hours" type="text" required
+          :class="{ error: inputError }" @click="resetError()" />
       </div>
 
       <div class="mb-3 modal-footer">
-        <button
-          :disabled="isLoading"
-          class="btn btn-primary me-3"
-          @click="AddOvertime"
-        >
-          <span
-            v-if="isLoading"
-            class="spinner-border spinner-border-sm"
-            role="status"
-            aria-hidden="true"
-          ></span>
+        <button :disabled="isLoading" class="btn btn-primary me-3" @click="AddOvertime">
+          <span v-if="isLoading" class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
           <span v-else>{{ t("buttonSave") }}</span>
         </button>
         <button class="btn btn-secondary" @click="closePopupOvertime">
@@ -706,10 +532,7 @@
       </div>
     </Popup>
     <div class="delete-popup">
-      <Popup
-        :isOpen="isDeleteConfirmPopupOpen"
-        :closePopup="closeDeleteConfirmPopup"
-      >
+      <Popup :isOpen="isDeleteConfirmPopupOpen" :closePopup="closeDeleteConfirmPopup">
         <div class="mb-5">
           <a>{{ t("deleteConfirmSentence") }}</a>
         </div>
@@ -724,10 +547,7 @@
       </Popup>
     </div>
     <div class="delete-popup">
-      <Popup
-        :isOpen="isDeleteLeaveConfirmPopupOpen"
-        :closePopup="closeDeleteLeaveConfirmPopup"
-      >
+      <Popup :isOpen="isDeleteLeaveConfirmPopupOpen" :closePopup="closeDeleteLeaveConfirmPopup">
         <div class="mb-5">
           <a>{{ t("deleteConfirmSentence") }}</a>
         </div>
@@ -735,10 +555,7 @@
           <button class="btn btn-danger me-2" @click="deleteLeave">
             {{ t("buttonDelete") }}
           </button>
-          <button
-            class="btn btn-secondary"
-            @click="closeDeleteLeaveConfirmPopup"
-          >
+          <button class="btn btn-secondary" @click="closeDeleteLeaveConfirmPopup">
             {{ t("buttonCancel") }}
           </button>
         </div>
@@ -759,13 +576,8 @@
     </div> -->
     <div v-if="isPopupVisible_error" class="popup-error2">
       <div class="text-end">
-        <button
-          type="button"
-          class="btn-close"
-          aria-label="Close"
-          @click="closeErrorPopup"
-          style="color: #9f9999"
-        ></button>
+        <button type="button" class="btn-close" aria-label="Close" @click="closeErrorPopup"
+          style="color: #9f9999"></button>
       </div>
       <div class="popup-content-error2">
         <ul>
@@ -785,13 +597,8 @@
     </div> -->
     <div v-if="isPopupVisible_error2" class="popup-error2">
       <div class="text-end">
-        <button
-          type="button"
-          class="btn-close"
-          aria-label="Close"
-          @click="closeErrorPopup2"
-          style="color: #9f9999"
-        ></button>
+        <button type="button" class="btn-close" aria-label="Close" @click="closeErrorPopup2"
+          style="color: #9f9999"></button>
       </div>
       <div class="popup-content-error2">
         <ul>
@@ -912,6 +719,8 @@ export default {
   },
   data() {
     return {
+      expandedItems: [],
+      allExpanded: false,
       dropDownStatus: "active",
       errorMessages: [],
       errorMessages2: [],
@@ -1098,13 +907,13 @@ export default {
           ...emp,
           Birthdate: emp.Birthdate
             ? String(emp.Birthdate)
-                .replace(
-                  /\b(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)\b/g,
-                  (match) => monthMapping[match]
-                )
-                .replace(/(\d{4})/, (match) =>
-                  (parseInt(match) + 543).toString()
-                )
+              .replace(
+                /\b(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)\b/g,
+                (match) => monthMapping[match]
+              )
+              .replace(/(\d{4})/, (match) =>
+                (parseInt(match) + 543).toString()
+              )
             : "", // ✅ ถ้า null หรือ undefined ให้เป็นค่าว่าง
           ["Start Working Date"]: String(emp["Start Working Date"])
             .replace(
@@ -1236,6 +1045,27 @@ export default {
     },
   },
   methods: {
+    toggleCollapse(id) {
+      if (this.expandedItems.includes(id)) {
+        this.expandedItems = this.expandedItems.filter((itemId) => itemId !== id);
+      } else {
+        this.expandedItems.push(id);
+      }
+    },
+    isExpanded(id) {
+      if (this.allExpanded) {
+        return true;
+      }
+      return this.expandedItems.includes(id);
+    },
+    toggleAll() {
+      this.allExpanded = !this.allExpanded;
+      if (this.allExpanded) {
+        this.expandedItems = this.filteredEmp.map((item) => item.ID);
+      } else {
+        this.expandedItems = [];
+      }
+    },
     formatDatePicker(date) {
       if (!date) return "";
       const d = new Date(date);
@@ -1249,6 +1079,14 @@ export default {
       this.isPopupVisible_error = false;
     },
     closeErrorPopup2() {
+      this.isPopupVisible_error2 = false;
+    },
+    resetError(field) {
+      if (field && this.isEmpty[field] !== undefined) {
+        this.isEmpty[field] = false;
+      }
+      this.inputError = false;
+      this.isPopupVisible_error = false;
       this.isPopupVisible_error2 = false;
     },
     generateYears(start, end) {
@@ -1298,15 +1136,15 @@ export default {
       this.formData.Birthdate =
         this.t("lang") === "en"
           ? new Date(
-              new Date(currentDate).setFullYear(currentDate.getFullYear())
-            )
+            new Date(currentDate).setFullYear(currentDate.getFullYear())
+          )
           : currentDate;
 
       this.formData.start_working_date =
         this.t("lang") === "en"
           ? new Date(
-              new Date(currentDate).setFullYear(currentDate.getFullYear())
-            )
+            new Date(currentDate).setFullYear(currentDate.getFullYear())
+          )
           : currentDate;
     },
     openPopupLeave() {
@@ -1317,8 +1155,8 @@ export default {
       this.formDataLeave.date =
         this.t("lang") === "en"
           ? new Date(
-              new Date(currentDate).setFullYear(currentDate.getFullYear())
-            )
+            new Date(currentDate).setFullYear(currentDate.getFullYear())
+          )
           : currentDate;
 
       this.formDataLeave.dateEnd = (() => {
@@ -1795,17 +1633,17 @@ export default {
             const Birthdate =
               item.Birthdate && item.Birthdate !== ""
                 ? new Date(item.Birthdate).toLocaleDateString(
-                    "en-GB",
-                    formatDate
-                  )
+                  "en-GB",
+                  formatDate
+                )
                 : "";
 
             const startWorking =
               item.start_working_date && item.start_working_date !== ""
                 ? new Date(item.start_working_date).toLocaleDateString(
-                    "en-GB",
-                    formatDate
-                  )
+                  "en-GB",
+                  formatDate
+                )
                 : "";
 
             function formatSalary(salary) {

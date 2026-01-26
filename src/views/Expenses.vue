@@ -129,11 +129,11 @@
           <!-- <input
             v-model="searchQuery"
             type="text"
-            class="form-control me-3 size-font-sm"
+            class="form-control me-3 size-font-md"
             :placeholder="$t('Search')"
           /> -->
           <select
-            class="form-control form-select size-font-sm"
+            class="form-control form-select size-font-md"
             v-model="searchQuery"
             aria-label="Expense Category select"
           >
@@ -152,12 +152,12 @@
         <!-- <div class="col-1 col-sm-1 col-md-7 col-lg-7"></div> -->
         <div class="col-6 col-sm-6 col-md-9 col-lg-9 text-end">
           <a
-            class="btn btn-success me-3 size-font-sm me-2"
+            class="btn btn-success me-3 size-font-md me-2"
             @click="openPopup"
             >{{ t("addExpenses") }}</a
           >
           <a
-            class="btn btn-outline-secondary mdi mdi-export-variant size-font-sm"
+            class="btn btn-outline-secondary mdi mdi-export-variant size-font-md"
             @click="exportExpense"
           ></a>
         </div>
@@ -228,10 +228,11 @@
           ><span style="color: red">*</span>{{ t("cateHeaderTable") }}</label
         >
         <select
-          class="form-control form-select size-font-sm"
+          class="form-control form-select size-font-md"
           v-model="formData.cateExpense"
           aria-label="Expense Category select"
           :class="{ error: isEmpty.cateExpense }"
+          @click="resetError('cateExpense')"
         >
           <option value="" selected hidden>
             {{ t("expense.selectCategory") }}
@@ -258,6 +259,7 @@
           @input="updatePrice"
           @keypress="onlyNumber"
           :class="{ error: isEmpty.priceExpense }"
+          @click="resetError('priceExpense')"
         />
       </div>
       <div class="mb-3">
@@ -271,6 +273,7 @@
           @input="onInput"
           maxlength="220"
           :class="{ error: isEmpty.remarkExpense }"
+          @click="resetError('remarkExpense')"
         ></textarea>
       </div>
       <div class="mb-3 div-for-formControl">
@@ -1077,6 +1080,15 @@ export default {
       setTimeout(() => {
         this.isPopupVisible = false; // Auto-hide after 2 seconds
       }, 2000);
+    },
+    closeErrorPopup() {
+      this.isPopupVisible_error = false;
+    },
+    resetError(field) {
+      if (field && this.isEmpty[field] !== undefined) {
+        this.isEmpty[field] = false;
+      }
+      this.isPopupVisible_error = false;
     },
     // Displays an error popup message
     showPopup_error(message) {

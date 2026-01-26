@@ -7,36 +7,72 @@
         <h2>{{ t("headerStockManage") }}</h2>
       </div>
       <div class="add-btn mb-3">
-        <a class="btn btn-success size-font-sm" @click="openPopup">{{
+        <a class="btn btn-success size-font-md" @click="openPopup">{{
           t("manageStock")
         }}</a>
       </div>
-      <div v-if="role === 'SUPERUSER'">
-        <productList
-          :tableHeaders="tableHeaders"
-          :initialTableData="transactionTable"
-          @handleManage="handleManage"
-          :columnforManage="true"
-          v-if="transactionTable"
-          :isLoading="isLoading"
-          :documentName="documentName"
-        />
+      <div class="card-view-customs">
+        <!-- Expand/Collapse All -->
+        <div class="container">
+          <div class="text-start">
+            {{ allExpanded ? t("CollapseItemsAll") : t("expandedItemsAll") }}
+            <span :class="allExpanded ? 'mdi mdi-chevron-up' : 'mdi mdi-chevron-down'" @click="toggleAll">
+            </span>
+          </div>
+        </div>
+        <div class="row">
+          <div v-for="item in transactionTable" :key="item.ID" class="col-12 mb-3">
+            <div class="card d-flex flex-column" style="font-size: 16px">
+              <div class="card-header d-flex justify-content-between align-items-center"
+                style="background-color: transparent; border-bottom: none">
+                <div class="fw-bold">{{ item.product }}</div>
+                <div class="d-flex gap-3">
+                  <span class="mdi mdi-pencil-outline" @click="handleManage(item)"
+                    style="cursor: pointer; font-size: 20px"></span>
+                </div>
+              </div>
+              <div class="card-body pt-0" style="line-height: 1.8">
+                <div class="d-flex justify-content-between">
+                  <span>{{ t("datepaysalaryHeaderTable") }}</span>
+                  <span class="text-end">{{ item.Date }}</span>
+                </div>
+                <div class="d-flex justify-content-between">
+                  <span>{{ t("transHeaderTable") }}</span>
+                  <span class="text-end"
+                    :class="{ 'text-success': item.Transaction === 'Receive' || item.Transaction === 'เพิ่มสินค้า' || item.Transaction === 'Receive (เพิ่มสินค้า)', 'text-danger': item.Transaction === 'Issue' || item.Transaction === 'ลดสินค้า' || item.Transaction === 'Issue (ลดสินค้า)' }">{{
+                    item.Transaction }}</span>
+                </div>
+                <div class="d-flex justify-content-between">
+                  <span>{{ t("quanHeaderTable") }}</span>
+                  <span class="text-end">{{ item.Quantity }}</span>
+                </div>
+
+                <div v-show="isExpanded(item.ID)">
+                  <div class="d-flex justify-content-between">
+                    <span>{{ t("productDetailHeaderTable") }}</span>
+                    <span class="text-end text-break">{{ item.Detail }}</span>
+                  </div>
+                </div>
+              </div>
+              <div class="card-footer text-center bg-transparent border-0 pt-0" @click="toggleCollapse(item.ID)">
+                <span :class="isExpanded(item.ID) ? 'mdi mdi-chevron-up' : 'mdi mdi-chevron-down'"
+                  style="font-size: 24px; cursor: pointer"></span>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
-      <div v-if="role != 'SUPERUSER'">
-        <productList
-          :tableHeaders="tableHeaders"
-          :initialTableData="transactionTable"
-          @handleManage="handleManage"
-          :columnforManage="false"
-          v-if="transactionTable"
-          :isLoading="isLoading"
-          :documentName="documentName"
-        />
+      <div class="show-only-desktop sale_hide">
+        <div v-if="role === 'SUPERUSER'">
+          <productList :tableHeaders="tableHeaders" :initialTableData="transactionTable" @handleManage="handleManage"
+            :columnforManage="true" v-if="transactionTable" :isLoading="isLoading" :documentName="documentName" />
+        </div>
+        <div v-if="role != 'SUPERUSER'">
+          <productList :tableHeaders="tableHeaders" :initialTableData="transactionTable" @handleManage="handleManage"
+            :columnforManage="false" v-if="transactionTable" :isLoading="isLoading" :documentName="documentName" />
+        </div>
       </div>
-      <div
-        v-if="isLoading"
-        class="d-flex justify-content-center align-items-center"
-      >
+      <div v-if="isLoading" class="d-flex justify-content-center align-items-center">
         <div class="spinner-border text-primary" role="status">
           <span class="visually-hidden">Loading...</span>
         </div>
@@ -50,21 +86,12 @@
       </div>
       <div class="div-for-formControl mb-3">
         <div class="col-6 col-sm-6 col-md-6 col-lg-6">
-          <label class="col-sm-6 col-md-6"
-            ><span style="color: red">*</span
-            >{{ t("productNameProduct") }}</label
-          >
+          <label class="col-sm-6 col-md-6"><span style="color: red">*</span>{{ t("productNameProduct") }}</label>
         </div>
         <div class="col-6 col-sm-6 col-md-6 col-lg-6">
-          <v-autocomplete
-            :items="currentTableData"
-            item-title="productname"
-            item-value="productID"
-            variant="outlined"
-            v-model="formData.productID"
-            :class="{ error: isEmpty.productID }"
-            :change="selectProdcut(formData.productID)"
-          >
+          <v-autocomplete :items="currentTableData" item-title="productname" item-value="productID" variant="outlined"
+            v-model="formData.productID" :class="{ error: isEmpty.productID }"
+            :change="selectProdcut(formData.productID)" @click="resetError('productID')">
           </v-autocomplete>
         </div>
       </div>
@@ -90,86 +117,40 @@
                 </select> -->
       <!-- </div> -->
       <div class="mb-3 div-for-formControl">
-        <label
-          ><span style="color: red">*</span>{{ t("manageStockType") }}</label
-        >
-        <select
-          class="form-control form-select"
-          v-model="formData.transactionType"
-          :class="{ error: isEmpty.transactionType }"
-        >
+        <label><span style="color: red">*</span>{{ t("manageStockType") }}</label>
+        <select class="form-control form-select" v-model="formData.transactionType"
+          :class="{ error: isEmpty.transactionType }" @click="resetError('transactionType')">
           <option value="Receive">{{ t("receive") }}</option>
           <option value="Issue">{{ t("issue") }}</option>
         </select>
       </div>
       <div class="mb-3 div-for-formControl">
         <label>{{ t("current_product_amount") }}</label>
-        <input
-          class="form-control"
-          v-model="formData.current_product_amount"
-          type="number"
-          readonly="true"
-          disabled="true"
-        />
+        <input class="form-control" v-model="formData.current_product_amount" type="number" readonly="true"
+          disabled="true" />
       </div>
       <div class="mb-3 div-for-formControl">
-        <label
-          ><span style="color: red">*</span>{{ t("quantityProduct") }}</label
-        >
-        <input
-          class="form-control"
-          v-model="formData.quantity"
-          type="number"
-          min="1"
-          @input="checkQuantity"
-          :class="{ error: isEmpty.quantity }"
-        />
+        <label><span style="color: red">*</span>{{ t("quantityProduct") }}</label>
+        <input class="form-control" v-model="formData.quantity" type="number" min="1" @input="checkQuantity"
+          :class="{ error: isEmpty.quantity }" :placeholder="t('enterQuantity')" @click="resetError('quantity')" />
       </div>
       <div class="mb-3 div-for-formControl">
         <label>{{ t("update_product_amount") }}</label>
-        <input
-          class="form-control"
-          v-model="formData.update_product_amount"
-          type="number"
-          readonly="true"
-          disabled="true"
-        />
+        <input class="form-control" v-model="formData.update_product_amount" type="number" readonly="true"
+          disabled="true" />
       </div>
       <div class="mb-3 div-for-formControl">
         <label>{{ t("productDetail") }}</label>
-        <input
-          class="form-control"
-          v-model="formData.transactionDetail"
-          :class="{ error: inputError }"
-        />
+        <input class="form-control" v-model="formData.transactionDetail" :class="{ error: inputError }"
+          :placeholder="t('enterTransactionDetail')" @click="resetError()" />
       </div>
       <div class="modal-footer">
-        <button
-          v-if="isAddingMode"
-          :disabled="isLoading"
-          class="btn btn-primary me-3"
-          @click="producTransaction"
-        >
-          <span
-            v-if="isLoading"
-            class="spinner-border spinner-border-sm"
-            role="status"
-            aria-hidden="true"
-          ></span>
+        <button v-if="isAddingMode" :disabled="isLoading" class="btn btn-primary me-3" @click="producTransaction">
+          <span v-if="isLoading" class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
           <span v-else>{{ t("buttonAdd") }}</span>
         </button>
-        <button
-          v-if="isEditingMode"
-          :disabled="isLoading"
-          class="btn btn-primary me-3"
-          @click="editTransaction"
-        >
-          <span
-            v-if="isLoading"
-            class="spinner-border spinner-border-sm"
-            role="status"
-            aria-hidden="true"
-          ></span>
+        <button v-if="isEditingMode" :disabled="isLoading" class="btn btn-primary me-3" @click="editTransaction">
+          <span v-if="isLoading" class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
           <span v-else>{{ t("buttonSave") }}</span>
         </button>
         <button class="btn btn-secondary" @click="closePopup">
@@ -192,13 +173,8 @@
     </div> -->
     <div v-if="isPopupVisible_error" class="popup-error2">
       <div class="text-end">
-        <button
-          type="button"
-          class="btn-close"
-          aria-label="Close"
-          @click="closeErrorPopup"
-          style="color: #9f9999"
-        ></button>
+        <button type="button" class="btn-close" aria-label="Close" @click="closeErrorPopup"
+          style="color: #9f9999"></button>
       </div>
       <div class="popup-content-error2">
         <ul>
@@ -265,6 +241,8 @@ export default {
         quantity: "", // Quantity of product for transaction
         transactionDetail: "", // Additional details for transaction
       },
+      expandedItems: [],
+      allExpanded: false,
     };
   },
   computed: {
@@ -288,8 +266,8 @@ export default {
             prod.Transaction === "Receive"
               ? this.t("ReceiveLG")
               : prod.Transaction === "Issue"
-              ? this.t("IssueLG")
-              : prod.Transaction,
+                ? this.t("IssueLG")
+                : prod.Transaction,
           Date: this.formatThaiDate(prod.Date), // แปลงวันที่เป็นไทย
         }));
       } else {
@@ -302,6 +280,27 @@ export default {
     },
   },
   methods: {
+    toggleCollapse(id) {
+      if (this.expandedItems.includes(id)) {
+        this.expandedItems = this.expandedItems.filter((itemId) => itemId !== id);
+      } else {
+        this.expandedItems.push(id);
+      }
+    },
+    isExpanded(id) {
+      if (this.allExpanded) {
+        return true;
+      }
+      return this.expandedItems.includes(id);
+    },
+    toggleAll() {
+      this.allExpanded = !this.allExpanded;
+      if (this.allExpanded) {
+        this.expandedItems = this.transactionTable.map((item) => item.ID);
+      } else {
+        this.expandedItems = [];
+      }
+    },
     async selectProdcut(id) {
       // สมมุติว่า Product เป็น array และคุณต้องการหา product ที่มี id ตรงกับที่ส่งมา
       const selectedProduct = this.Product.find((p) => p.productID === id);
@@ -330,6 +329,13 @@ export default {
       this.Product = json.data;
     },
     closeErrorPopup() {
+      this.isPopupVisible_error = false;
+    },
+    resetError(field) {
+      if (field && this.isEmpty[field] !== undefined) {
+        this.isEmpty[field] = false;
+      }
+      this.inputError = false;
       this.isPopupVisible_error = false;
     },
     formatThaiDate(dateStr) {

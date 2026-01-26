@@ -18,37 +18,38 @@
       </div> -->
       <div class="row mb-3">
         <div class="col-6 col-sm-6 col-md-3 col-lg-3">
-          <input
-            v-model="searchQuery"
-            type="text"
-            class="form-control me-3 size-font-sm"
-            :placeholder="$t('Search')"
-          />
+          <input v-model="searchQuery" type="text" class="form-control me-3 size-font-md" :placeholder="$t('Search')" />
         </div>
         <div class="col-6 col-sm-6 col-md-9 col-lg-9">
-          <a
-            class="btn btn-success size-font-sm float-right"
-            @click="openPopup"
-            >{{ t("addCategory") }}</a
-          >
+          <a class="btn btn-success size-font-md float-right" @click="openPopup">{{ t("addCategory") }}</a>
         </div>
       </div>
       <div>
-        <CategoryList
-          :initialTableData="filteredCategories"
-          :tableHeaders="tableHeaders"
-          :columnEditAndDelete="true"
-          @handleEdit="handleEdit"
-          @handleDelete="handleDelete"
-          v-if="Categories && Categories.length > 0"
-          :isLoading="isLoading"
-          :showAllowButton="true"
-        />
+        <div class="card-view-customs">
+          <div class="row">
+            <div v-for="item in filteredCategories" :key="item.ID" class="col-12 mb-3">
+              <div class="card d-flex flex-column" style="font-size: 16px">
+                <div class="card-header d-flex justify-content-between align-items-center"
+                  style="background-color: transparent; border-bottom: none">
+                  <div class="fw-bold">{{ item["Category Name"] }}</div>
+                  <div class="d-flex gap-3">
+                    <span class="mdi mdi-pencil-outline" @click="handleEdit(item)"
+                      style="cursor: pointer; font-size: 20px"></span>
+                    <span class="mdi mdi-trash-can-outline text-danger" @click="handleDelete(item)"
+                      style="cursor: pointer; font-size: 20px"></span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="show-only-desktop sale_hide">
+          <CategoryList :initialTableData="filteredCategories" :tableHeaders="tableHeaders" :columnEditAndDelete="true"
+            @handleEdit="handleEdit" @handleDelete="handleDelete" v-if="Categories && Categories.length > 0"
+            :isLoading="isLoading" :showAllowButton="true" />
+        </div>
       </div>
-      <div
-        v-if="isLoading"
-        class="d-flex justify-content-center align-items-center"
-      >
+      <div v-if="isLoading" class="d-flex justify-content-center align-items-center">
         <div class="spinner-border text-primary" role="status">
           <span class="visually-hidden">Loading...</span>
         </div>
@@ -61,52 +62,21 @@
       <h2 v-if="isEditMode">{{ t("headerPopupEditCategory") }}</h2>
       <div class="add-btn mb-3">
         <div>{{ this.category_file.name }}</div>
-        <input
-          type="file"
-          id="fileInput"
-          @change="handleFileUpload"
-          class="hidden"
-        />
+        <input type="file" id="fileInput" @change="handleFileUpload" class="hidden" />
       </div>
       <div class="mb-3">
         <label class="col-sm-5 col-md-6 mb-3"><span style="color: red">*</span>{{ t("categoryName") }}</label>
-        <input
-          class="form-control"
-          v-model="formData.categoryName"
-          type="text"
-          id="input-text"
-          required
-          maxlength="30"
-          :class="{ error: isEmpty.categoryName }"
-        />
+        <input class="form-control" v-model="formData.categoryName" type="text" id="input-text" required maxlength="30"
+          :class="{ error: isEmpty.categoryName }" :placeholder="t('enterCategoryName')"
+          @click="resetError('categoryName')" />
       </div>
       <div class="modal-footer">
-        <button
-          :disabled="isLoading"
-          class="btn btn-primary me-3"
-          v-if="isAddingMode"
-          @click="addCategory"
-        >
-          <span
-            v-if="isLoading"
-            class="spinner-border spinner-border-sm"
-            role="status"
-            aria-hidden="true"
-          ></span>
+        <button :disabled="isLoading" class="btn btn-primary me-3" v-if="isAddingMode" @click="addCategory">
+          <span v-if="isLoading" class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
           <span v-else>{{ t("buttonAdd") }}</span>
         </button>
-        <button
-          :disabled="isLoading"
-          class="btn btn-primary me-3"
-          v-if="isEditMode"
-          @click="editCategory"
-        >
-          <span
-            v-if="isLoading"
-            class="spinner-border spinner-border-sm"
-            role="status"
-            aria-hidden="true"
-          ></span>
+        <button :disabled="isLoading" class="btn btn-primary me-3" v-if="isEditMode" @click="editCategory">
+          <span v-if="isLoading" class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
           <span v-else>{{ t("buttonSave") }}</span>
         </button>
         <button class="btn btn-secondary" @click="closePopup">
@@ -115,25 +85,13 @@
       </div>
     </Popup>
     <div class="delete-popup">
-      <Popup
-        :isOpen="isDeleteConfirmPopupOpen"
-        :closePopup="closeDeleteConfirmPopup"
-      >
+      <Popup :isOpen="isDeleteConfirmPopupOpen" :closePopup="closeDeleteConfirmPopup">
         <div class="mb-5">
           <a>{{ t("deleteConfirmSentence") }}</a>
         </div>
         <div class="modal-footer">
-          <button
-            :disabled="isLoading"
-            class="btn btn-danger me-3"
-            @click="deleteCategory"
-          >
-            <span
-              v-if="isLoading"
-              class="spinner-border spinner-border-sm"
-              role="status"
-              aria-hidden="true"
-            ></span>
+          <button :disabled="isLoading" class="btn btn-danger me-3" @click="deleteCategory">
+            <span v-if="isLoading" class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
             <span v-else>{{ t("buttonDelete") }}</span>
           </button>
           <button class="btn btn-secondary" @click="closeDeleteConfirmPopup">
@@ -157,13 +115,8 @@
     </div> -->
     <div v-if="isPopupVisible_error" class="popup-error2">
       <div class="text-end">
-        <button
-          type="button"
-          class="btn-close"
-          aria-label="Close"
-          @click="closeErrorPopup"
-          style="color: #9f9999"
-        ></button>
+        <button type="button" class="btn-close" aria-label="Close" @click="closeErrorPopup"
+          style="color: #9f9999"></button>
       </div>
       <div class="popup-content-error2">
         <ul>
@@ -240,6 +193,12 @@ export default {
   },
   methods: {
     closeErrorPopup() {
+      this.isPopupVisible_error = false;
+    },
+    resetError(field) {
+      if (field && this.isEmpty[field] !== undefined) {
+        this.isEmpty[field] = false;
+      }
       this.isPopupVisible_error = false;
     },
     validateFormData() {
@@ -535,9 +494,9 @@ export default {
         } else {
           // alert(json.data);
           if (typeof json.data === 'string' && json.data.includes("violates foreign key constraint")) {
-             errorMessages.push(this.$t("validation.category_in_use"));
+            errorMessages.push(this.$t("validation.category_in_use"));
           } else {
-             errorMessages.push(json.data);
+            errorMessages.push(json.data);
           }
           this.showPopup_validate(errorMessages);
           console.log("Delete category error", json);

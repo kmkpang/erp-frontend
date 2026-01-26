@@ -4,29 +4,68 @@
     <!-- <Navigate /> -->
     <div class="page-body">
       <div class="header-center-page mb-3">
-        <h2>{{ t("headerManageUSer") }}</h2>
+        <h2>{{ t("headerManageUser") }}</h2>
       </div>
       <div class="add-btn mb-3">
-        <a class="btn btn-success size-font-sm" @click="openPopup">{{
+        <a class="btn btn-success size-font-md" @click="openPopup">{{
           t("addUser")
-        }}</a>
+          }}</a>
       </div>
-      <div>
-        <UserList
-          :tableHeaders="tableHeaders"
-          :initialTableData="Users"
-          :columnEditAndDelete="true"
-          @handleEdit="handleEdit"
-          @handleDelete="handleDelete"
-          :isLoading="isLoading"
-          :documentName="documentName"
-          :showAllowButton="true"
-        />
+
+      <div class="card-view-customs">
+        <!-- Expand/Collapse All -->
+        <div class="container">
+          <div class="text-start">
+            {{ allExpanded ? t("CollapseItemsAll") : t("expandedItemsAll") }}
+            <span :class="allExpanded ? 'mdi mdi-chevron-up' : 'mdi mdi-chevron-down'" @click="toggleAll">
+            </span>
+          </div>
+        </div>
+        <div class="row">
+          <div v-for="item in Users" :key="item.ID" class="col-12 mb-3">
+            <div class="card d-flex flex-column" style="font-size: 16px">
+              <div class="card-header d-flex justify-content-between align-items-center"
+                style="background-color: transparent; border-bottom: none">
+                <div class="fw-bold">{{ item["First name"] + ' ' + item["Last name"] }}</div>
+                <div class="d-flex gap-3">
+                  <span class="mdi mdi-pencil-outline" @click="handleEdit(item)"
+                    style="cursor: pointer; font-size: 20px"></span>
+                  <span class="mdi mdi-trash-can-outline text-danger" @click="handleDelete(item)"
+                    style="cursor: pointer; font-size: 20px"></span>
+                </div>
+              </div>
+              <div class="card-body pt-0" style="line-height: 1.8">
+                <div class="d-flex justify-content-between">
+                  <span>{{ t("roleHeaderTable") }}</span>
+                  <span class="text-end">{{ item.Role }}</span>
+                </div>
+                <div class="d-flex justify-content-between">
+                  <span>{{ t("phoneNumberHeaderTable") }}</span>
+                  <span class="text-end">{{ item["Phone number"] }}</span>
+                </div>
+
+                <div v-show="isExpanded(item.ID)">
+                  <div class="d-flex justify-content-between">
+                    <span>{{ t("emailHeaderTable") }}</span>
+                    <span class="text-end text-break">{{ item.Email }}</span>
+                  </div>
+                </div>
+              </div>
+              <div class="card-footer text-center bg-transparent border-0 pt-0" @click="toggleCollapse(item.ID)">
+                <span :class="isExpanded(item.ID) ? 'mdi mdi-chevron-up' : 'mdi mdi-chevron-down'"
+                  style="font-size: 24px; cursor: pointer"></span>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
-      <div
-        v-if="isLoading"
-        class="d-flex justify-content-center align-items-center"
-      >
+      <div class="show-only-desktop sale_hide">
+        <UserList :tableHeaders="tableHeaders" :initialTableData="Users" :columnEditAndDelete="true"
+          @handleEdit="handleEdit" @handleDelete="handleDelete" :isLoading="isLoading" :documentName="documentName"
+          :showAllowButton="true" />
+      </div>
+
+      <div v-if="isLoading" class="d-flex justify-content-center align-items-center">
         <div class="spinner-border text-primary" role="status">
           <span class="visually-hidden">Loading...</span>
         </div>
@@ -64,18 +103,10 @@
           </div> -->
           <!-- Dropdown: แสดงเฉพาะเมื่อเลือก "พนักงานที่มีอยู่" -->
           <div v-if="isExistingUser && isAddingMode" class="mt-3">
-            <select
-              id="employeeSelect"
-              v-model="selectedEmployee"
-              class="form-select"
-              @change="selectUser(selectedEmployee)"
-            >
+            <select id="employeeSelect" v-model="selectedEmployee" class="form-select"
+              @change="selectUser(selectedEmployee)">
               <option disabled value="">-- กรุณาเลือกพนักงาน --</option>
-              <option
-                v-for="emp in Employees"
-                :key="emp.employeeID"
-                :value="emp.employeeID"
-              >
+              <option v-for="emp in Employees" :key="emp.employeeID" :value="emp.employeeID">
                 {{ emp.F_name + " " + emp.L_name }}
               </option>
             </select>
@@ -84,89 +115,48 @@
             <div class="me-3">
               <label><span style="color: red">*</span>{{ t("role") }}</label>
             </div>
-            <select
-              class="form-control col-sm-5 col-md-6 form-select"
-              v-model="formData.RoleID"
-              required
-              :class="{ error: isEmpty.RoleID }"
-            >
-              <option
-                v-for="user in Roles"
-                :key="user.RoleID"
-                :value="user.RoleID"
-              >
+            <select class="form-control col-sm-5 col-md-6 form-select" v-model="formData.RoleID" required
+              :class="{ error: isEmpty.RoleID }" @click="resetError('RoleID')">
+              <option v-for="user in Roles" :key="user.RoleID" :value="user.RoleID">
                 {{ user.RoleName }}
               </option>
             </select>
           </div>
           <div class="mb-3 div-for-formControl">
             <label><span style="color: red">*</span>{{ t("firstname") }}</label>
-            <input
-              v-model="formData.userF_name"
-              type="text"
-              class="form-control"
-              :class="{ error: isEmpty.userF_name }"
-              :disabled="isExistingUser"
-            />
+            <input v-model="formData.userF_name" type="text" class="form-control" :class="{ error: isEmpty.userF_name }"
+              :disabled="isExistingUser" :placeholder="t('enterFirstName')" @click="resetError('userF_name')" />
           </div>
           <div class="mb-3 div-for-formControl">
             <label><span style="color: red">*</span>{{ t("lastname") }}</label>
-            <input
-              v-model="formData.userL_name"
-              type="text"
-              class="form-control"
-              :class="{ error: isEmpty.userL_name }"
-              :disabled="isExistingUser"
-            />
+            <input v-model="formData.userL_name" type="text" class="form-control" :class="{ error: isEmpty.userL_name }"
+              :disabled="isExistingUser" :placeholder="t('enterLastName')" @click="resetError('userL_name')" />
           </div>
           <div class="mb-3 div-for-formControl">
             <label><span style="color: red">*</span>{{ t("phoneNum") }}</label>
-            <input
-              v-model="formData.userPhone"
-              type="text"
-              class="form-control"
-              :class="{ error: isEmpty.userPhone }"
-              :disabled="isExistingUser"
-              @keypress="validateInput"
-              maxlength="10"
-            />
+            <input v-model="formData.userPhone" type="text" class="form-control" :class="{ error: isEmpty.userPhone }"
+              :disabled="isExistingUser" @keypress="validateInput" maxlength="10"
+              :placeholder="t('customerPurchasePlaceholderPhoneNum')" @click="resetError('userPhone')" />
           </div>
           <div class="mb-3 div-for-formControl">
             <label><span style="color: red">*</span>{{ t("email") }}</label>
-            <input
-              v-model="formData.userEmail"
-              type="text"
-              class="form-control"
-              :class="{ error: isEmpty.userEmail }"
-              :disabled="isExistingUser"
-            />
+            <input v-model="formData.userEmail" type="text" class="form-control" :class="{ error: isEmpty.userEmail }"
+              :disabled="isExistingUser" :placeholder="t('enterEmail')" @click="resetError('userEmail')" />
           </div>
           <div class="mb-3 div-for-formControl">
             <label><span style="color: red">*</span>{{ t("password") }}</label>
             <div class="" style="width: 50%;">
               <div class="input-group">
-                <input
-                  :type="statusPassword ? 'text' : 'password'"
-                  class="form-control"
-                  style="padding-right: 40px;"
-                  :class="{ error: isEmpty.userPassword }"
-                  aria-label="Password"
-                  aria-describedby="basic-addon2"
-                  v-model="formData.userPassword"
-                />
-                <button
-                  class="btn btn-outline-secondary"
-                  type="button"
-                  id="button-addon2"
-                  @click="statusPassword = !statusPassword"
-                >
-                  <span
-                    :class="
-                      statusPassword
-                        ? 'mdi mdi-eye-off-outline'
-                        : 'mdi mdi-eye-circle'
-                    "
-                  ></span>
+                <input :type="statusPassword ? 'text' : 'password'" class="form-control" style="padding-right: 40px;"
+                  :class="{ error: isEmpty.userPassword }" aria-label="Password" aria-describedby="basic-addon2"
+                  v-model="formData.userPassword" :placeholder="t('enterPassword')"
+                  @click="resetError('userPassword')" />
+                <button class="btn btn-outline-secondary" type="button" id="button-addon2"
+                  @click="statusPassword = !statusPassword">
+                  <span :class="statusPassword
+                    ? 'mdi mdi-eye-off-outline'
+                    : 'mdi mdi-eye-circle'
+                    "></span>
                 </button>
               </div>
             </div>
@@ -175,32 +165,12 @@
             {{ t("passwordCondition") }}
           </small>
           <div style="display: flex; justify-content: flex-end">
-            <button
-              v-if="isAddingMode"
-              :disabled="isLoading"
-              class="btn btn-primary me-3"
-              @click="addUser"
-            >
-              <span
-                v-if="isLoading"
-                class="spinner-border spinner-border-sm"
-                role="status"
-                aria-hidden="true"
-              ></span>
+            <button v-if="isAddingMode" :disabled="isLoading" class="btn btn-primary me-3" @click="addUser">
+              <span v-if="isLoading" class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
               <span v-else>{{ t("buttonAdd") }}</span>
             </button>
-            <button
-              v-if="isEditMode"
-              :disabled="isLoading"
-              class="btn btn-primary me-3"
-              @click="editUser"
-            >
-              <span
-                v-if="isLoading"
-                class="spinner-border spinner-border-sm"
-                role="status"
-                aria-hidden="true"
-              ></span>
+            <button v-if="isEditMode" :disabled="isLoading" class="btn btn-primary me-3" @click="editUser">
+              <span v-if="isLoading" class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
               <span v-else>{{ t("buttonSave") }}</span>
             </button>
             <button class="btn btn-outline-secondary" @click="closePopup">
@@ -210,25 +180,13 @@
         </Popup>
       </div>
       <div class="delete-popup">
-        <Popup
-          :isOpen="isDeleteConfirmPopupOpen"
-          :closePopup="closeDeleteConfirmPopup"
-        >
+        <Popup :isOpen="isDeleteConfirmPopupOpen" :closePopup="closeDeleteConfirmPopup">
           <div class="mb-5">
             <a>{{ t("deleteConfirmSentence") }}</a>
           </div>
           <div class="modal-footer">
-            <button
-              :disabled="isLoading"
-              class="btn btn-danger me-3"
-              @click="deleteUser"
-            >
-              <span
-                v-if="isLoading"
-                class="spinner-border spinner-border-sm"
-                role="status"
-                aria-hidden="true"
-              ></span>
+            <button :disabled="isLoading" class="btn btn-danger me-3" @click="deleteUser">
+              <span v-if="isLoading" class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
               <span v-else>{{ t("buttonDelete") }}</span>
             </button>
             <button class="btn btn-secondary" @click="closeDeleteConfirmPopup">
@@ -249,13 +207,8 @@
       </div> -->
       <div v-if="isPopupVisible_error" class="popup-error2">
         <div class="text-end">
-          <button
-            type="button"
-            class="btn-close"
-            aria-label="Close"
-            @click="closeErrorPopup"
-            style="color: #9f9999"
-          ></button>
+          <button type="button" class="btn-close" aria-label="Close" @click="closeErrorPopup"
+            style="color: #9f9999"></button>
         </div>
         <div class="popup-content-error2">
           <a>{{ popupMessage_error }}</a>
@@ -334,6 +287,8 @@ export default {
         userPassword: "", // User's password
         RoleID: "", // The selected role ID for the user
       },
+      expandedItems: [],
+      allExpanded: false,
     };
   },
   computed: {
@@ -350,6 +305,27 @@ export default {
     },
   },
   methods: {
+    toggleCollapse(id) {
+      if (this.expandedItems.includes(id)) {
+        this.expandedItems = this.expandedItems.filter((itemId) => itemId !== id);
+      } else {
+        this.expandedItems.push(id);
+      }
+    },
+    isExpanded(id) {
+      if (this.allExpanded) {
+        return true;
+      }
+      return this.expandedItems.includes(id);
+    },
+    toggleAll() {
+      this.allExpanded = !this.allExpanded;
+      if (this.allExpanded) {
+        this.expandedItems = this.Users.map((item) => item.ID);
+      } else {
+        this.expandedItems = [];
+      }
+    },
     validateInput(event) {
       const charCode = event.which ? event.which : event.keyCode;
       // Allow only numbers
@@ -379,17 +355,17 @@ export default {
 
         // this.Employees = json.data;
 
-    
-            // Set raw data
-    const allEmployees = json.data;
 
-    // Get email list of users
-    const userEmails = this.Users.map(user => user.Email);
+        // Set raw data
+        const allEmployees = json.data;
 
-    // Filter employees: remove ones whose email is in userEmails
-    this.Employees = allEmployees.filter(
-      employee => !userEmails.includes(employee.Email)
-    );
+        // Get email list of users
+        const userEmails = this.Users.map(user => user.Email);
+
+        // Filter employees: remove ones whose email is in userEmails
+        this.Employees = allEmployees.filter(
+          employee => !userEmails.includes(employee.Email)
+        );
 
 
       } catch (error) {
@@ -412,6 +388,12 @@ export default {
       }
     },
     closeErrorPopup() {
+      this.isPopupVisible_error = false;
+    },
+    resetError(field) {
+      if (field && this.isEmpty[field] !== undefined) {
+        this.isEmpty[field] = false;
+      }
       this.isPopupVisible_error = false;
     },
     // Clears all input fields in the form

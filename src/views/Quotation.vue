@@ -25,13 +25,13 @@
           <input
             v-model="searchQuery"
             type="text"
-            class="form-control me-3 size-font-sm"
+            class="form-control me-3 size-font-md"
             :placeholder="$t('Search')"
           />
         </div>
         <div class="col-6 col-sm-6 col-md-6 col-lg-9">
           <a
-            class="btn btn-success float-right size-font-sm"
+            class="btn btn-success float-right size-font-md"
             @click="openPopup"
             >{{ t("addQuotation") }}</a
           >
@@ -59,245 +59,94 @@
             v-for="quotation in filteredQuo"
             :key="quotation.sale_id"
           >
-            <div class="card d-flex flex-column" style="font-size: 12px">
-              <div class="card-header d-flex">
-                <div class="col-6">{{ quotation.sale_number }}</div>
-                <div
-                  class="col-3 text-end"
-                  :class="{
-                    'text-success': ['อนุมัติ', 'Allowed'].includes(
-                      quotation.status
-                    ),
-                    'text-danger': quotation.status === 'ยกเลิก',
-                  }"
-                >
-                  {{ quotation.status }}
-                </div>
-                <div class="col-1 text-end">
+            <div class="card d-flex flex-column" style="font-size: 16px">
+              <div class="card-header d-flex justify-content-between align-items-center" style="background-color: transparent; border-bottom: none;">
+                <div class="fw-bold">{{ quotation.sale_number }}</div>
+                <div class="d-flex gap-3">
                   <span
-                    v-if="
-                      quotation.status === 'ยังไม่มีใบวางบิล' ||
-                      quotation.status === 'Invoice not Issued'
-                    "
-                    class="mdi mdi-check-circle"
+                    v-if="['รอสร้างใบวางบิล', 'Invoice not Issued'].includes(quotation.sale_status)"
+                    class="mdi mdi-check-circle text-success"
                     @click="handleAllow(quotation)"
+                    style="cursor: pointer; font-size: 20px;"
                   ></span>
-                </div>
-                <div class="col-1 text-end">
-                  <span
-                    class="mdi mdi-pencil-outline"
-                    @click="handleEdit(quotation)"
-                  ></span>
-                </div>
-                <div class="col-1 text-end">
-                  <span
-                    v-if="
-                      quotation.status === 'ยังไม่มีใบวางบิล' ||
-                      quotation.status === 'Invoice not Issued'
-                    "
-                    class="mdi mdi-trash-can-outline"
-                    style="color: red"
+                  
+                  <span class="mdi mdi-pencil-outline" @click="handleEdit(quotation)" style="cursor: pointer; font-size: 20px;"></span>
+                  
+                   <span
+                    v-if="['รอสร้างใบวางบิล', 'Invoice not Issued'].includes(quotation.sale_status)"
+                    class="mdi mdi-trash-can-outline text-danger"
                     @click="handleDelete(quotation)"
+                    style="cursor: pointer; font-size: 20px;"
                   ></span>
                 </div>
               </div>
-              <div class="card-body" style="line-height: 1.75">
-                <div class="container">
-                  <div class="row">
-                    <div class="col-6">
-                      <p class="card-text">{{ t("cusNameHeaderTable") }}</p>
-                    </div>
-                    <div class="col-6 text-end">
-                      <p class="card-text">{{ quotation.cus_name }}</p>
-                    </div>
-                    <div class="col-6">
-                      <p class="card-text">
-                        {{ t("employeeNameHeaderTable") }}
-                      </p>
-                    </div>
-                    <div class="col-6 text-end">
-                      <p class="card-text">{{ quotation.employeeName }}</p>
-                    </div>
-                    <div class="col-6">
-                      <p class="card-text">
-                        {{ t("saleTotalpriceHeaderTable") }}
-                      </p>
-                    </div>
-                    <div class="col-6 text-end">
-                      <p class="card-text">{{ quotation.sale_totalprice }}</p>
-                    </div>
 
-                    <div class="col-6" v-if="isExpanded(quotation.sale_id)">
-                      <p class="card-text">{{ t("netpriceHeaderTable") }}</p>
-                    </div>
-                    <div
-                      class="col-6 text-end"
-                      v-if="isExpanded(quotation.sale_id)"
-                    >
-                      <p class="card-text">{{ quotation.net_price }}</p>
-                    </div>
-                    <div class="col-6" v-if="isExpanded(quotation.sale_id)">
-                      <p class="card-text">
-                        {{ t("cusAddressHeaderTable") }}
-                      </p>
-                    </div>
-                    <div
-                      class="col-6 text-end"
-                      v-if="isExpanded(quotation.sale_id)"
-                    >
-                      <p class="card-text">{{ quotation.cus_address }}</p>
-                    </div>
-                    <div class="col-6" v-if="isExpanded(quotation.sale_id)">
-                      <p class="card-text">
-                        {{ t("cusTelHeaderTable") }}
-                      </p>
-                    </div>
-                    <div
-                      class="col-6 text-end"
-                      v-if="isExpanded(quotation.sale_id)"
-                    >
-                      <p class="card-text">{{ quotation.cus_tel }}</p>
-                    </div>
-                    <div class="col-5" v-if="isExpanded(quotation.sale_id)">
-                      <p class="card-text">
-                        {{ t("cusEmailHeaderTable") }}
-                      </p>
-                    </div>
-                    <div
-                      class="col-7 text-end"
-                      v-if="isExpanded(quotation.sale_id)"
-                    >
-                      <p class="card-text">{{ quotation.cus_email }}</p>
-                    </div>
-                    <div class="col-6" v-if="isExpanded(quotation.sale_id)">
-                      <p class="card-text">
-                        {{ t("cusTaxHeaderTable") }}
-                      </p>
-                    </div>
-                    <div
-                      class="col-6 text-end"
-                      v-if="isExpanded(quotation.sale_id)"
-                    >
-                      <p class="card-text">{{ quotation.cus_tax }}</p>
-                    </div>
-                    <div class="col-6" v-if="isExpanded(quotation.sale_id)">
-                      <p class="card-text">
-                        {{ t("cusPurchaseHeaderTable") }}
-                      </p>
-                    </div>
-                    <div
-                      class="col-6 text-end"
-                      v-if="isExpanded(quotation.sale_id)"
-                    >
-                      <p class="card-text">{{ quotation.cus_purchase }}</p>
-                    </div>
-                    <div class="col-6" v-if="isExpanded(quotation.sale_id)">
-                      <p class="card-text">
-                        {{ t("saleDateHeaderTable") }}
-                      </p>
-                    </div>
-                    <div
-                      class="col-6 text-end"
-                      v-if="isExpanded(quotation.sale_id)"
-                    >
-                      <p class="card-text">{{ quotation.sale_date }}</p>
-                    </div>
-                    <div class="col-6" v-if="isExpanded(quotation.sale_id)">
-                      <p class="card-text">
-                        {{ t("creditdateHeaderTable") }}
-                      </p>
-                    </div>
-                    <div
-                      class="col-6 text-end"
-                      v-if="isExpanded(quotation.sale_id)"
-                    >
-                      <p class="card-text">
-                        {{ quotation.credit_date_number }}
-                      </p>
-                    </div>
-                    <div class="col-6" v-if="isExpanded(quotation.sale_id)">
-                      <p class="card-text">
-                        {{ t("expiredHeaderTable") }}
-                      </p>
-                    </div>
-                    <div
-                      class="col-6 text-end"
-                      v-if="isExpanded(quotation.sale_id)"
-                    >
-                      <p class="card-text">
-                        {{ quotation.credit_expired_date }}
-                      </p>
-                    </div>
-                    <div class="col-6" v-if="isExpanded(quotation.sale_id)">
-                      <p class="card-text">
-                        {{ t("invoiceStatusHeaderTable") }}
-                      </p>
-                    </div>
-                    <div
-                      class="col-6 text-end"
-                      v-if="isExpanded(quotation.sale_id)"
-                    >
-                      <p class="card-text">{{ quotation.invoice }}</p>
-                    </div>
-                    <div class="col-6" v-if="isExpanded(quotation.sale_id)">
-                      <p class="card-text"></p>
-                    </div>
-                    <!-- <div
-                      class="col-6 text-end"
-                      v-if="isExpanded(quotation.sale_id)"
-                    >
-                      <div class="icon-table d-flex justify-content-end">
-                        <div class="icon-table">
-                          <div
-                            class="icon-preview me-4"
-                            @click="handlePreview(quotation)"
-                          ></div>
-                          <div
-                            class="icon-download"
-                            @click="handleDownload(quotation)"
-                          ></div>
-                        </div>
-                      </div>
-                    </div> -->
+              <div class="card-body pt-0" style="line-height: 1.8;">
+                <div class="d-flex justify-content-between">
+                  <span>{{ t("cusNameHeaderTable") }}</span>
+                  <span class="text-end text-break">{{ quotation.cus_name }}</span>
+                </div>
+                <div class="d-flex justify-content-between">
+                  <span>{{ t("employeeNameHeaderTable") }}</span>
+                  <span class="text-end">{{ quotation.employeeName }}</span>
+                </div>
+                <div class="d-flex justify-content-between">
+                   <span>{{ t("saleTotalpriceHeaderTable") }}</span>
+                   <span class="text-end">{{ quotation.sale_totalprice }}</span>
+                </div>
+                 <div class="d-flex justify-content-between">
+                   <span>{{ t("netpriceHeaderTable") }}</span>
+                   <span class="text-end">{{ quotation.net_price }}</span>
+                </div>
+
+                <div v-show="isExpanded(quotation.sale_id)">
+                  <div class="d-flex justify-content-between">
+                    <span>{{ t("cusAddressHeaderTable") }}</span>
+                    <div class="text-end text-break" style="max-width: 60%;">{{ quotation.cus_address }}</div>
+                  </div>
+                  <div class="d-flex justify-content-between">
+                    <span>{{ t("cusTelHeaderTable") }}</span>
+                    <span class="text-end">{{ quotation.cus_tel }}</span>
+                  </div>
+                  <div class="d-flex justify-content-between">
+                    <span>{{ t("cusEmailHeaderTable") }}</span>
+                    <span class="text-end text-break">{{ quotation.cus_email }}</span>
+                  </div>
+                  <div class="d-flex justify-content-between">
+                    <span>{{ t("cusTaxHeaderTable") }}</span>
+                    <span class="text-end">{{ quotation.cus_tax }}</span>
+                  </div>
+                  <div class="d-flex justify-content-between">
+                    <span>{{ t("cusPurchaseHeaderTable") }}</span>
+                    <span class="text-end">{{ quotation.cus_purchase }}</span>
+                  </div>
+                  
+                  <div class="d-flex justify-content-between">
+                    <span>{{ t("saleDateHeaderTable") }}</span>
+                    <span class="text-end">{{ quotation.sale_date }}</span>
+                  </div>
+                  <div class="d-flex justify-content-between">
+                    <span>{{ t("creditdateHeaderTable") }}</span>
+                    <span class="text-end">{{ quotation.credit_date_number }}</span>
+                  </div>
+                   <div class="d-flex justify-content-between">
+                    <span>{{ t("expiredHeaderTable") }}</span>
+                    <span class="text-end">{{ quotation.credit_expired_date }}</span>
+                  </div>
+                  <div class="d-flex justify-content-between">
+                    <span>{{ t("invoiceStatusHeaderTable") }}</span>
+                    <span class="text-end">{{ quotation.invoice }}</span>
+                  </div>
+
+                  <div class="d-flex justify-content-end gap-3 mt-2">
+                    <span class="mdi mdi-eye-outline" @click="handlePreview(quotation)" style="cursor: pointer; font-size: 20px;"></span>
+                    <span class="mdi mdi-tray-arrow-down" @click="handleDownload(quotation)" style="cursor: pointer; font-size: 20px;"></span>
                   </div>
                 </div>
               </div>
-              <div
-                class="card-header d-flex"
-                style="background: white; border: none; margin-top: -15px"
-                v-if="isExpanded(quotation.sale_id)"
-              >
-                <div class="col-7"></div>
-                <div class="col-3 text-end"></div>
-                <div class="col-1 text-end">
-                  <span
-                    class="mdi mdi-eye-outline"
-                    @click="handlePreview(quotation)"
-                  ></span>
-                </div>
-                <div class="col-1 text-end">
-                  <span
-                    class="mdi mdi-tray-arrow-down"
-                    @click="handleDownload(quotation)"
-                  ></span>
-                </div>
-              </div>
-
-              <!-- Footer (กดแล้วขยายเฉพาะ Card ที่กด) -->
-              <div
-                class="card-footer text-center"
-                style="padding-bottom: 0.75rem !important"
-              >
-                <span
-                  :class="
-                    isExpanded(quotation.sale_id)
-                      ? 'mdi mdi-chevron-up'
-                      : 'mdi mdi-chevron-down'
-                  "
-                  class="icon-toggle"
-                  @click="toggleCollapse(quotation.sale_id)"
-                >
-                </span>
+              
+              <div class="card-footer text-center bg-transparent border-0 pt-0" @click="toggleCollapse(quotation.sale_id)">
+                 <span :class="isExpanded(quotation.sale_id) ? 'mdi mdi-chevron-up' : 'mdi mdi-chevron-down'" style="font-size: 24px; cursor: pointer;"></span>
               </div>
             </div>
           </div>
@@ -397,6 +246,7 @@
               variant="outlined"
               v-model="formData.employeeID"
               :class="{ error: isEmpty.employeeID }"
+              @click="resetError('employeeID')"
             >
             </v-autocomplete>
           </div>
@@ -456,6 +306,8 @@
                 :class="{ error: isEmpty.cus_name }"
                 autoComplete="off"
                 style="width: 100%; padding-right: 30px; font-size: 14px"
+                :placeholder="t('customerNamePlaceholder')"
+                @click="resetError('cus_name')"
               />
               <span
                 style="
@@ -532,6 +384,7 @@
             :disabled="isDisabled"
             :class="{ error: isEmpty.cus_address }"
             style="color: #212529"
+            @click="resetError('cus_address')"
           />
         </div>
         <div class="mb-3 div-for-formControl">
@@ -547,6 +400,7 @@
             :disabled="isDisabled"
             :class="{ error: isEmpty.cus_tel }"
             style="color: #212529"
+            @click="resetError('cus_tel')"
           />
         </div>
         <div class="mb-3 div-for-formControl">
@@ -560,6 +414,7 @@
             :disabled="isDisabled"
             :class="{ error: isEmpty.cus_email }"
             style="color: #212529"
+            @click="resetError('cus_email')"
           />
         </div>
         <div class="mb-3 div-for-formControl">
@@ -575,6 +430,7 @@
             @keypress="validateInput"
             maxlength="13"
             style="color: #212529"
+            @click="resetError('cus_tax')"
           />
         </div>
         <div class="mb-3 div-for-formControl">
@@ -589,6 +445,7 @@
             :disabled="isDisabled"
             :class="{ error: isEmpty.cus_purchase }"
             style="color: #212529"
+            @click="resetError('cus_purchase')"
           />
         </div>
       </div>
@@ -637,6 +494,7 @@
                           @input="getDetailProduct(form, index)"
                           :class="{ error: inputError }"
                           autoComplete="off"
+                          :placeholder="t('selectProduct')"
                       /></label>
                       <datalist id="browsers2">
                         <option
@@ -799,7 +657,7 @@
                   class="custom-input"
                   :value="formatDatePicker(formData.sale_date)"
                   v-on="inputEvents"
-                  placeholder="เลือกวันที่"
+                  :placeholder="t('selectDate')"
                   style="width: 100%"
                 />
               </template>
@@ -927,7 +785,7 @@
         <div class="mb-3 div-for-formControl">
           <label class="col-sm-5 col-md-6">{{ t("vatPrice") }} </label>
           <input
-            placeholder="vat price 7%"
+            :placeholder="t('vatPricePlaceholder')"
             v-model="formData.vat"
             class="form-control readonly"
             readonly
@@ -973,6 +831,7 @@
                 rows="3"
                 @input="onInput"
                 maxlength="220"
+                :placeholder="t('remarkPlaceholder')"
               ></textarea>
               <!-- <p>
               {{ 105 - (formData.remark ? formData.remark.length : 0) }}
@@ -1718,6 +1577,12 @@ export default {
     closeErrorPopup() {
       this.isPopupVisible_error = false;
       // alert(this.isPopupVisible_error);
+    },
+    resetError(field) {
+      if (field && this.isEmpty[field] !== undefined) {
+        this.isEmpty[field] = false;
+      }
+      this.isPopupVisible_error = false;
     },
     toggleAll() {
       if (this.allExpanded) {

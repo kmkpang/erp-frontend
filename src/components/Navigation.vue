@@ -2,15 +2,9 @@
   <div class="Navigation">
     <!-- Top Navigate -->
     <div>
-      <nav
-        class="navtop navbar navbar-expand-sm fixed-top"
-        style="flex-wrap: nowrap; z-index: 4"
-      >
-        <span
-          class="mdi mdi-menu "
-          style="cursor: pointer; width: 20px; height: 20px; font-size: 20px;"
-          @click="toggleSidebarMenu"
-        ></span>
+      <nav class="navtop navbar navbar-expand-sm fixed-top" style="flex-wrap: nowrap; z-index: 4">
+        <span class="mdi mdi-menu " style="cursor: pointer; width: 20px; height: 20px; font-size: 20px;"
+          @click="toggleSidebarMenu"></span>
 
         <div class="container-fluid logowithname-top">
           <img :src="formDataBusiness.bus_logo" class="logo-on-top" />
@@ -24,9 +18,9 @@
         <div class="me-3">
           <div class="user-profile-button" @click="toggleDropdown" ref="profileBtn">
             <a target="_blank" class="me-2">
-            <div class="user-avatar text-center">
-              {{ firstChar }}
-            </div>
+              <div class="user-avatar text-center">
+                {{ firstChar }}
+              </div>
             </a>
             <a style="white-space: nowrap">
               {{ userName }}
@@ -51,67 +45,33 @@
     </div>
     <!-- Sidebar Navigation -->
     <div>
-      <nav
-        ref="sidebar"
-        :class="{ open: isSidebarVisible }"
-        class="navbar bg-light sidebar"
-      >
-        <div
-          class="container-fluid"
-          style="padding-bottom: 100px; padding-top: 50%;"
-        >
+      <nav ref="sidebar" :class="{ open: isSidebarVisible }" class="navbar bg-light sidebar">
+        <div class="container-fluid" style="padding-bottom: 100px; padding-top: 50%;">
           <ul class="navbar-nav">
             <!-- Search input -->
             <div>
-              <input
-                class="form-control"
-                :placeholder="$t('Search')"
-                v-model="searchNav"
-                @input="filterItems"
-              />
+              <input class="form-control" :placeholder="$t('Search')" v-model="searchNav" @input="filterItems" />
             </div>
             <!-- Navigate Home page -->
-            <li
-              v-if="searchNav === ''"
-              class="nav-item"
-              :class="{ active: activePage === 'home' }"
-              @click="handleSidebarToggleOnMobile"
-            >
-              <router-link
-                @click="handleClicktoHome"
-                class="nav-link"
-                to="/"
-                :disabled="activePage === 'home'"
-                >{{ t("home") }}</router-link
-              >
+            <li v-if="searchNav === ''" class="nav-item" :class="{ active: activePage === 'home' }"
+              @click="handleSidebarToggleOnMobile">
+              <router-link @click="handleClicktoHome" class="nav-link" to="/" :disabled="activePage === 'home'">{{
+                t("home") }}</router-link>
             </li>
 
             <!--filter sidebar (if input text on search input)-->
-            <li
-              v-else
-              v-for="navItem in filteredNavItems"
-              :key="navItem.path"
-              class="nav-item"
-              :class="{ active: activePage === navItem.name.toLowerCase() }"
-            >
-              <router-link
-                class="nav-link"
-                :to="navItem.path"
-                :disabled="activePage === navItem.name.toLowerCase()"
-                v-if="this.$i18n.locale === 'th'"
-              >
+            <li v-else v-for="navItem in filteredNavItems" :key="navItem.path" class="nav-item"
+              :class="{ active: activePage === navItem.name.toLowerCase() }">
+              <router-link class="nav-link" :to="navItem.path" :disabled="activePage === navItem.name.toLowerCase()"
+                v-if="this.$i18n.locale === 'th'">
                 {{
                   isThaiSearch
                     ? navItem.displayNameTh || navItem.displayName
                     : navItem.displayNameTh
                 }}
               </router-link>
-              <router-link
-                class="nav-link"
-                :to="navItem.path"
-                :disabled="activePage === navItem.name.toLowerCase()"
-                v-else
-              >
+              <router-link class="nav-link" :to="navItem.path" :disabled="activePage === navItem.name.toLowerCase()"
+                v-else>
                 {{
                   isThaiSearch
                     ? navItem.displayName || navItem.displayName
@@ -120,16 +80,11 @@
               </router-link>
             </li>
             <!--  sales Navigate -->
-            <li
-              v-if="searchNav === ''"
-              class="nav-item"
-              @click="toggleSubSidebarSale"
-              :class="{
-                active:
-                  activePage === 'billingnote' ||
-                  activePage === 'customer',
-              }"
-            >
+            <li v-if="searchNav === ''" class="nav-item" @click="toggleSubSidebarSale" :class="{
+              active:
+                activePage === 'billingnote' ||
+                activePage === 'customer',
+            }">
               <a class="nav-link sidebar-expanded">
                 {{ t("sale") }}
                 <i class="bi" :class="isOpenSale ? 'bi-dash' : 'bi-plus'"></i>
@@ -137,117 +92,60 @@
             </li>
             <div class="sub-sidebar" v-if="isOpenSale">
               <!-- Billing Note -->
-              <li
-                v-if="searchNav === ''"
-                class="nav-item"
-                :class="{ active: activePage === 'billingnote' }"
-                @click="handleSidebarToggleOnMobile"
-              >
-                <router-link
-                  @click="handleClicktoBillingNote"
-                  class="nav-link"
-                  to="/billingnote"
-                  :disabled="activePage === 'billingnote'"
-                  >{{ t("headerBilling") }}</router-link
-                >
+              <li v-if="searchNav === ''" class="nav-item" :class="{ active: activePage === 'billingnote' }"
+                @click="handleSidebarToggleOnMobile">
+                <router-link @click="handleClicktoBillingNote" class="nav-link" to="/billingnote"
+                  :disabled="activePage === 'billingnote'">{{ t("headerBilling") }}</router-link>
               </li>
               <!-- Customer -->
-              <li
-                v-if="searchNav === ''"
-                class="nav-item"
-                :class="{ active: activePage === 'customer' }"
-                @click="handleSidebarToggleOnMobile"
-              >
-                <router-link
-                  @click="handleClicktoCustomer"
-                  class="nav-link"
-                  to="/customer"
-                  :disabled="activePage === 'customer'"
-                  >{{ t("headerCustomer") }}</router-link
-                >
+              <li v-if="searchNav === ''" class="nav-item" :class="{ active: activePage === 'customer' }"
+                @click="handleSidebarToggleOnMobile">
+                <router-link @click="handleClicktoCustomer" class="nav-link" to="/customer"
+                  :disabled="activePage === 'customer'">{{ t("headerCustomer") }}</router-link>
               </li>
             </div>
             <!-- Product Navigate -->
-            <li
-              v-if="searchNav === ''"
-              class="nav-item"
-              @click="toggleSubSidebarProduct"
-              :class="{
-                active:
-                  activePage === 'product' ||
-                  activePage === 'stockmanage' ||
-                  activePage === 'category',
-              }"
-            >
+            <li v-if="searchNav === ''" class="nav-item" @click="toggleSubSidebarProduct" :class="{
+              active:
+                activePage === 'product' ||
+                activePage === 'stockmanage' ||
+                activePage === 'category',
+            }">
               <a class="nav-link sidebar-expanded">
                 {{ t("headerProduct") }}
-                <i
-                  class="bi"
-                  :class="isOpenProduct ? 'bi-dash' : 'bi-plus'"
-                ></i>
+                <i class="bi" :class="isOpenProduct ? 'bi-dash' : 'bi-plus'"></i>
               </a>
             </li>
             <div class="sub-sidebar" v-if="isOpenProduct">
               <!-- Product -->
-              <li
-                v-if="searchNav === ''"
-                class="nav-item"
-                :class="{ active: activePage === 'product' }"
-                @click="handleSidebarToggleOnMobile"
-              >
-                <router-link
-                  @click="subProduct"
-                  class="nav-link"
-                  to="/product"
-                  :disabled="activePage === 'product'"
-                  >{{ t("headerProduct") }}</router-link
-                >
+              <li v-if="searchNav === ''" class="nav-item" :class="{ active: activePage === 'product' }"
+                @click="handleSidebarToggleOnMobile">
+                <router-link @click="subProduct" class="nav-link" to="/product" :disabled="activePage === 'product'">{{
+                  t("headerProduct") }}</router-link>
               </li>
               <!-- Stock Manage -->
-              <li
-                v-if="searchNav === ''"
-                class="nav-item"
-                :class="{ active: activePage === 'stockmanage' }"
-                @click="handleSidebarToggleOnMobile"
-              >
-                <router-link
-                  @click="subProduct_manageStock"
-                  class="nav-link"
-                  to="/stockmanage"
-                  :disabled="activePage === 'stockmanage'"
-                  >{{ t("headerStockManage") }}</router-link
-                >
+              <li v-if="searchNav === ''" class="nav-item" :class="{ active: activePage === 'stockmanage' }"
+                @click="handleSidebarToggleOnMobile">
+                <router-link @click="subProduct_manageStock" class="nav-link" to="/stockmanage"
+                  :disabled="activePage === 'stockmanage'">{{ t("headerStockManage") }}</router-link>
               </li>
               <!-- Category -->
-              <li
-                v-if="searchNav === ''"
-                class="nav-item"
-                :class="{ active: activePage === 'category' }"
-                @click="handleSidebarToggleOnMobile"
-              >
-                <router-link
-                  class="nav-link"
-                  @click="subProduct_category"
-                  to="/category"
-                  :disabled="activePage === 'category'"
-                  >{{ t("headerCategory") }}</router-link
-                >
+              <li v-if="searchNav === ''" class="nav-item" :class="{ active: activePage === 'category' }"
+                @click="handleSidebarToggleOnMobile">
+                <router-link class="nav-link" @click="subProduct_category" to="/category"
+                  :disabled="activePage === 'category'">{{ t("headerCategory") }}</router-link>
               </li>
             </div>
 
 
             <!-- Administrator Navigate -->
-            <li
-              v-if="searchNav === '' && userRole === 'SUPERUSER'"
-              class="nav-item"
-              @click="toggleSubSidebarAdmin"
+            <li v-if="searchNav === '' && userRole === 'SUPERUSER'" class="nav-item" @click="toggleSubSidebarAdmin"
               :class="{
                 active:
                   activePage === 'rolemanage' ||
                   activePage === 'user' ||
                   activePage === 'about',
-              }"
-            >
+              }">
               <a class="nav-link sidebar-expanded">
                 {{ t("administrator") }}
                 <!-- true:false -->
@@ -256,49 +154,22 @@
             </li>
             <div class="sub-sidebar" v-if="isOpenAdmin">
               <!-- Role -->
-              <li
-                v-if="searchNav === ''"
-                class="nav-item"
-                :class="{ active: activePage === 'rolemanage' }"
-                @click="handleSidebarToggleOnMobile"
-              >
-                <router-link
-                  @click="handleAdministrator"
-                  class="nav-link"
-                  to="/rolemanage"
-                  :disabled="activePage === 'rolemanage'"
-                  >{{ t("headerRole") }}</router-link
-                >
+              <li v-if="searchNav === ''" class="nav-item" :class="{ active: activePage === 'rolemanage' }"
+                @click="handleSidebarToggleOnMobile">
+                <router-link @click="handleAdministrator" class="nav-link" to="/rolemanage"
+                  :disabled="activePage === 'rolemanage'">{{ t("headerRole") }}</router-link>
               </li>
               <!-- Add user -->
-              <li
-                v-if="searchNav === ''"
-                class="nav-item"
-                :class="{ active: activePage === 'user' }"
-                @click="handleSidebarToggleOnMobile"
-              >
-                <router-link
-                  @click="subAdmin_register"
-                  class="nav-link"
-                  to="/user"
-                  :disabled="activePage === 'user'"
-                  >{{ t("headerManageUSer") }}</router-link
-                >
+              <li v-if="searchNav === ''" class="nav-item" :class="{ active: activePage === 'user' }"
+                @click="handleSidebarToggleOnMobile">
+                <router-link @click="subAdmin_register" class="nav-link" to="/user" :disabled="activePage === 'user'">{{
+                  t("headerManageUser") }}</router-link>
               </li>
               <!-- About Business -->
-              <li
-                v-if="searchNav === ''"
-                class="nav-item"
-                :class="{ active: activePage === 'about' }"
-                @click="handleSidebarToggleOnMobile"
-              >
-                <router-link
-                  @click="handleAbout"
-                  class="nav-link"
-                  to="/aboutcompany"
-                  :disabled="activePage === 'about'"
-                  >{{ t("headerAbout") }}</router-link
-                >
+              <li v-if="searchNav === ''" class="nav-item" :class="{ active: activePage === 'about' }"
+                @click="handleSidebarToggleOnMobile">
+                <router-link @click="handleAbout" class="nav-link" to="/aboutcompany"
+                  :disabled="activePage === 'about'">{{ t("headerAbout") }}</router-link>
               </li>
             </div>
           </ul>
@@ -315,14 +186,8 @@
       <div class="mb-3 mt-3 div-for-formProfile">
         <label>{{ t("firstname") }}</label>
         <a v-if="isShowingF_name">{{ formDataUser.userF_name }}</a>
-        <input
-          class="form-control"
-          style="margin-right: 8px;"
-          v-if="isEditF_nameMode"
-          v-model="formDataUser.userF_name"
-          type="text"
-          :class="{ error: inputError }"
-        />
+        <input class="form-control" style="margin-right: 8px;" v-if="isEditF_nameMode" v-model="formDataUser.userF_name"
+          type="text" :class="{ error: inputError }" />
         <button class="btn btn-outline-secondary" @click="EditF_name">
           <div class="icon-edit"></div>
         </button>
@@ -330,14 +195,8 @@
       <div class="mb-3 div-for-formProfile">
         <label>{{ t("lastname") }}</label>
         <a v-if="isShowingL_name">{{ formDataUser.userL_name }}</a>
-        <input
-          class="form-control"
-          style="margin-right: 8px;"
-          v-if="isEditL_nameMode"
-          v-model="formDataUser.userL_name"
-          type="text"
-          :class="{ error: inputError }"
-        />
+        <input class="form-control" style="margin-right: 8px;" v-if="isEditL_nameMode" v-model="formDataUser.userL_name"
+          type="text" :class="{ error: inputError }" />
         <button class="btn btn-outline-secondary" @click="EditL_name">
           <div class="icon-edit"></div>
         </button>
@@ -345,16 +204,9 @@
       <div class="mb-3 div-for-formProfile">
         <label>{{ t("phoneNum") }}</label>
         <a v-if="isShowingPhone">{{ formatPhoneNumber(formDataUser.userPhone) }}</a>
-        <input
-          class="form-control"
-          style="margin-right: 8px;"
-          v-if="isEdituserPhoneMode"
-          v-model="formDataUser.userPhone"
-          type="text"
-          @keypress="validateInput"
-          maxlength="10"
-          :class="{ error: inputError }"
-        />
+        <input class="form-control" style="margin-right: 8px;" v-if="isEdituserPhoneMode"
+          v-model="formDataUser.userPhone" type="text" @keypress="validateInput" maxlength="10"
+          :class="{ error: inputError }" />
         <button class="btn btn-outline-secondary" @click="EditPhone">
           <div class="icon-edit"></div>
         </button>
@@ -362,14 +214,8 @@
       <div class="mb-3 div-for-formProfile">
         <label>{{ t("email") }}</label>
         <a v-if="isShowingEmail">{{ formDataUser.userEmail }}</a>
-        <input
-          class="form-control"
-          style="margin-right: 8px;"
-          v-if="isEdituserEmailMode"
-          v-model="formDataUser.userEmail"
-          type="text"
-          :class="{ error: inputError }"
-        />
+        <input class="form-control" style="margin-right: 8px;" v-if="isEdituserEmailMode"
+          v-model="formDataUser.userEmail" type="text" :class="{ error: inputError }" />
         <button class="btn btn-outline-secondary" @click="EditEmail">
           <div class="icon-edit"></div>
         </button>
@@ -377,20 +223,13 @@
       <div class="mb-3 div-for-formProfile">
         <label>{{ t("password") }}</label>
         <a v-if="isShowingPassword">********</a>
-        <div v-if="isEdituserPasswordMode" class="password-wrapper" 
+        <div v-if="isEdituserPasswordMode" class="password-wrapper"
           style="flex: 2; position: relative; padding-right: 8px;">
-          <input
-            class="form-control"
-            v-model="formDataUser.userPassword"
-            :type="showPassword ? 'text' : 'password'"
-            :class="{ error: inputError }"
-          />
-          <span 
-            class="mdi" 
-            :class="showPassword ? 'mdi-eye-outline' : 'mdi-eye-off-outline'"
+          <input class="form-control" v-model="formDataUser.userPassword" :type="showPassword ? 'text' : 'password'"
+            :class="{ error: inputError }" />
+          <span class="mdi" :class="showPassword ? 'mdi-eye-outline' : 'mdi-eye-off-outline'"
             @click="showPassword = !showPassword"
-            style="position: absolute; right: 20px; top: 50%; transform: translateY(-50%); cursor: pointer; color: #6c757d;"
-          ></span>
+            style="position: absolute; right: 20px; top: 50%; transform: translateY(-50%); cursor: pointer; color: #6c757d;"></span>
         </div>
         <button class="btn btn-outline-secondary" @click="EditPassword">
           <div class="icon-edit"></div>
@@ -401,27 +240,15 @@
         <a>{{ getRoleName(formDataUser.RoleID) }}</a>
         <div style="flex: 0.1"><a> </a></div>
       </div>
-      <div
-        style="display: flex; justify-content: flex-end"
-        v-if="
-          isEditF_nameMode ||
-          isEditL_nameMode ||
-          isEdituserPhoneMode ||
-          isEdituserEmailMode ||
-          isEdituserPasswordMode
-        "
-      >
-        <button
-          :disabled="isLoading"
-          class="btn btn-primary me-3"
-          @click="editUser"
-        >
-          <span
-            v-if="isLoading"
-            class="spinner-border spinner-border-sm"
-            role="status"
-            aria-hidden="true"
-          ></span>
+      <div style="display: flex; justify-content: flex-end" v-if="
+        isEditF_nameMode ||
+        isEditL_nameMode ||
+        isEdituserPhoneMode ||
+        isEdituserEmailMode ||
+        isEdituserPasswordMode
+      ">
+        <button :disabled="isLoading" class="btn btn-primary me-3" @click="editUser">
+          <span v-if="isLoading" class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
           <span v-else>{{ t("buttonSave") }}</span>
         </button>
         <button class="btn btn-outline-secondary" @click="cancelAllEdit">
@@ -435,17 +262,8 @@
           <a>{{ t("closeconfirm") }}</a>
         </div>
         <div class="modal-footer">
-          <button
-            :disabled="isLoading"
-            class="btn btn-primary me-3"
-            @click="ConfirmClose"
-          >
-            <span
-              v-if="isLoading"
-              class="spinner-border spinner-border-sm"
-              role="status"
-              aria-hidden="true"
-            ></span>
+          <button :disabled="isLoading" class="btn btn-primary me-3" @click="ConfirmClose">
+            <span v-if="isLoading" class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
             <span v-else>{{ t("buttonClose") }}</span>
           </button>
           <button class="btn btn-secondary" @click="closeConfirmPopup">
@@ -469,13 +287,8 @@
   </div> -->
   <div v-if="isPopupVisible_error" class="popup-error2">
     <div class="text-end">
-      <button
-        type="button"
-        class="btn-close"
-        aria-label="Close"
-        @click="closeErrorPopup"
-        style="color: #9f9999"
-      ></button>
+      <button type="button" class="btn-close" aria-label="Close" @click="closeErrorPopup"
+        style="color: #9f9999"></button>
     </div>
     <div class="popup-content-error2">
       <ul>
@@ -730,7 +543,7 @@ export default {
     },
     filteredNavItems() {
       const search = this.searchNav.toLowerCase();
-      const isThai = /[\u0E00-\u0E7F]/.test(search); 
+      const isThai = /[\u0E00-\u0E7F]/.test(search);
 
       return this.navItems.filter((item) => {
         if (isThai) {

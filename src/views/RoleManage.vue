@@ -6,21 +6,31 @@
       <div class="mb-3">
         <h2>{{ t("headerRole") }}</h2>
       </div>
-      <div class="mt-3">
-        <div class="mb-3">
-          <tableList
-            :tableHeaders="tableHeaders"
-            :initialTableData="roles"
-            @handleEdit="handleEdit"
-            @handleDelete="handleDelete"
-            v-if="roles && roles.length > 0"
-            :isLoading="isLoading"
-          />
+      <div class="card-view-customs">
+        <div class="row">
+          <div v-for="role in roles" :key="role.ID" class="col-12 mb-3">
+            <div class="card d-flex flex-column" style="font-size: 16px">
+              <div class="card-header d-flex justify-content-between align-items-center"
+                style="background-color: transparent; border-bottom: none">
+                <div class="fw-bold">{{ role.Role }}</div>
+                <div class="d-flex gap-3">
+                  <span class="mdi mdi-pencil-outline" @click="handleEdit(role)"
+                    style="cursor: pointer; font-size: 20px"></span>
+                  <span class="mdi mdi-trash-can-outline text-danger" @click="handleDelete(role)"
+                    style="cursor: pointer; font-size: 20px"></span>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
-        <div
-          v-if="isLoading"
-          class="d-flex justify-content-center align-items-center"
-        >
+      </div>
+
+      <div class="mt-3 show-only-desktop sale_hide">
+        <div class="mb-3">
+          <tableList :tableHeaders="tableHeaders" :initialTableData="roles" @handleEdit="handleEdit"
+            @handleDelete="handleDelete" v-if="roles && roles.length > 0" :isLoading="isLoading" />
+        </div>
+        <div v-if="isLoading" class="d-flex justify-content-center align-items-center">
           <div class="spinner-border text-primary" role="status">
             <span class="visually-hidden">Loading...</span>
           </div>
@@ -33,27 +43,12 @@
           </div>
           <div class="mb-3">
             <label class="col-sm-5 col-md-6">Role name: </label>
-            <input
-              class="form-control col-sm-9 col-md-6"
-              v-model="formRole.RoleName"
-              type="text"
-              id="input-text"
-              required
-              :class="{ error: inputError }"
-            />
+            <input class="form-control col-sm-9 col-md-6" v-model="formRole.RoleName" type="text" id="input-text"
+              required :class="{ error: inputError }" @click="resetError()" />
           </div>
           <div class="modal-footer">
-            <button
-              :disabled="isLoading"
-              class="btn btn-primary me-3"
-              @click="editRole"
-            >
-              <span
-                v-if="isLoading"
-                class="spinner-border spinner-border-sm"
-                role="status"
-                aria-hidden="true"
-              ></span>
+            <button :disabled="isLoading" class="btn btn-primary me-3" @click="editRole">
+              <span v-if="isLoading" class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
               <span v-else>Save</span>
             </button>
             <button class="btn btn-secondary" @click="closePopup">
@@ -62,31 +57,16 @@
           </div>
         </Popup>
         <div class="delete-popup">
-          <Popup
-            :isOpen="isDeleteConfirmPopupOpen"
-            :closePopup="closeDeleteConfirmPopup"
-          >
+          <Popup :isOpen="isDeleteConfirmPopupOpen" :closePopup="closeDeleteConfirmPopup">
             <div class="mb-5">
               <a>Are you sure? you want to delete.</a>
             </div>
             <div class="modal-footer">
-              <button
-                :disabled="isLoading"
-                class="btn btn-danger me-3"
-                @click="deleteRole"
-              >
-                <span
-                  v-if="isLoading"
-                  class="spinner-border spinner-border-sm"
-                  role="status"
-                  aria-hidden="true"
-                ></span>
+              <button :disabled="isLoading" class="btn btn-danger me-3" @click="deleteRole">
+                <span v-if="isLoading" class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
                 <span v-else>Delete</span>
               </button>
-              <button
-                class="btn btn-secondary"
-                @click="closeDeleteConfirmPopup"
-              >
+              <button class="btn btn-secondary" @click="closeDeleteConfirmPopup">
                 Cancel
               </button>
             </div>
@@ -104,13 +84,8 @@
         </div> -->
         <div v-if="isPopupVisible_error" class="popup-error2">
           <div class="text-end">
-            <button
-              type="button"
-              class="btn-close"
-              aria-label="Close"
-              @click="closeErrorPopup"
-              style="color: #9f9999"
-            ></button>
+            <button type="button" class="btn-close" aria-label="Close" @click="closeErrorPopup"
+              style="color: #9f9999"></button>
           </div>
           <div class="popup-content-error2">
             <ul>
@@ -180,6 +155,14 @@ export default {
         RoleID: "",
         RoleName: "",
       };
+    },
+    closeErrorPopup() {
+      this.isPopupVisible_error = false;
+    },
+    resetError(field) {
+      // RoleManage uses inputError (global)
+      this.inputError = false;
+      this.isPopupVisible_error = false;
     },
     // Close the delete confirmation popup
     closeDeleteConfirmPopup() {

@@ -9,11 +9,7 @@
       </div>
       <div class="row mb-3">
         <div class="col-4 col-sm-4 col-md-2 col-lg-2">
-          <select
-            class="form-control form-select size-font-sm"
-            v-model="dropDownStatus"
-            aria-label="Status select"
-          >
+          <select class="form-control form-select size-font-md" v-model="dropDownStatus" aria-label="Status select">
             <option value="" selected hidden>{{ t("filter") }}</option>
             <option value="active">{{ t("statusActive") }}</option>
             <option value="not_active">{{ t("statusNotActive") }}</option>
@@ -22,39 +18,96 @@
       </div>
       <div class="row mb-3">
         <div class="col-6 col-sm-6 col-md-3 col-lg-3">
-          <input
-            v-model="searchQuery"
-            type="text"
-            class="form-control me-3 size-font-sm"
-            :placeholder="$t('Search')"
-          />
+          <input v-model="searchQuery" type="text" class="form-control me-3 size-font-md" :placeholder="$t('Search')" />
         </div>
         <div class="col-6 col-sm-6 col-md-9 col-lg-9">
-          <a
-            class="btn btn-success float-right size-font-sm"
-            @click="openPopup"
-            >{{ t("addCustomer2") }}</a
-          >
+          <a class="btn btn-success float-right size-font-md" @click="openPopup">{{ t("addCustomer2") }}</a>
         </div>
       </div>
 
-      <div>
-        <CategoryList
-          :initialTableData="filteredCustomer"
-          :tableHeaders="tableHeaders"
-          :columnEditAndDelete="true"
-          @handleEdit="handleEdit"
-          @handleDelete="handleDelete"
-          :isLoading="isLoading"
-          :documentName="documentName"
-          :showAllowButton="true"
-          :hiddenColumns="['status']"
-        />
+      <div class="card-view-customs">
+        <!-- ปุ่ม Expand/Collapse All -->
+        <div class="container">
+          <div class="text-start">
+            {{ allExpanded ? t("CollapseItemsAll") : t("expandedItemsAll") }}
+            <span :class="allExpanded ? 'mdi mdi-chevron-up' : 'mdi mdi-chevron-down'
+              " @click="toggleAll">
+            </span>
+          </div>
+        </div>
+        <div class="row">
+          <div v-for="customer in filteredCustomer" :key="customer.ID" class="col-12 mb-3">
+            <div class="card d-flex flex-column" style="font-size: 16px">
+              <div class="card-header d-flex justify-content-between align-items-center"
+                style="background-color: transparent; border-bottom: none;">
+                <div class="fw-bold">{{ customer['Customer Name'] }}</div>
+                <div class="d-flex gap-3">
+                  <!-- <span
+                    :class="{'text-success': customer.status === 'เปิดใช้งาน' || customer.status === 'Active', 'text-danger': customer.status !== 'เปิดใช้งาน' && customer.status !== 'Active'}">
+                     {{ customer.status }}
+                   </span> -->
+                  <span class="mdi mdi-pencil-outline" @click="handleEdit(customer)"
+                    style="cursor: pointer; font-size: 20px;"></span>
+                  <span class="mdi mdi-trash-can-outline text-danger" @click="handleDelete(customer)"
+                    style="cursor: pointer; font-size: 20px;"></span>
+                </div>
+              </div>
+
+              <div class="card-body pt-0" style="line-height: 1.8;">
+                <div class="d-flex justify-content-between">
+                  <span>{{ t("cusNameHeaderTable") }}</span>
+                  <span class="text-end text-break">{{ customer['Customer Name'] }}</span>
+                </div>
+                <div class="d-flex justify-content-between">
+                  <span>{{ t("cusAddressHeaderTable") }}</span>
+                  <div class="text-end text-break" style="max-width: 60%;">{{ customer['Customer Address'] }}</div>
+                </div>
+                <div class="d-flex justify-content-between">
+                  <span>{{ t("cusTaxHeaderTable") }}</span>
+                  <span class="text-end">{{ customer['Customer Tax'] }}</span>
+                </div>
+                <div class="d-flex justify-content-between">
+                  <span>{{ t("cusTelHeaderTable") }}</span>
+                  <span class="text-end">{{ customer['Customer Tel'] }}</span>
+                </div>
+
+                <div v-show="isExpanded(customer.ID)">
+                  <div class="d-flex justify-content-between">
+                    <span>{{ t("cusEmailHeaderTable") }}</span>
+                    <span class="text-end text-break">{{ customer['Customer Email'] }}</span>
+                  </div>
+                  <div class="d-flex justify-content-between">
+                    <span>{{ t("cusPurchaseHeaderTable") }}</span>
+                    <span class="text-end">{{ customer['Purchase by'] }}</span>
+                  </div>
+                  <div class="d-flex justify-content-between">
+                    <span>{{ t("cusPurchasePhone") }}</span>
+                    <span class="text-end">{{ customer['Purchase Phone'] }}</span>
+                  </div>
+                  <div class="d-flex justify-content-between">
+                    <span>{{ t("cusPurchaseEmail") }}</span>
+                    <span class="text-end text-break">{{ customer['Purchase Email'] }}</span>
+                  </div>
+                  <div class="d-flex justify-content-between" v-if="customer['Purchase Remark']">
+                    <span>{{ t("quotationRemark") }}</span>
+                    <span class="text-end text-break">{{ customer['Purchase Remark'] }}</span>
+                  </div>
+                </div>
+              </div>
+              <div class="card-footer text-center bg-transparent border-0 pt-0" @click="toggleCollapse(customer.ID)">
+                <span :class="isExpanded(customer.ID) ? 'mdi mdi-chevron-up' : 'mdi mdi-chevron-down'"
+                  style="font-size: 24px; cursor: pointer;"></span>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
-      <div
-        v-if="isLoading"
-        class="d-flex justify-content-center align-items-center"
-      >
+      <div class="show-only-desktop sale_hide">
+        <CategoryList :initialTableData="filteredCustomer" :tableHeaders="tableHeaders" :columnEditAndDelete="true"
+          @handleEdit="handleEdit" @handleDelete="handleDelete" :isLoading="isLoading" :documentName="documentName"
+          :showAllowButton="true" :hiddenColumns="['status']" />
+      </div>
+      <div v-if="isLoading" class="d-flex justify-content-center align-items-center">
         <div class="spinner-border text-primary" role="status">
           <span class="visually-hidden">Loading...</span>
         </div>
@@ -68,125 +121,62 @@
       </h2>
       <h2 v-if="isEditMode">{{ t("headerPopupEditCustomer") }}</h2>
       <div class="mb-3">
-        <span style="color: red">*</span
-        ><label class="col-sm-5 col-md-6">{{ t("customerName") }}</label>
-        <input
-          v-model="formData.cus_name"
-          type="text"
-          id="input-text"
-          required
-          :class="{ error: isEmpty.cus_name, 'form-control': true }"
-        />
+        <span style="color: red">*</span><label class="col-sm-5 col-md-6">{{ t("customerName") }}</label>
+        <input v-model="formData.cus_name" type="text" id="input-text" required
+          :class="{ error: isEmpty.cus_name, 'form-control': true }" :placeholder="t('customerNamePlaceholder')"
+          @click="resetError('cus_name')" />
       </div>
       <div class="mb-3">
-        <span style="color: red">*</span
-        ><label class="col-sm-5 col-md-6">{{ t("customerAddress") }}</label>
-        <input
-          :class="{ error: isEmpty.cus_address, 'form-control': true }"
-          v-model="formData.cus_address"
-          type="text"
-          id="input-text"
-          required
-        />
+        <span style="color: red">*</span><label class="col-sm-5 col-md-6">{{ t("customerAddress") }}</label>
+        <input :class="{ error: isEmpty.cus_address, 'form-control': true }" v-model="formData.cus_address" type="text"
+          id="input-text" :placeholder="t('customerPurchasePlaceholderAddress')" @click="resetError('cus_address')"
+          required />
       </div>
       <div class="mb-3">
-        <span style="color: red">*</span
-        ><label class="col-sm-5 col-md-6">{{ t("phoneNum") }}</label>
-        <input
-          :class="{ error: isEmpty.cus_tel, 'form-control': true }"
-          v-model="formData.cus_tel"
-          type="text"
-          id="input-text"
-          @keypress="validateInput"
-          maxlength="10"
-          required
-        />
+        <span style="color: red">*</span><label class="col-sm-5 col-md-6">{{ t("phoneNum") }}</label>
+        <input :class="{ error: isEmpty.cus_tel, 'form-control': true }" v-model="formData.cus_tel" type="text"
+          id="input-text" @keypress="validateInput" :placeholder="t('customerPurchasePlaceholderPhoneNum')"
+          @click="resetError('cus_tel')" maxlength="10" required />
       </div>
       <div class="mb-3">
         <label class="col-sm-5 col-md-6">{{ t("email") }}</label>
-        <input
-          :class="{ error: isEmpty.cus_email, 'form-control': true }"
-          v-model="formData.cus_email"
-          type="email"
-          id="input-text"
-        />
+        <input :class="{ error: isEmpty.cus_email, 'form-control': true }" v-model="formData.cus_email" type="email"
+          id="input-text" :placeholder="t('enterEmail')" @click="resetError('cus_email')" />
       </div>
 
       <div class="mb-3">
-        <span style="color: red">*</span
-        ><label class="col-sm-5 col-md-6">{{ t("taxID") }}</label>
-        <input
-          :class="{ error: isEmpty.cus_tax, 'form-control': true }"
-          v-model="formData.cus_tax"
-          type="text"
-          id="input-text"
-          @keypress="validateInput"
-          maxlength="13"
-          required
-        />
+        <span style="color: red">*</span><label class="col-sm-5 col-md-6">{{ t("taxID") }}</label>
+        <input :class="{ error: isEmpty.cus_tax, 'form-control': true }" v-model="formData.cus_tax" type="text"
+          id="input-text" @keypress="validateInput" :placeholder="t('customerPurchasePlaceholderTaxID')"
+          @click="resetError('cus_tax')" maxlength="13" required />
       </div>
       <div class="mb-3">
-        <span style="color: red">*</span
-        ><label class="col-sm-5 col-md-6">{{ t("customerPurchaseBy") }}</label>
-        <input
-          :class="{ error: isEmpty.cus_purchase, 'form-control': true }"
-          v-model="formData.cus_purchase"
-          type="text"
-          id="input-text"
-          required
-        />
+        <label class="col-sm-5 col-md-6">{{ t("customerPurchaseBy") }}</label>
+        <input :class="{ error: isEmpty.cus_purchase, 'form-control': true }" v-model="formData.cus_purchase"
+          type="text" id="input-text" :placeholder="t('enterContactPerson')" @click="resetError('cus_purchase')" />
       </div>
 
       <div class="mb-3">
         <label class="col-sm-5 col-md-6">{{ t("cusPurchasePhone") }}</label>
-        <input
-          class="form-control"
-          v-model="formData.cus_purchase_phone"
-          type="text"
-          id="input-text"
-          @keypress="validateInput"
-          maxlength="10"
-        />
+        <input class="form-control" v-model="formData.cus_purchase_phone" type="text" id="input-text"
+          @keypress="validateInput" :placeholder="t('customerPurchasePlaceholderPhoneNum')"
+          @click="resetError('cus_purchase_phone')" maxlength="10" />
       </div>
 
       <div class="mb-3">
         <label class="col-sm-5 col-md-6">{{ t("cusPurchaseEmail") }}</label>
-        <input
-          class="form-control"
-          v-model="formData.cus_purchase_email"
-          type="email"
-          id="input-text"
-        />
+        <input class="form-control" v-model="formData.cus_purchase_email" type="email" id="input-text"
+          :placeholder="t('enterEmail')" @click="resetError('cus_purchase_email')" />
       </div>
 
 
       <div class="modal-footer">
-        <button
-          :disabled="isLoading"
-          class="btn btn-primary me-3"
-          v-if="isAddingMode"
-          @click="addCustomer"
-        >
-          <span
-            v-if="isLoading"
-            class="spinner-border spinner-border-sm"
-            role="status"
-            aria-hidden="true"
-          ></span>
+        <button :disabled="isLoading" class="btn btn-primary me-3" v-if="isAddingMode" @click="addCustomer">
+          <span v-if="isLoading" class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
           <span v-else>{{ t("buttonAdd") }}</span>
         </button>
-        <button
-          :disabled="isLoading"
-          class="btn btn-primary me-3"
-          v-if="isEditMode"
-          @click="editCustomer"
-        >
-          <span
-            v-if="isLoading"
-            class="spinner-border spinner-border-sm"
-            role="status"
-            aria-hidden="true"
-          ></span>
+        <button :disabled="isLoading" class="btn btn-primary me-3" v-if="isEditMode" @click="editCustomer">
+          <span v-if="isLoading" class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
           <span v-else>{{ t("buttonSave") }}</span>
         </button>
         <button class="btn btn-secondary" @click="closePopup">
@@ -203,112 +193,56 @@
       </h2>
 
       <div class="mb-3">
-        <label class="col-sm-5 col-md-6"
-          ><span style="color: red">*</span
-          >{{ t("cusNameHeaderTable2") }}</label
-        >
-        <input
-          v-model="formDataCustomer.company_person_name"
-          type="text"
-          id="input-text"
-          required
-          :class="{ error: isEmpty2.company_person_name, 'form-control': true }"
-        />
+        <label class="col-sm-5 col-md-6"><span style="color: red">*</span>{{ t("cusNameHeaderTable2") }}</label>
+        <input v-model="formDataCustomer.company_person_name" type="text" id="input-text" required
+          :class="{ error: isEmpty2.company_person_name, 'form-control': true }" :placeholder="t('enterContactPerson')"
+          @click="resetError('company_person_name')" />
       </div>
       <div class="mb-3">
         <label class="col-sm-5 col-md-6" hidden>
-          <span style="color: red">*</span
-          >{{ t("cusAddressHeaderTable2") }}</label
-        >
-        <input
-          :class="{
-            error: isEmpty2.company_person_address,
-            'form-control': true,
-          }"
-          v-model="formDataCustomer.company_person_address"
-          type="text"
-          id="input-text"
-          required
-          hidden
-        />
+          <span style="color: red">*</span>{{ t("cusAddressHeaderTable2") }}</label>
+        <input :class="{
+          error: isEmpty2.company_person_address,
+          'form-control': true,
+        }" v-model="formDataCustomer.company_person_address" type="text" id="input-text" required hidden
+          @click="resetError('company_person_address')" />
       </div>
       <div class="mb-3">
-        <label class="col-sm-5 col-md-6"
-          ><span style="color: red">*</span>{{ t("cusTelHeaderTable2") }}</label
-        >
-        <input
-          :class="{ error: isEmpty2.company_person_tel, 'form-control': true }"
-          v-model="formDataCustomer.company_person_tel"
-          type="text"
-          id="input-text"
-          maxlength="10"
-          @keypress="validateInput"
-          required
-        />
+        <label class="col-sm-5 col-md-6"><span style="color: red">*</span>{{ t("cusTelHeaderTable2") }}</label>
+        <input :class="{ error: isEmpty2.company_person_tel, 'form-control': true }"
+          v-model="formDataCustomer.company_person_tel" type="text" id="input-text" maxlength="10"
+          @keypress="validateInput" required :placeholder="t('customerPurchasePlaceholderPhoneNum')"
+          @click="resetError('company_person_tel')" />
       </div>
       <div class="mb-3">
-        <label class="col-sm-5 col-md-6"
-          ><span style="color: red">*</span
-          >{{ t("cusEmailHeaderTable2") }}</label
-        >
-        <input
-          :class="{
-            error: isEmpty2.company_person_email,
-            'form-control': true,
-          }"
-          v-model="formDataCustomer.company_person_email"
-          type="text"
-          id="input-text"
-          required
-        />
+        <label class="col-sm-5 col-md-6"><span style="color: red">*</span>{{ t("cusEmailHeaderTable2") }}</label>
+        <input :class="{
+          error: isEmpty2.company_person_email,
+          'form-control': true,
+        }" v-model="formDataCustomer.company_person_email" type="text" id="input-text" required
+          :placeholder="t('enterEmail')" @click="resetError('company_person_email')" />
       </div>
       <div class="mb-3">
         <label class="col-sm-5 col-md-6">{{ t("quotationRemark") }}</label>
-        <textarea
-          class="form-control"
-          id="exampleFormControlTextarea1"
-          rows="2"
-        ></textarea>
+        <textarea class="form-control" id="exampleFormControlTextarea1" rows="2"
+          :placeholder="t('remarkPlaceholder')"></textarea>
       </div>
       <div class="mb-3">
-        <label class="col-sm-5 col-md-6"
-          ><span style="color: red">*</span>{{ t("cusCompany") }}</label
-        >
-        <select
-          class="form-control col-sm-7 col-md-6 form-select"
-          v-model="formDataCustomer.company_person_customer"
-          :class="{ error: isEmpty2.company_person_customer }"
-          id="cus_id"
-        >
-          <option
-            v-for="CustomerDropown in CustomerDropown"
-            :key="CustomerDropown.cus_id"
-            :value="CustomerDropown.cus_id"
-          >
+        <label class="col-sm-5 col-md-6"><span style="color: red">*</span>{{ t("cusCompany") }}</label>
+        <select class="form-control col-sm-7 col-md-6 form-select" v-model="formDataCustomer.company_person_customer"
+          :class="{ error: isEmpty2.company_person_customer }" id="cus_id">
+          <option v-for="CustomerDropown in CustomerDropown" :key="CustomerDropown.cus_id"
+            :value="CustomerDropown.cus_id">
             {{ CustomerDropown.cus_name }}
           </option>
         </select>
       </div>
       <div class="modal-footer">
-        <button
-          v-if="this.isEditMode"
-          class="btn btn-primary me-3"
-          @click="EditCustomer2"
-        >
+        <button v-if="this.isEditMode" class="btn btn-primary me-3" @click="EditCustomer2">
           Save
         </button>
-        <button
-          :disabled="isLoading"
-          class="btn btn-primary me-3"
-          v-if="isAddingMode"
-          @click="addCustomer2"
-        >
-          <span
-            v-if="isLoading"
-            class="spinner-border spinner-border-sm"
-            role="status"
-            aria-hidden="true"
-          ></span>
+        <button :disabled="isLoading" class="btn btn-primary me-3" v-if="isAddingMode" @click="addCustomer2">
+          <span v-if="isLoading" class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
           <span v-else>{{ t("buttonAdd") }}</span>
         </button>
         <!-- <button
@@ -331,25 +265,13 @@
       </div>
     </Popup>
     <div class="delete-popup">
-      <Popup
-        :isOpen="isDeleteConfirmPopupOpen"
-        :closePopup="closeDeleteConfirmPopup"
-      >
+      <Popup :isOpen="isDeleteConfirmPopupOpen" :closePopup="closeDeleteConfirmPopup">
         <div class="mb-5">
           <a>{{ t("deleteConfirmSentence") }}</a>
         </div>
         <div class="modal-footer">
-          <button
-            :disabled="isLoading"
-            class="btn btn-danger me-3"
-            @click="deleteCustomer"
-          >
-            <span
-              v-if="isLoading"
-              class="spinner-border spinner-border-sm"
-              role="status"
-              aria-hidden="true"
-            ></span>
+          <button :disabled="isLoading" class="btn btn-danger me-3" @click="deleteCustomer">
+            <span v-if="isLoading" class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
             <span v-else>{{ t("buttonDelete") }}</span>
           </button>
           <button class="btn btn-secondary" @click="closeDeleteConfirmPopup">
@@ -373,13 +295,8 @@
     </div> -->
     <div v-if="isPopupVisible_error" class="popup-error2">
       <div class="text-end">
-        <button
-          type="button"
-          class="btn-close"
-          aria-label="Close"
-          @click="closeErrorPopup"
-          style="color: #9f9999"
-        ></button>
+        <button type="button" class="btn-close" aria-label="Close" @click="closeErrorPopup"
+          style="color: #9f9999"></button>
       </div>
       <div class="popup-content-error2">
         <ul>
@@ -478,6 +395,8 @@ export default {
         status: "active",
       },
       searchQuery: "",
+      expandedItems: [],
+      allExpanded: false,
     };
   },
   computed: {
@@ -633,6 +552,27 @@ export default {
     },
   },
   methods: {
+    toggleCollapse(id) {
+      if (this.expandedItems.includes(id)) {
+        this.expandedItems = this.expandedItems.filter((itemId) => itemId !== id);
+      } else {
+        this.expandedItems.push(id);
+      }
+    },
+    isExpanded(id) {
+      if (this.allExpanded) {
+        return true;
+      }
+      return this.expandedItems.includes(id);
+    },
+    toggleAll() {
+      this.allExpanded = !this.allExpanded;
+      if (this.allExpanded) {
+        this.expandedItems = this.filteredCustomer.map((item) => item.ID);
+      } else {
+        this.expandedItems = [];
+      }
+    },
     validateInput(event) {
       const charCode = event.which ? event.which : event.keyCode;
       if (charCode < 48 || charCode > 57) {
@@ -655,6 +595,15 @@ export default {
     closeErrorPopup() {
       this.isPopupVisible_error = false;
     },
+    resetError(field) {
+      if (field && this.isEmpty[field] !== undefined) {
+        this.isEmpty[field] = false;
+      }
+      if (field && this.isEmpty2[field] !== undefined) {
+        this.isEmpty2[field] = false;
+      }
+      this.isPopupVisible_error = false;
+    },
     async validateFormData() {
       this.isEmpty.cus_name = false;
       this.isEmpty.cus_address = false;
@@ -675,12 +624,16 @@ export default {
         errorMessages.push(this.$t("validation.cus_address"));
       }
 
-      if (this.formData.cus_tel.trim() === "") {
+      if (!this.formData.cus_tel || this.formData.cus_tel.trim() === "") {
         this.isEmpty.cus_tel = true;
         errorMessages.push(this.$t("validation.cus_tel"));
+      } else if (!/^\d+$/.test(this.formData.cus_tel)) {
+        console.log("cus_tel", this.formData.cus_tel);
+        this.isEmpty.cus_tel = true;
+        errorMessages.push(this.$t("validation.phone_numeric"));
       } else if (
-        this.formData.cus_tel.length !== 10 &&
-        this.formData.cus_tel.length !== 9
+        this.formData.cus_tel.length < 9 ||
+        this.formData.cus_tel.length > 10
       ) {
         this.isEmpty.cus_tel = true;
         errorMessages.push(this.$t("validation.cus_tel_length"));
@@ -702,9 +655,10 @@ export default {
         errorMessages.push(this.$t("validation.cus_tax_length"));
       }
 
-      if (this.formData.cus_purchase.trim() === "") {
-        this.isEmpty.cus_purchase = true;
-        errorMessages.push(this.$t("validation.cus_purchase"));
+
+
+      if (this.formData.cus_purchase_phone && !/^\d+$/.test(this.formData.cus_purchase_phone)) {
+        errorMessages.push(this.$t("validation.phone_numeric"));
       }
 
       if (errorMessages.length > 0) {
@@ -779,11 +733,11 @@ export default {
         status: item.status,
         cus_name: item["Customer Name"],
         cus_address: item["Customer Address"],
-        cus_tel: item["Customer Tel"],
+        cus_tel: item["Customer Tel"] ? String(item["Customer Tel"]).replace(/\D/g, "") : "",
         cus_email: item["Customer Email"],
         cus_tax: item["Customer Tax"],
         cus_purchase: item["Purchase by"],
-        cus_purchase_phone: item["Purchase Phone"],
+        cus_purchase_phone: item["Purchase Phone"] ? String(item["Purchase Phone"]).replace(/\D/g, "") : "",
         cus_purchase_email: item["Purchase Email"],
         cus_purchase_remark: item["Purchase Remark"],
       };

@@ -29,6 +29,7 @@
           v-model="formUser.useremail"
           type="text"
           required
+          :placeholder="t('enterEmail')"
         />
         <span v-if="!isEmailValid" class="error-message text-danger">{{
           t("errormessage-login")
@@ -52,6 +53,7 @@
             aria-label="Comfirm Password"
             aria-describedby="basic-addon2"
             v-model="formUser.password"
+            :placeholder="t('enterPassword')"
           />
           <button
             class="btn btn-outline-secondary"

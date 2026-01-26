@@ -8,7 +8,7 @@
       </div>
       <div class="add-btn mb-3">
         <a
-          class="btn btn-success me-3 size-font-sm"
+          class="btn btn-success me-3 size-font-md"
           @click="openAddPositionPopup"
           >{{ t("addPosition") }}</a
         >
@@ -50,6 +50,8 @@
           type="text"
           id="input-text"
           :class="{ error: isEmpty.Position }"
+          :placeholder="t('enterPositionName')"
+          @click="resetError('Position')"
           required
         />
       </div>
@@ -220,6 +222,12 @@ export default {
   },
   methods: {
     closeErrorPopup() {
+      this.isPopupVisible_error = false;
+    },
+    resetError(field) {
+      if (field && this.isEmpty[field] !== undefined) {
+        this.isEmpty[field] = false;
+      }
       this.isPopupVisible_error = false;
     },
     async validateFormData() {

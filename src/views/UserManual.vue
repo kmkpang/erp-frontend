@@ -311,7 +311,7 @@ a:hover {
 
 .toc {
   background-color: #f8f9fa;
-  border-radius: 6px;
+  border-radius: 8px;
 }
 
 hr {
