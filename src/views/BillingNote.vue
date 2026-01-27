@@ -43,12 +43,20 @@
 
               <div class="card-body pt-0" style="line-height: 1.8;">
                 <div class="d-flex justify-content-between">
+                  <span>{{ t("billingDateHeaderTable") }}</span>
+                  <span class="text-end">{{ quotation.billing_date }}</span>
+                </div>
+                <div class="d-flex justify-content-between">
                   <span>{{ t("cusNameHeaderTable") }}</span>
                   <span class="text-end text-break">{{ quotation.cus_name }}</span>
                 </div>
                 <div class="d-flex justify-content-between">
-                  <span>{{ t("employeeNameHeaderTable") }}</span>
-                  <span class="text-end">{{ quotation.employeeName }}</span>
+                  <span>{{ t("cusTaxHeaderTable") }}</span>
+                  <span class="text-end">{{ quotation.cus_tax }}</span>
+                </div>
+                <div class="d-flex justify-content-between">
+                  <span>{{ t("vatTypeHeaderTable") }}</span>
+                  <span class="text-end">{{ quotation.vatType }}</span>
                 </div>
                 <div class="d-flex justify-content-between">
                   <span>{{ t("saleTotalpriceHeaderTable") }}</span>
@@ -58,35 +66,33 @@
                   <span>{{ t("netpriceHeaderTable") }}</span>
                   <span class="text-end">{{ quotation.net_price }}</span>
                 </div>
+                <div class="d-flex justify-content-between">
+                  <span>{{ t("paymentsHeaderTable") }}</span>
+                  <span class="text-end">{{ quotation.payments }}</span>
+                </div>
 
                 <div v-show="isExpanded(quotation.sale_id)">
                   <div class="d-flex justify-content-between">
                     <span>{{ t("cusAddressHeaderTable") }}</span>
-                    <div class="text-end text-break" style="max-width: 60%;">{{ quotation.cus_address }}</div>
+                    <div class="text-end text-break" style="max-width: 60%;">{{ quotation.cus_address || '-' }}</div>
                   </div>
                   <div class="d-flex justify-content-between">
                     <span>{{ t("cusTelHeaderTable") }}</span>
-                    <span class="text-end">{{ quotation.cus_tel }}</span>
+                    <span class="text-end">{{ quotation.cus_tel || '-' }}</span>
                   </div>
                   <div class="d-flex justify-content-between">
                     <span>{{ t("cusEmailHeaderTable") }}</span>
-                    <span class="text-end text-break">{{ quotation.cus_email }}</span>
+                    <span class="text-end text-break">{{ quotation.cus_email || '-' }}</span>
                   </div>
-                  <div class="d-flex justify-content-between">
-                    <span>{{ t("cusTaxHeaderTable") }}</span>
-                    <span class="text-end">{{ quotation.cus_tax }}</span>
-                  </div>
+
                   <div class="d-flex justify-content-between">
                     <span>{{ t("cusPurchaseHeaderTable") }}</span>
-                    <span class="text-end">{{ quotation.cus_purchase }}</span>
+                    <span class="text-end">{{ quotation.cus_purchase || '-' }}</span>
                   </div>
+
                   <div class="d-flex justify-content-between">
-                    <span>{{ t("billingDateHeaderTable") }}</span>
-                    <span class="text-end">{{ quotation.billing_date }}</span>
-                  </div>
-                  <div class="d-flex justify-content-between">
-                    <span>{{ t("paymentsHeaderTable") }}</span>
-                    <span class="text-end">{{ quotation.payments }}</span>
+                    <span>{{ t("employeeNameHeaderTable") }}</span>
+                    <span class="text-end">{{ quotation.employeeName || '-' }}</span>
                   </div>
 
                   <div class="d-flex justify-content-end gap-3 mt-2">
@@ -127,7 +133,8 @@
     <div class="border p-4 mb-3">
       <div class="mb-3 div-for-formControl">
         <label class="col-sm-5 col-md-6">{{ t("numberBilling") }}</label>
-        <input class="form-control readonly" v-model="formData.billing_number" readonly disabled />
+        <input class="form-control" v-model="formData.billing_number" @click="closeErrorPopup"
+          @focus="closeErrorPopup" />
       </div>
       <div class="mb-3 div-for-formControl">
         <label class="col-sm-6 col-md-6">{{ t("dateBilling") }}</label>
@@ -142,8 +149,9 @@
         /> -->
         <v-date-picker v-model="formData.billing_date" locale="th-TH" :format="formatDatePicker">
           <template v-slot="{ togglePopover }">
-            <input class="custom-input" :value="formatDatePicker(formData.billing_date)" @focus="togglePopover" readonly
-              :placeholder="t('selectDate')" style="cursor: pointer" />
+            <input class="custom-input" :value="formatDatePicker(formData.billing_date)"
+              @focus="togglePopover(); closeErrorPopup()" readonly :placeholder="t('selectDate')"
+              style="cursor: pointer" @click="closeErrorPopup" />
           </template>
         </v-date-picker>
       </div>
@@ -158,9 +166,10 @@
           <!-- ✅ Add mode: Customer selection dropdown -->
           <div v-if="!isEditMode" class="relative-wrapper">
             <input class="form-control" v-model="selectedCusName" @input="onCustomerInput"
-              @focus="showCustomerDropdown = true" @blur="closeCustomerList" :class="{ error: isEmpty.cus_name }"
-              autoComplete="off" style="width: 100%; padding-right: 30px; font-size: 14px"
-              :placeholder="t('customerNamePlaceholder')" @click="resetError('cus_name')" />
+              @focus="showCustomerDropdown = true; closeErrorPopup()" @blur="closeCustomerList"
+              :class="{ error: isEmpty.cus_name }" autoComplete="off"
+              style="width: 100%; padding-right: 30px; font-size: 14px" :placeholder="t('customerNamePlaceholder')"
+              @click="resetError('cus_name')" />
             <span style="
                 position: absolute;
                 right: 16px;
@@ -188,18 +197,21 @@
       <div class="mb-3 div-for-formControl">
         <label class="col-sm-5 col-md-6">{{ t("customerAddress") }}</label>
         <input class="form-control" v-model="formData.cus_address" :class="{ error: isEmpty.cus_address }"
-          :placeholder="t('customerPurchasePlaceholderAddress')" @click="resetError('cus_address')" />
+          :placeholder="t('customerPurchasePlaceholderAddress')" @click="resetError('cus_address')"
+          @focus="closeErrorPopup" />
       </div>
       <div class="mb-3 div-for-formControl">
         <label class="col-sm-5 col-md-6">{{ t("phoneNum") }}</label>
         <input class="form-control" v-model="formData.cus_tel" :class="{ error: isEmpty.cus_tel }"
-          :placeholder="t('customerPurchasePlaceholderPhoneNum')" @click="resetError('cus_tel')" />
+          :placeholder="t('customerPurchasePlaceholderPhoneNum')" @click="resetError('cus_tel')"
+          @focus="closeErrorPopup" />
       </div>
 
       <div class="mb-3 div-for-formControl">
         <label class="col-sm-5 col-md-6">{{ t("taxID") }}</label>
         <input class="form-control" v-model="formData.cus_tax" :class="{ error: isEmpty.cus_tax }"
-          :placeholder="t('customerPurchasePlaceholderTaxID')" @click="resetError('cus_tax')" />
+          :placeholder="t('customerPurchasePlaceholderTaxID')" @click="resetError('cus_tax')"
+          @focus="closeErrorPopup" />
       </div>
 
     </div>
@@ -232,7 +244,7 @@
                   <div v-if="!isEditMode" class="relative-wrapper">
                     <div style="position: relative">
                       <input class="form-control" v-model="form.productName" @input="onProductInput(form, index)"
-                        @focus="form.showProductDropdown = true" @blur="closeProductList(form)"
+                        @focus="form.showProductDropdown = true; closeErrorPopup()" @blur="closeProductList(form)"
                         :class="{ error: inputError }" autoComplete="off"
                         style="width: 100%; padding-right: 30px; font-size: 14px" :placeholder="t('selectProduct')" />
                       <span style="
@@ -279,7 +291,8 @@
                 </td>
                 <td class="quantity-column">
                   <input class="form-control" v-model="form.sale_qty" type="number" min="1"
-                    @input="updatePrice2(form, index)" :readonly="isEditMode" :disabled="isEditMode" />
+                    @input="updatePrice2(form, index)" :readonly="isEditMode" :disabled="isEditMode"
+                    @focus="closeErrorPopup" />
                 </td>
                 <td class="unit-column">
                   <input class="form-control" v-model="form.pro_unti" :readonly="isEditMode" :disabled="isEditMode" />
@@ -306,7 +319,7 @@
                         border-left: 1px solid rgba(0, 0, 0, 0) !important;
                       " class="form-control" v-model="form.sale_discount" type="number" min="0"
                       @input="limitDiscount(form)" @change="updatePrice2(form, index)" :readonly="isEditMode"
-                      :disabled="isEditMode" />
+                      :disabled="isEditMode" @focus="closeErrorPopup" />
                   </div>
                 </td>
                 <td class="total-price-column">
@@ -347,14 +360,14 @@
               @change="vatTypeChange()" :disabled="isEditMode" />
             <label class="form-check-label" for="inlineCheckbox1">{{
               t("vatType1")
-            }}</label>
+              }}</label>
           </div>
           <div class="form-check form-check-inline">
             <input class="form-check-input" type="radio" value="VATincluding" v-model="formData.vatType"
               @change="vatTypeChange()" :disabled="isEditMode" />
             <label class="form-check-label" for="inlineCheckbox2">{{
               t("vatType2")
-            }}</label>
+              }}</label>
           </div>
         </div>
       </div>
@@ -382,7 +395,8 @@
     </div> -->
       <div class="mb-3 div-for-formControl">
         <label class="col-sm-5 col-md-6">{{ t("payments") }}</label>
-        <select class="form-control form-select" v-model="formData.payments" :class="{ error: inputError }">
+        <select class="form-control form-select" v-model="formData.payments" :class="{ error: inputError }"
+          @focus="closeErrorPopup" @click="closeErrorPopup">
           <option value="Cash">{{ t("cash") }}</option>
           <option value="MobileBank">{{ t("mobileBanking") }}</option>
           <option value="Cheque">{{ t("cheque") }}</option>
@@ -395,7 +409,7 @@
         <div class="mb-2 div-for-formControl">
           <label class="col-sm-5 col-md-6">{{ t("pay_bank") }}</label>
           <select class="form-select" v-model="formData.pay_bank" :class="{ error: inputError }"
-            @click="resetError('pay_bank')">
+            @click="resetError('pay_bank')" @focus="closeErrorPopup">
             <option value="" disabled selected>{{ t("select_bank") }}</option>
             <option value="ธนาคารกรุงเทพ">ธนาคารกรุงเทพ (BBL)</option>
             <option value="ธนาคารกสิกรไทย">ธนาคารกสิกรไทย (KBANK)</option>
@@ -417,12 +431,13 @@
         </div>
         <div class="mb-2 div-for-formControl">
           <label class="col-sm-5 col-md-6">{{ t("pay_number") }}</label>
-          <input class="form-control" v-model="formData.pay_number"
+          <input class="form-control" v-model="formData.pay_number" @click="closeErrorPopup" @focus="closeErrorPopup"
             :placeholder="formData.payments === 'Cheque' ? t('checkNumber') : t('transactionNumber')" />
         </div>
         <div class="mb-2 div-for-formControl">
           <label class="col-sm-5 col-md-6">{{ t("pay_branch") }}</label>
-          <input class="form-control" v-model="formData.pay_branch" :placeholder="t('bankBranchPlaceholder')" />
+          <input class="form-control" v-model="formData.pay_branch" :placeholder="t('bankBranchPlaceholder')"
+            @click="closeErrorPopup" @focus="closeErrorPopup" />
         </div>
         <div class="mb-2 div-for-formControl">
           <label class="col-sm-5 col-md-6">{{ t("pay_date") }}</label>
@@ -437,10 +452,11 @@
       <div class="mb-5 div-for-formControl-textarea">
         <label class="col-sm-6 col-md-6 label-textarea">{{
           t("quotationRemark")
-        }}</label>
+          }}</label>
         <div class="text-editor">
           <textarea v-model="formData.remark" class="form-control" maxlength="105" rows="3"
-            :placeholder="t('remarkPlaceholder')" @input="onInput"></textarea>
+            :placeholder="t('remarkPlaceholder')" @input="onInput" @focus="closeErrorPopup"
+            @click="closeErrorPopup"></textarea>
           <p>
             {{ 105 - (formData.remark ? formData.remark.length : 0) }}
             {{ t("characters") }}
@@ -782,22 +798,20 @@ export default {
     //send header data to table, this for update switch lang
     tableHeaders() {
       return [
-        //key of lang, key of data that get from API
-        // { label: this.t("billingStatusHeaderTable"), key: "billing_status" },
         { label: this.t("billingNumberHeaderTable"), key: "billing_number" },
-        { label: this.t("employeeNameHeaderTable"), key: "employeeName" },
+        { label: this.t("billingDateHeaderTable"), key: "billing_date" },
         { label: this.t("cusNameHeaderTable"), key: "cus_name" },
+        { label: this.t("cusTaxHeaderTable"), key: "cus_tax" },
+        { label: this.t("vatTypeHeaderTable"), key: "vatType" },
+        { label: this.t("saleTotalpriceHeaderTable"), key: "sale_totalprice" },
+        { label: this.t("netpriceHeaderTable"), key: "net_price" },
+        { label: this.t("paymentsHeaderTable"), key: "payments" },
         { label: this.t("cusAddressHeaderTable"), key: "cus_address" },
         { label: this.t("cusTelHeaderTable"), key: "cus_tel" },
         { label: this.t("cusEmailHeaderTable"), key: "cus_email" },
-        { label: this.t("cusTaxHeaderTable"), key: "cus_tax" },
         { label: this.t("cusPurchaseHeaderTable"), key: "cus_purchase" },
-        { label: this.t("saleTotalpriceHeaderTable"), key: "sale_totalprice" },
-        { label: this.t("netpriceHeaderTable"), key: "sale_totalprice" },
-        // { label: this.t("invoiceDateHeaderTable"), key: "invoice_date" },
+        { label: this.t("employeeNameHeaderTable"), key: "employeeName" },
         { label: this.t("remarkHeaderTable"), key: "remark" },
-        { label: this.t("billingDateHeaderTable"), key: "billing_date" },
-        { label: this.t("paymentsHeaderTable"), key: "payments" },
       ];
     },
     filteredBill() {
@@ -824,14 +838,13 @@ export default {
             ...rest
           } = inv;
           return {
-            ...rest,
-            showAllowButton: true,
-            // statusds: inv.deleted_at,
-            billing_status:
-              inv.billing_status === "Complete"
-                ? this.t("CompleteLG")
-                : inv.billing_status, // ถ้าไม่ตรงเงื่อนไขใด ๆ ใช้ค่าเดิม
-
+            billing_number: inv.billing_number,
+            billing_date: inv.billing_date,
+            cus_name: inv.cus_name,
+            cus_tax: inv.cus_tax,
+            vatType: inv.vatType,
+            sale_totalprice: inv.sale_totalprice,
+            net_price: inv.net_price,
             payments:
               inv.payments === "Cash"
                 ? this.t("CashLG")
@@ -839,7 +852,19 @@ export default {
                   ? this.t("CardLG")
                   : inv.payments === "MobileBank"
                     ? this.t("MobileBankLG")
-                    : inv.payments, // ถ้าไม่ตรงเงื่อนไขใด ๆ ใช้ค่าเดิม
+                    : inv.payments,
+            cus_address: inv.cus_address,
+            cus_tel: inv.cus_tel,
+            cus_email: inv.cus_email,
+            cus_purchase: inv.cus_purchase,
+            ...rest,
+            showAllowButton: true,
+            billing_status:
+              inv.billing_status === "Complete"
+                ? this.t("CompleteLG")
+                : inv.billing_status,
+            employeeName: inv.employeeName,
+            remark: inv.remark,
           };
         });
 
@@ -1176,7 +1201,7 @@ export default {
         Net_price: 0,
         vat: 0,
         remark: "",
-        billing_number: "",
+        billing_number: "HD",
         billing_date: new Date(),
         payments: "Cash",
         pay_bank: "",
@@ -1200,7 +1225,7 @@ export default {
         pay_bank: false,
       };
 
-      await this.checkLatestBillingNumber();
+      // await this.checkLatestBillingNumber();
       await this.getCustomer();
       // ✅ Ensure products are loaded
       if (this.Products.length === 0) {
@@ -1237,66 +1262,66 @@ export default {
     },
 
     // Check latest billing number and generate new one
-    async checkLatestBillingNumber() {
-      const accessToken = localStorage.getItem("@accessToken");
-      try {
-        const response = await fetch(
-          `${API_CALL}/quotation/checkLatestBilling`,
-          {
-            method: "GET",
-            headers: {
-              Authorization: `Bearer ${accessToken}`,
-              "Content-Type": "application/json",
-            },
-          }
-        );
-        const json = await response.json();
+    // async checkLatestBillingNumber() {
+    //   const accessToken = localStorage.getItem("@accessToken");
+    //   try {
+    //     const response = await fetch(
+    //       `${API_CALL}/quotation/checkLatestBilling`,
+    //       {
+    //         method: "GET",
+    //         headers: {
+    //           Authorization: `Bearer ${accessToken}`,
+    //           "Content-Type": "application/json",
+    //         },
+    //       }
+    //     );
+    //     const json = await response.json();
 
-        if (json.statusCode === 200 && json.data) {
-          const latestNumber = json.data.billing_number;
-          const today = new Date();
-          const year = today.getFullYear();
-          const month = String(today.getMonth() + 1).padStart(2, "0");
-          const day = String(today.getDate()).padStart(2, "0");
-          const todayStr = `${year}${month}${day}`;
+    //     if (json.statusCode === 200 && json.data) {
+    //       const latestNumber = json.data.billing_number;
+    //       const today = new Date();
+    //       const year = today.getFullYear();
+    //       const month = String(today.getMonth() + 1).padStart(2, "0");
+    //       const day = String(today.getDate()).padStart(2, "0");
+    //       const todayStr = `${year}${month}${day}`;
 
-          // Parse latest number: HDyyyyMMdd-xx (removed BL- prefix)
-          const match = latestNumber.match(/HD(\d{8})-(\d{2})/);
+    //       // Parse latest number: HDyyyyMMdd-xx (removed BL- prefix)
+    //       const match = latestNumber.match(/HD(\d{8})-(\d{2})/);
 
-          if (match) {
-            const lastDate = match[1];
-            const lastSeq = parseInt(match[2], 10);
+    //       if (match) {
+    //         const lastDate = match[1];
+    //         const lastSeq = parseInt(match[2], 10);
 
-            if (lastDate === todayStr) {
-              // Same day, increment sequence
-              const newSeq = String(lastSeq + 1).padStart(2, "0");
-              this.formData.billing_number = `HD${todayStr}-${newSeq}`;
-            } else {
-              // Different day, start from 01
-              this.formData.billing_number = `HD${todayStr}-01`;
-            }
-          } else {
-            // Invalid format or first billing
-            this.formData.billing_number = `HD${todayStr}-01`;
-          }
-        } else {
-          // No billing found, start from 01
-          const today = new Date();
-          const year = today.getFullYear();
-          const month = String(today.getMonth() + 1).padStart(2, "0");
-          const day = String(today.getDate()).padStart(2, "0");
-          this.formData.billing_number = `HD${year}${month}${day}-01`;
-        }
-      } catch (error) {
-        console.error("Error checking latest billing:", error);
-        // Fallback to default
-        const today = new Date();
-        const year = today.getFullYear();
-        const month = String(today.getMonth() + 1).padStart(2, "0");
-        const day = String(today.getDate()).padStart(2, "0");
-        this.formData.billing_number = `HD${year}${month}${day}-01`;
-      }
-    },
+    //         if (lastDate === todayStr) {
+    //           // Same day, increment sequence
+    //           const newSeq = String(lastSeq + 1).padStart(2, "0");
+    //           this.formData.billing_number = `HD${todayStr}-${newSeq}`;
+    //         } else {
+    //           // Different day, start from 01
+    //           this.formData.billing_number = `HD${todayStr}-01`;
+    //         }
+    //       } else {
+    //         // Invalid format or first billing
+    //         this.formData.billing_number = `HD${todayStr}-01`;
+    //       }
+    //     } else {
+    //       // No billing found, start from 01
+    //       const today = new Date();
+    //       const year = today.getFullYear();
+    //       const month = String(today.getMonth() + 1).padStart(2, "0");
+    //       const day = String(today.getDate()).padStart(2, "0");
+    //       this.formData.billing_number = `HD${year}${month}${day}-01`;
+    //     }
+    //   } catch (error) {
+    //     console.error("Error checking latest billing:", error);
+    //     // Fallback to default
+    //     const today = new Date();
+    //     const year = today.getFullYear();
+    //     const month = String(today.getMonth() + 1).padStart(2, "0");
+    //     const day = String(today.getDate()).padStart(2, "0");
+    //     this.formData.billing_number = `HD${year}${month}${day}-01`;
+    //   }
+    // },
 
     // Get customer list
     async getCustomer() {
@@ -1418,34 +1443,6 @@ export default {
         }
       }
     },
-
-    // Update price for individual product
-    updatePrice2(form, index) {
-      console.log("💵 updatePrice2 called for product:", form.productname);
-      const qty = parseFloat(form.sale_qty) || 0;
-      const price = parseFloat(form.price) || 0;
-      const discount = parseFloat(form.sale_discount) || 0;
-
-      let totalPrice = qty * price;
-
-      if (form.discounttype === "percent") {
-        totalPrice = totalPrice - (totalPrice * discount) / 100;
-      } else {
-        totalPrice = totalPrice - discount;
-      }
-
-      form.sale_price = Math.max(0, totalPrice);
-      console.log("💰 Product sale_price:", form.sale_price);
-
-      console.log("🔍 About to call updateTotalDiscount...");
-      try {
-        this.updateTotalDiscount();
-        console.log("✅ updateTotalDiscount called successfully");
-      } catch (error) {
-        console.error("❌ Error calling updateTotalDiscount:", error);
-      }
-    },
-
     // Limit discount to valid range
     limitDiscount(form) {
       if (form.discounttype === "percent") {
@@ -1508,6 +1505,35 @@ export default {
       console.log("=== EXITING updateTotalDiscount ===");
     },
 
+    // Update price for individual product
+    updatePrice2(form, index) {
+      console.log("💵 updatePrice2 called for product:", form.productname);
+      const qty = parseFloat(form.sale_qty) || 0;
+      const price = parseFloat(form.price) || 0;
+      const discount = parseFloat(form.sale_discount) || 0;
+
+      let totalPrice = qty * price;
+
+      if (form.discounttype === "percent") {
+        totalPrice = totalPrice - (totalPrice * discount) / 100;
+      } else {
+        totalPrice = totalPrice - discount;
+      }
+
+      form.sale_price = Math.max(0, totalPrice);
+      console.log("💰 Product sale_price:", form.sale_price);
+
+      console.log("🔍 About to call updateTotalDiscount...");
+      try {
+        console.log("🔄 updateTotalDiscount called");
+        this.updateTotalDiscount();
+        console.log("✅ updateTotalDiscount called successfully");
+      } catch (error) {
+        console.error("❌ Error calling updateTotalDiscount:", error);
+      }
+    },
+
+
     // Handle VAT type change
     vatTypeChange() {
       this.updateTotalDiscount();
@@ -1568,21 +1594,6 @@ export default {
       if (!this.formData.cus_address) {
         this.isEmpty.cus_address = true;
         this.errorMessages.push(this.t("validation.cus_address"));
-      }
-
-      if (!this.formData.cus_tel) {
-        this.isEmpty.cus_tel = true;
-        this.errorMessages.push(this.t("validation.cus_tel"));
-      }
-
-      if (!this.formData.cus_email) {
-        this.isEmpty.cus_email = true;
-        this.errorMessages.push(this.t("validation.cus_email"));
-      }
-
-      if (!this.formData.cus_purchase) {
-        this.isEmpty.cus_purchase = true;
-        this.errorMessages.push(this.t("validation.cus_purchase"));
       }
 
       if (!this.formData.cus_tax) {
@@ -2103,60 +2114,7 @@ export default {
         .toString()
         .replace(/\B(?=(\d{3})+(?!\d))/g, ",");
     },
-    //calculate function total discount
-    updateTotalDiscount() {
-      const totalDiscount = this.productForms.reduce((total, form) => {
-        let sumdiscount = "";
-        if (form.sale_discount === "") {
-          return 0;
-        }
 
-        if (form.discounttype === "percent") {
-          sumdiscount =
-            (parseFloat(form.sale_discount) *
-              (parseFloat(form.sale_qty) * parseFloat(form.price))) /
-            100;
-        } else {
-          sumdiscount = parseFloat(form.sale_discount);
-        }
-
-        const saleDiscount = parseFloat(sumdiscount);
-        return total + saleDiscount;
-      }, 0);
-      this.formData.total_discount = this.formatDecimal(totalDiscount);
-    },
-    //calculate function Net
-    totalNetPrice() {
-      const totalNet = this.productForms.reduce((total, form) => {
-        const salePrice = parseFloat(form.sale_price.replace(/,/g, "")); // แปลง formatDecimal เป็นตัวเลข
-        return total + salePrice;
-      }, 0);
-      const saleDiscount = this.formData.total_discount.replace(/,/g, "");
-      // this.formData.Net_price = this.formatDecimal(totalNet - saleDiscount);
-      this.formData.Net_price = this.formatDecimal(
-        parseFloat(totalNet) - parseFloat(this.formData.discount_quotation)
-      );
-    },
-    //calculate function vat
-    vat_price() {
-      // this.formData.vat = this.formatDecimal(
-      //   (7 / 100) * parseFloat(this.formData.Net_price.replace(/,/g, ""))
-      // );
-    },
-    //calculate function total price not include discount
-    total_priceBeforeDiscount() {
-      const totalNet = this.productForms.reduce((total, form) => {
-        const salePrice = parseFloat(form.sale_price.replace(/,/g, "")); // แปลง formatDecimal เป็นตัวเลข
-        return total + salePrice;
-      }, 0);
-      this.formData.total_price = this.formatDecimal(totalNet);
-    },
-    //calculate function total price
-    total_pricesale() {
-      // const vat = parseFloat(this.formData.vat.replace(/,/g, ""));
-      // const net = parseFloat(this.formData.Net_price.replace(/,/g, ""));
-      // this.formData.sale_totalprice = this.formatDecimal(net + vat);
-    },
     //function for set pdf view
     // ✅ New modular PDF generation method to match the requested design
     async viewformpdf(action, row) {
@@ -3101,6 +3059,7 @@ export default {
               cus_purchase: item.cus_purchase,
               sale_totalprice: total_before_vat,
               net_price: vat_in,
+              vatType: item.vatType,
               invoice_id: item.invoice_id,
               remark: item.remark || "",
               ID: item.billing_id,

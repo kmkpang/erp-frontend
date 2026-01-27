@@ -124,49 +124,50 @@
         <span style="color: red">*</span><label class="col-sm-5 col-md-6">{{ t("customerName") }}</label>
         <input v-model="formData.cus_name" type="text" id="input-text" required
           :class="{ error: isEmpty.cus_name, 'form-control': true }" :placeholder="t('customerNamePlaceholder')"
-          @click="resetError('cus_name')" />
+          @click="resetError('cus_name')" @focus="closeErrorPopup" />
       </div>
       <div class="mb-3">
         <span style="color: red">*</span><label class="col-sm-5 col-md-6">{{ t("customerAddress") }}</label>
         <input :class="{ error: isEmpty.cus_address, 'form-control': true }" v-model="formData.cus_address" type="text"
           id="input-text" :placeholder="t('customerPurchasePlaceholderAddress')" @click="resetError('cus_address')"
-          required />
+          required @focus="closeErrorPopup" />
       </div>
       <div class="mb-3">
-        <span style="color: red">*</span><label class="col-sm-5 col-md-6">{{ t("phoneNum") }}</label>
+        <label class="col-sm-5 col-md-6">{{ t("phoneNum") }}</label>
         <input :class="{ error: isEmpty.cus_tel, 'form-control': true }" v-model="formData.cus_tel" type="text"
           id="input-text" @keypress="validateInput" :placeholder="t('customerPurchasePlaceholderPhoneNum')"
-          @click="resetError('cus_tel')" maxlength="10" required />
+          @click="resetError('cus_tel')" maxlength="10" required @focus="closeErrorPopup" />
       </div>
       <div class="mb-3">
         <label class="col-sm-5 col-md-6">{{ t("email") }}</label>
         <input :class="{ error: isEmpty.cus_email, 'form-control': true }" v-model="formData.cus_email" type="email"
-          id="input-text" :placeholder="t('enterEmail')" @click="resetError('cus_email')" />
+          id="input-text" :placeholder="t('enterEmail')" @click="resetError('cus_email')" @focus="closeErrorPopup" />
       </div>
 
       <div class="mb-3">
         <span style="color: red">*</span><label class="col-sm-5 col-md-6">{{ t("taxID") }}</label>
         <input :class="{ error: isEmpty.cus_tax, 'form-control': true }" v-model="formData.cus_tax" type="text"
           id="input-text" @keypress="validateInput" :placeholder="t('customerPurchasePlaceholderTaxID')"
-          @click="resetError('cus_tax')" maxlength="13" required />
+          @click="resetError('cus_tax')" maxlength="13" required @focus="closeErrorPopup" />
       </div>
       <div class="mb-3">
         <label class="col-sm-5 col-md-6">{{ t("customerPurchaseBy") }}</label>
         <input :class="{ error: isEmpty.cus_purchase, 'form-control': true }" v-model="formData.cus_purchase"
-          type="text" id="input-text" :placeholder="t('enterContactPerson')" @click="resetError('cus_purchase')" />
+          type="text" id="input-text" :placeholder="t('enterContactPerson')" @click="resetError('cus_purchase')"
+          @focus="closeErrorPopup" />
       </div>
 
       <div class="mb-3">
         <label class="col-sm-5 col-md-6">{{ t("cusPurchasePhone") }}</label>
         <input class="form-control" v-model="formData.cus_purchase_phone" type="text" id="input-text"
           @keypress="validateInput" :placeholder="t('customerPurchasePlaceholderPhoneNum')"
-          @click="resetError('cus_purchase_phone')" maxlength="10" />
+          @click="resetError('cus_purchase_phone')" maxlength="10" @focus="closeErrorPopup" />
       </div>
 
       <div class="mb-3">
         <label class="col-sm-5 col-md-6">{{ t("cusPurchaseEmail") }}</label>
         <input class="form-control" v-model="formData.cus_purchase_email" type="email" id="input-text"
-          :placeholder="t('enterEmail')" @click="resetError('cus_purchase_email')" />
+          :placeholder="t('enterEmail')" @click="resetError('cus_purchase_email')" @focus="closeErrorPopup" />
       </div>
 
 
@@ -196,7 +197,7 @@
         <label class="col-sm-5 col-md-6"><span style="color: red">*</span>{{ t("cusNameHeaderTable2") }}</label>
         <input v-model="formDataCustomer.company_person_name" type="text" id="input-text" required
           :class="{ error: isEmpty2.company_person_name, 'form-control': true }" :placeholder="t('enterContactPerson')"
-          @click="resetError('company_person_name')" />
+          @click="resetError('company_person_name')" @focus="closeErrorPopup" />
       </div>
       <div class="mb-3">
         <label class="col-sm-5 col-md-6" hidden>
@@ -205,14 +206,14 @@
           error: isEmpty2.company_person_address,
           'form-control': true,
         }" v-model="formDataCustomer.company_person_address" type="text" id="input-text" required hidden
-          @click="resetError('company_person_address')" />
+          @click="resetError('company_person_address')" @focus="closeErrorPopup" />
       </div>
       <div class="mb-3">
         <label class="col-sm-5 col-md-6"><span style="color: red">*</span>{{ t("cusTelHeaderTable2") }}</label>
         <input :class="{ error: isEmpty2.company_person_tel, 'form-control': true }"
           v-model="formDataCustomer.company_person_tel" type="text" id="input-text" maxlength="10"
           @keypress="validateInput" required :placeholder="t('customerPurchasePlaceholderPhoneNum')"
-          @click="resetError('company_person_tel')" />
+          @click="resetError('company_person_tel')" @focus="closeErrorPopup" />
       </div>
       <div class="mb-3">
         <label class="col-sm-5 col-md-6"><span style="color: red">*</span>{{ t("cusEmailHeaderTable2") }}</label>
@@ -220,17 +221,18 @@
           error: isEmpty2.company_person_email,
           'form-control': true,
         }" v-model="formDataCustomer.company_person_email" type="text" id="input-text" required
-          :placeholder="t('enterEmail')" @click="resetError('company_person_email')" />
+          :placeholder="t('enterEmail')" @click="resetError('company_person_email')" @focus="closeErrorPopup" />
       </div>
       <div class="mb-3">
         <label class="col-sm-5 col-md-6">{{ t("quotationRemark") }}</label>
-        <textarea class="form-control" id="exampleFormControlTextarea1" rows="2"
-          :placeholder="t('remarkPlaceholder')"></textarea>
+        <textarea class="form-control" id="exampleFormControlTextarea1" rows="2" :placeholder="t('remarkPlaceholder')"
+          @focus="closeErrorPopup" @click="closeErrorPopup"></textarea>
       </div>
       <div class="mb-3">
         <label class="col-sm-5 col-md-6"><span style="color: red">*</span>{{ t("cusCompany") }}</label>
         <select class="form-control col-sm-7 col-md-6 form-select" v-model="formDataCustomer.company_person_customer"
-          :class="{ error: isEmpty2.company_person_customer }" id="cus_id">
+          :class="{ error: isEmpty2.company_person_customer }" id="cus_id" @focus="closeErrorPopup"
+          @click="closeErrorPopup">
           <option v-for="CustomerDropown in CustomerDropown" :key="CustomerDropown.cus_id"
             :value="CustomerDropown.cus_id">
             {{ CustomerDropown.cus_name }}
@@ -624,19 +626,18 @@ export default {
         errorMessages.push(this.$t("validation.cus_address"));
       }
 
-      if (!this.formData.cus_tel || this.formData.cus_tel.trim() === "") {
-        this.isEmpty.cus_tel = true;
-        errorMessages.push(this.$t("validation.cus_tel"));
-      } else if (!/^\d+$/.test(this.formData.cus_tel)) {
-        console.log("cus_tel", this.formData.cus_tel);
-        this.isEmpty.cus_tel = true;
-        errorMessages.push(this.$t("validation.phone_numeric"));
-      } else if (
-        this.formData.cus_tel.length < 9 ||
-        this.formData.cus_tel.length > 10
-      ) {
-        this.isEmpty.cus_tel = true;
-        errorMessages.push(this.$t("validation.cus_tel_length"));
+      if (this.formData.cus_tel.trim() !== "") {
+        if (!/^\d+$/.test(this.formData.cus_tel)) {
+          console.log("cus_tel", this.formData.cus_tel);
+          this.isEmpty.cus_tel = true;
+          errorMessages.push(this.$t("validation.phone_numeric"));
+        } else if (
+          this.formData.cus_tel.length < 9 ||
+          this.formData.cus_tel.length > 10
+        ) {
+          this.isEmpty.cus_tel = true;
+          errorMessages.push(this.$t("validation.cus_tel_length"));
+        }
       }
 
       if (

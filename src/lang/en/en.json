@@ -208,6 +208,7 @@
   "cusTaxHeaderTable": "Company /Customer Tax",
   "cusPurchaseHeaderTable": "Company /Customer Purchase",
   "saleTotalpriceHeaderTable": "Total Before VAT",
+  "vatTypeHeaderTable": "VAT Type",
   "remarkHeaderTable": "Remark",
   "billingDateHeaderTable": "Receipt Date",
   "billingStatusHeaderTable": "Bill Status",
