@@ -842,7 +842,12 @@ export default {
             billing_date: inv.billing_date,
             cus_name: inv.cus_name,
             cus_tax: inv.cus_tax,
-            vatType: inv.vatType,
+            vatType:
+              inv.vatType === "VATexcluding"
+                ? this.t("vatType1")
+                : inv.vatType === "VATincluding"
+                  ? this.t("vatType2")
+                  : inv.vatType,
             sale_totalprice: inv.sale_totalprice,
             net_price: inv.net_price,
             payments:
@@ -973,6 +978,19 @@ export default {
       const buddhistYear = d.getFullYear() + 543;
 
       return `${day}/${month}/${buddhistYear}`; // 🔸 แสดงเป็น พ.ศ.
+    },
+    formatPhoneNumber(phone) {
+      if (!phone || phone === '-') return "-";
+      const cleaned = ('' + phone).replace(/\D/g, '');
+      const match10 = cleaned.match(/^(\d{3})(\d{3})(\d{4})$/);
+      if (match10) {
+        return `${match10[1]}-${match10[2]}-${match10[3]}`;
+      }
+      const match9 = cleaned.match(/^(\d{2})(\d{3})(\d{4})$/);
+      if (match9) {
+        return `${match9[1]}-${match9[2]}-${match9[3]}`;
+      }
+      return phone;
     },
     closeErrorPopup() {
       this.isPopupVisible_error = false;
@@ -1394,6 +1412,38 @@ export default {
     // Toggle product detail textarea
     toggleProductDetail(form) {
       form.showDetails = !form.showDetails;
+    },
+
+    totalNetPrice() {
+      const totalNet = this.productForms.reduce((total, form) => {
+        const salePrice = parseFloat(form.sale_price.replace(/,/g, "")); // แปลง formatDecimal เป็นตัวเลข
+        return total + salePrice;
+      }, 0);
+      console.log('this.formData.total_discount', this.formData.total_discount);
+      const saleDiscount = this.formData.total_discount > 0 ? this.formData.total_discount.replace(/,/g, "") : 0;
+      // this.formData.Net_price = this.formatDecimal(totalNet - saleDiscount);
+      // this.formData.Net_price = this.formatDecimal(totalNet);
+
+      this.formData.Net_price = this.formatDecimal(
+        parseFloat(totalNet) - parseFloat(this.formData.discount_quotation)
+      );
+    },
+    vat_price() {
+      this.formData.vat = this.formatDecimal(
+        (7 / 100) * parseFloat(this.formData.Net_price.replace(/,/g, ""))
+      );
+    },
+    total_priceBeforeDiscount() {
+      const totalNet = this.productForms.reduce((total, form) => {
+        const salePrice = parseFloat(form.sale_price.replace(/,/g, "")); // แปลง formatDecimal เป็นตัวเลข
+        return total + salePrice;
+      }, 0);
+      this.formData.total_price = this.formatDecimal(totalNet);
+    },
+    total_pricesale() {
+      const vat = parseFloat(this.formData.vat.replace(/,/g, ""));
+      const net = parseFloat(this.formData.Net_price.replace(/,/g, ""));
+      this.formData.sale_totalprice = this.formatDecimal(net + vat);
     },
 
     // Get product details when selected
@@ -1972,7 +2022,7 @@ export default {
         pay_number: row.pay_number,
         pay_branch: row.pay_branch,
         pay_date: row.pay_date,
-        vatType: row.vatType || "VATexcluding",
+        vatType: row.vatType,
       };
       //loop of product
       this.productForms = (row.productForms || row.details || []).map((detail) => {
@@ -2043,7 +2093,7 @@ export default {
         pay_number: row.pay_number,
         pay_branch: row.pay_branch,
         pay_date: row.pay_date,
-        vatType: row.vatType || "VATexcluding",
+        vatType: row.vatType,
       };
       //loop of product
       this.productForms = (row.details || row.productForms || []).map((detail) => {
@@ -2213,6 +2263,7 @@ export default {
       // RENDER LOGO & HEADER
       const renderHeader = () => {
         // Logo
+        console.log('this.Business', this.Business);
         if (this.Business.bus_logo) {
           doc.addImage(this.Business.bus_logo, "JPEG", 10, 10, 25, 25);
         }
@@ -2220,17 +2271,22 @@ export default {
         // Company Info
         doc.setFont("PromptBold", "bold");
         doc.setFontSize(16);
-        doc.text(this.Business.bus_name || "บริษัท เอช แอนด์ ดี อิงค์ เจ็ท จำกัด", 40, 18);
+        doc.text(this.Business.bus_name, 40, 18);
+
+        if (this.Business.bus_code === '00000') {
+          doc.setFontSize(10);
+          doc.text("(สำนักงานใหญ่)", 40, 24);
+        }
 
         doc.setFont("PromptLight", "normal");
         doc.setFontSize(9);
         const addressLines = doc.splitTextToSize(this.Business.bus_address || "", 100);
         doc.text(addressLines, 10, 40);
-        doc.text(`เลขประจำตัวผู้เสียภาษี  ${this.Business.bus_tax || "0105569006906"}`, 10, 48);
-        doc.text(`โทร  ${this.Business.bus_tel || "098-9315128"}`, 10, 52);
-
-        // Title Box (Top Right)
-        doc.setDrawColor(orangeColor[0], orangeColor[1], orangeColor[2]);
+        doc.text(`เลขประจำตัวผู้เสียภาษี  ${this.Business.bus_tax || "-"}`, 10, 48);
+        doc.text(`โทร  ${this.formatPhoneNumber(this.Business.bus_tel) || "-"}`, 10, 52);
+        -
+          // Title Box (Top Right)
+          doc.setDrawColor(orangeColor[0], orangeColor[1], orangeColor[2]);
         doc.setLineWidth(0.5);
         doc.rect(140, 10, 60, 20); // Title frame
         doc.setFont("PromptRegular", "normal");
@@ -2253,11 +2309,11 @@ export default {
 
         // Customer Values
         doc.setFont("PromptLight", "normal");
-        doc.text(row.cus_name || "", 45, 65);
-        const cusAddressLines = doc.splitTextToSize(row.cus_address || "", 90);
+        doc.text(row.cus_name || "-", 45, 65);
+        const cusAddressLines = doc.splitTextToSize(row.cus_address || "-", 90);
         doc.text(cusAddressLines, 45, 75);
-        doc.text(row.cus_tel || "", 45, 85);
-        doc.text(row.cus_tax || "", 45, 90);
+        doc.text(this.formatPhoneNumber(row.cus_tel) || "-", 45, 85);
+        doc.text(row.cus_tax || "-", 45, 90);
 
         // Billing Info Box
         doc.rect(142, 60, 58, 35);
