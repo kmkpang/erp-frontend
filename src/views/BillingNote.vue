@@ -56,7 +56,11 @@
                 </div>
                 <div class="d-flex justify-content-between">
                   <span>{{ t("vatTypeHeaderTable") }}</span>
-                  <span class="text-end">{{ quotation.vatType }}</span>
+                  <span class="text-end">{{ quotation.vatType === "VATexcluding"
+                    ? this.t("vatType1")
+                    : quotation.vatType === "VATincluding"
+                      ? this.t("vatType2")
+                      : quotation.vatType }}</span>
                 </div>
                 <div class="d-flex justify-content-between">
                   <span>{{ t("saleTotalpriceHeaderTable") }}</span>
@@ -360,14 +364,14 @@
               @change="vatTypeChange()" :disabled="isEditMode" />
             <label class="form-check-label" for="inlineCheckbox1">{{
               t("vatType1")
-              }}</label>
+            }}</label>
           </div>
           <div class="form-check form-check-inline">
             <input class="form-check-input" type="radio" value="VATincluding" v-model="formData.vatType"
               @change="vatTypeChange()" :disabled="isEditMode" />
             <label class="form-check-label" for="inlineCheckbox2">{{
               t("vatType2")
-              }}</label>
+            }}</label>
           </div>
         </div>
       </div>
@@ -452,7 +456,7 @@
       <div class="mb-5 div-for-formControl-textarea">
         <label class="col-sm-6 col-md-6 label-textarea">{{
           t("quotationRemark")
-          }}</label>
+        }}</label>
         <div class="text-editor">
           <textarea v-model="formData.remark" class="form-control" maxlength="105" rows="3"
             :placeholder="t('remarkPlaceholder')" @input="onInput" @focus="closeErrorPopup"
