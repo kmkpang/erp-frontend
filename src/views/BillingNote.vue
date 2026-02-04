@@ -919,16 +919,17 @@ export default {
     // ✅ Computed properties for automatic price calculation
     calculatedTotalPrice() {
       return this.productForms.reduce((total, form) => {
-        console.log(form);
-        return total + (parseFloat(form.price) || 0) * (parseFloat(form.sale_qty) || 0);
+        const price = parseFloat(String(form.price).replace(/,/g, "")) || 0;
+        const qty = parseFloat(String(form.sale_qty).replace(/,/g, "")) || 0;
+        return total + price * qty;
       }, 0);
     },
 
     calculatedTotalDiscount() {
       return this.productForms.reduce((total, form) => {
-        const qty = parseFloat(form.sale_qty) || 0;
-        const price = parseFloat(form.price) || 0;
-        const discount = parseFloat(form.sale_discount) || 0;
+        const qty = parseFloat(String(form.sale_qty).replace(/,/g, "")) || 0;
+        const price = parseFloat(String(form.price).replace(/,/g, "")) || 0;
+        const discount = parseFloat(String(form.sale_discount).replace(/,/g, "")) || 0;
 
         if (form.discounttype === "percent") {
           return total + (qty * price * discount) / 100;
@@ -1524,15 +1525,17 @@ export default {
 
       // Calculate total before discount
       this.formData.total_price = this.productForms.reduce((total, form) => {
-        return total + (parseFloat(form.price) || 0) * (parseFloat(form.sale_qty) || 0);
+        const price = parseFloat(String(form.price).replace(/,/g, "")) || 0;
+        const qty = parseFloat(String(form.sale_qty).replace(/,/g, "")) || 0;
+        return total + price * qty;
       }, 0);
       console.log("💰 total_price:", this.formData.total_price);
 
       // Calculate total discount
       this.formData.total_discount = this.productForms.reduce((total, form) => {
-        const qty = parseFloat(form.sale_qty) || 0;
-        const price = parseFloat(form.price) || 0;
-        const discount = parseFloat(form.sale_discount) || 0;
+        const qty = parseFloat(String(form.sale_qty).replace(/,/g, "")) || 0;
+        const price = parseFloat(String(form.price).replace(/,/g, "")) || 0;
+        const discount = parseFloat(String(form.sale_discount).replace(/,/g, "")) || 0;
 
         if (form.discounttype === "percent") {
           return total + (qty * price * discount) / 100;
@@ -1562,9 +1565,9 @@ export default {
     // Update price for individual product
     updatePrice2(form, index) {
       console.log("💵 updatePrice2 called for product:", form.productname);
-      const qty = parseFloat(form.sale_qty) || 0;
-      const price = parseFloat(form.price) || 0;
-      const discount = parseFloat(form.sale_discount) || 0;
+      const qty = parseFloat(String(form.sale_qty).replace(/,/g, "")) || 0;
+      const price = parseFloat(String(form.price).replace(/,/g, "")) || 0;
+      const discount = parseFloat(String(form.sale_discount).replace(/,/g, "")) || 0;
 
       let totalPrice = qty * price;
 
