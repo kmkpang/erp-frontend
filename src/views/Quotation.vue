@@ -22,19 +22,10 @@
 
       <div class="row mb-3">
         <div class="col-6 col-sm-6 col-md-6 col-lg-3">
-          <input
-            v-model="searchQuery"
-            type="text"
-            class="form-control me-3 size-font-md"
-            :placeholder="$t('Search')"
-          />
+          <input v-model="searchQuery" type="text" class="form-control me-3 size-font-md" :placeholder="$t('Search')" />
         </div>
         <div class="col-6 col-sm-6 col-md-6 col-lg-9">
-          <a
-            class="btn btn-success float-right size-font-md"
-            @click="openPopup"
-            >{{ t("addQuotation") }}</a
-          >
+          <a class="btn btn-success float-right size-font-md" @click="openPopup">{{ t("addQuotation") }}</a>
         </div>
       </div>
 
@@ -43,41 +34,29 @@
         <div class="container">
           <div class="text-start">
             {{ allExpanded ? t("CollapseItemsAll") : t("expandedItemsAll") }}
-            <span
-              :class="
-                allExpanded ? 'mdi mdi-chevron-up' : 'mdi mdi-chevron-down'
-              "
-              @click="toggleAll"
-            >
+            <span :class="allExpanded ? 'mdi mdi-chevron-up' : 'mdi mdi-chevron-down'
+              " @click="toggleAll">
             </span>
           </div>
         </div>
 
         <div class="row">
-          <div
-            class="col-md-4 mt-3"
-            v-for="quotation in filteredQuo"
-            :key="quotation.sale_id"
-          >
+          <div class="col-md-4 mt-3" v-for="quotation in filteredQuo" :key="quotation.sale_id">
             <div class="card d-flex flex-column" style="font-size: 16px">
-              <div class="card-header d-flex justify-content-between align-items-center" style="background-color: transparent; border-bottom: none;">
+              <div class="card-header d-flex justify-content-between align-items-center"
+                style="background-color: transparent; border-bottom: none;">
                 <div class="fw-bold">{{ quotation.sale_number }}</div>
                 <div class="d-flex gap-3">
-                  <span
-                    v-if="['รอสร้างใบวางบิล', 'Invoice not Issued'].includes(quotation.sale_status)"
-                    class="mdi mdi-check-circle text-success"
-                    @click="handleAllow(quotation)"
-                    style="cursor: pointer; font-size: 20px;"
-                  ></span>
-                  
-                  <span class="mdi mdi-pencil-outline" @click="handleEdit(quotation)" style="cursor: pointer; font-size: 20px;"></span>
-                  
-                   <span
-                    v-if="['รอสร้างใบวางบิล', 'Invoice not Issued'].includes(quotation.sale_status)"
-                    class="mdi mdi-trash-can-outline text-danger"
-                    @click="handleDelete(quotation)"
-                    style="cursor: pointer; font-size: 20px;"
-                  ></span>
+                  <span v-if="['รอสร้างใบวางบิล', 'Invoice not Issued'].includes(quotation.sale_status)"
+                    class="mdi mdi-check-circle text-success" @click="handleAllow(quotation)"
+                    style="cursor: pointer; font-size: 20px;"></span>
+
+                  <span class="mdi mdi-pencil-outline" @click="handleEdit(quotation)"
+                    style="cursor: pointer; font-size: 20px;"></span>
+
+                  <span v-if="['รอสร้างใบวางบิล', 'Invoice not Issued'].includes(quotation.sale_status)"
+                    class="mdi mdi-trash-can-outline text-danger" @click="handleDelete(quotation)"
+                    style="cursor: pointer; font-size: 20px;"></span>
                 </div>
               </div>
 
@@ -91,12 +70,12 @@
                   <span class="text-end">{{ quotation.employeeName }}</span>
                 </div>
                 <div class="d-flex justify-content-between">
-                   <span>{{ t("saleTotalpriceHeaderTable") }}</span>
-                   <span class="text-end">{{ quotation.sale_totalprice }}</span>
+                  <span>{{ t("saleTotalpriceHeaderTable") }}</span>
+                  <span class="text-end">{{ quotation.sale_totalprice }}</span>
                 </div>
-                 <div class="d-flex justify-content-between">
-                   <span>{{ t("netpriceHeaderTable") }}</span>
-                   <span class="text-end">{{ quotation.net_price }}</span>
+                <div class="d-flex justify-content-between">
+                  <span>{{ t("netpriceHeaderTable") }}</span>
+                  <span class="text-end">{{ quotation.net_price }}</span>
                 </div>
 
                 <div v-show="isExpanded(quotation.sale_id)">
@@ -120,7 +99,7 @@
                     <span>{{ t("cusPurchaseHeaderTable") }}</span>
                     <span class="text-end">{{ quotation.cus_purchase }}</span>
                   </div>
-                  
+
                   <div class="d-flex justify-content-between">
                     <span>{{ t("saleDateHeaderTable") }}</span>
                     <span class="text-end">{{ quotation.sale_date }}</span>
@@ -129,7 +108,7 @@
                     <span>{{ t("creditdateHeaderTable") }}</span>
                     <span class="text-end">{{ quotation.credit_date_number }}</span>
                   </div>
-                   <div class="d-flex justify-content-between">
+                  <div class="d-flex justify-content-between">
                     <span>{{ t("expiredHeaderTable") }}</span>
                     <span class="text-end">{{ quotation.credit_expired_date }}</span>
                   </div>
@@ -139,14 +118,18 @@
                   </div>
 
                   <div class="d-flex justify-content-end gap-3 mt-2">
-                    <span class="mdi mdi-eye-outline" @click="handlePreview(quotation)" style="cursor: pointer; font-size: 20px;"></span>
-                    <span class="mdi mdi-tray-arrow-down" @click="handleDownload(quotation)" style="cursor: pointer; font-size: 20px;"></span>
+                    <span class="mdi mdi-eye-outline" @click="handlePreview(quotation)"
+                      style="cursor: pointer; font-size: 20px;"></span>
+                    <span class="mdi mdi-tray-arrow-down" @click="handleDownload(quotation)"
+                      style="cursor: pointer; font-size: 20px;"></span>
                   </div>
                 </div>
               </div>
-              
-              <div class="card-footer text-center bg-transparent border-0 pt-0" @click="toggleCollapse(quotation.sale_id)">
-                 <span :class="isExpanded(quotation.sale_id) ? 'mdi mdi-chevron-up' : 'mdi mdi-chevron-down'" style="font-size: 24px; cursor: pointer;"></span>
+
+              <div class="card-footer text-center bg-transparent border-0 pt-0"
+                @click="toggleCollapse(quotation.sale_id)">
+                <span :class="isExpanded(quotation.sale_id) ? 'mdi mdi-chevron-up' : 'mdi mdi-chevron-down'"
+                  style="font-size: 24px; cursor: pointer;"></span>
               </div>
             </div>
           </div>
@@ -154,27 +137,13 @@
       </div>
 
       <div class="show-only-desktop sale_hide">
-        <QuotationList
-          :tableHeaders="tableHeaders"
-          :initialTableData="filteredQuo"
-          :columnforExport="true"
-          :columnEditAndDelete="true"
-          @handleEdit="handleEdit"
-          @handleDelete="handleDelete"
-          @handleExport="handleDownload"
-          @handlePreview="handlePreview"
-          @handleAllow="handleAllow"
-          v-if="Quotations"
-          :isLoading="isLoading"
-          :documentName="documentName"
-          :showAllowButton="false"
-        />
+        <QuotationList :tableHeaders="tableHeaders" :initialTableData="filteredQuo" :columnforExport="true"
+          :columnEditAndDelete="true" @handleEdit="handleEdit" @handleDelete="handleDelete"
+          @handleExport="handleDownload" @handlePreview="handlePreview" @handleAllow="handleAllow" v-if="Quotations"
+          :isLoading="isLoading" :documentName="documentName" :showAllowButton="false" />
       </div>
     </div>
-    <div
-      v-if="isLoading"
-      class="d-flex justify-content-center align-items-center"
-    >
+    <div v-if="isLoading" class="d-flex justify-content-center align-items-center">
       <div class="spinner-border text-primary" role="status">
         <span class="visually-hidden">Loading...</span>
       </div>
@@ -185,27 +154,23 @@
       <h2 style="margin-top: -30px">{{ t("headerQuotation") }}</h2>
       <div class="border p-4 mb-3">
         <!-- <h2>{{ t("headerQuotation") }}</h2> -->
-        <h5 style="text-decoration-line: underline">
-          {{ t("HeaderPart") }}
-        </h5>
         <div class="mb-3 div-for-formControl">
           <label class="col-sm-5 col-md-6">{{ t("numberQuotation") }}</label>
-          <input
-            class="form-control readonly"
-            v-model="formData.sale_number"
-            readonly
-            disabled
-          />
+          <input class="form-control" v-model="formData.sale_number" />
+        </div>
+        <div class="mb-3 div-for-formControl">
+          <label class="col-sm-5 col-md-6">{{ t("quotationDate") }}</label>
+          <v-date-picker v-model="formData.sale_date" locale="th-TH" :format="formatDatePicker">
+            <template v-slot="{ togglePopover }">
+              <input class="custom-input" :value="formatDatePicker(formData.sale_date)" @click="togglePopover" readonly
+                :placeholder="t('selectDate')" style="width: 100%; cursor: pointer;" />
+            </template>
+          </v-date-picker>
         </div>
         <div class="mb-3 div-for-formControl" v-if="isEditMode">
           <label class="col-sm-5 col-md-6">{{ t("statusQuotation") }}</label>
 
-          <select
-            class="form-control dropdown_selector form-select"
-            v-model="formData.status"
-            disabled
-            readonly
-          >
+          <select class="form-control dropdown_selector form-select" v-model="formData.status" disabled readonly>
             <option value="Allowed">{{ t("AllowLG") }}</option>
             <option value="Cancel">{{ t("cancelStatus") }}</option>
             <option style="display: none" value="Pending" disabled>
@@ -232,43 +197,9 @@
           </v-autocomplete> -->
         <!-- </div> -->
         <!-- </div> -->
-        <div class="div-for-formControl">
-          <div class="col-6 col-sm-6 col-md-6">
-            <span style="color: red">*</span
-            ><label class="col-sm-6 col-md-6">{{ t("employeeName") }}</label>
-          </div>
-          <div class="col-6 col-sm-6 col-md-6">
-            <v-autocomplete
-              label=""
-              :items="Employees"
-              item-title="Name"
-              item-value="employeeID"
-              variant="outlined"
-              v-model="formData.employeeID"
-              :class="{ error: isEmpty.employeeID }"
-              @click="resetError('employeeID')"
-            >
-            </v-autocomplete>
-          </div>
 
-          <!-- <div class="col-6 col-sm-6 col-md-6">
-  <div style="position: relative;">
-    <input
-      list="employeeList"
-      v-model="formData.employeeID"
-      :class="{ error: isEmpty.employeeID }"
-      class="form-control"
-      style="width: 100%; padding-right: 30px; font-size: 14px;"
-    />
-  <span style="position: absolute; right: 16px; top: 50%; transform: translateY(-50%) scaleX(1.5); font-size: 8px; color: #888;">
-    ▼
-  </span>
-  </div>
-  <datalist id="employeeList">
-    <option v-for="employee in Employees" :key="employee.employeeID" :value="employee.Name"></option>
-  </datalist>
-</div> -->
-        </div>
+
+
         <!-- <select
           class="form-control dropdown_selector form-select"
           v-model="formData.employeeID"
@@ -289,46 +220,33 @@
             {{ t("customerPart") }}
           </h5>
         </div>
-        <div class="div-for-formControl mb-3">
-          <div class="col-6 col-sm-6 col-md-6">
-            <label class="col-sm-6 col-md-6"
-              ><span style="color: red">*</span>{{ t("customerName") }}</label
-            >
-          </div>
-          <div class="col-6 col-sm-6 col-md-6">
-            <div style="position: relative">
-              <input
-                list="browsers"
-                name="myBrowser"
-                class="form-control"
-                v-model="selectedCusName"
-                @input="getDetailCustomer()"
-                :class="{ error: isEmpty.cus_name }"
-                autoComplete="off"
-                style="width: 100%; padding-right: 30px; font-size: 14px"
-                :placeholder="t('customerNamePlaceholder')"
-                @click="resetError('cus_name')"
-              />
-              <span
-                style="
+        <div class="mb-3 div-for-formControl">
+          <label class="col-sm-5 col-md-6"><span style="color: red">*</span>{{ t("customerName") }}</label>
+          <!-- Modified Customer Selection -->
+          <div style="position: relative; width: 100%;" class="relative-wrapper">
+            <input class="form-control" v-model="selectedCusName" @input="onCustomerInput"
+              @focus="showCustomerDropdown = true; closeErrorPopup()" @blur="closeCustomerList"
+              :class="{ error: isEmpty.cus_name }" autoComplete="off"
+              style="width: 100%; padding-right: 30px; font-size: 14px" :placeholder="t('customerNamePlaceholder')"
+              @click="resetError('cus_name')" />
+            <span style="
                   position: absolute;
                   right: 16px;
                   top: 50%;
                   transform: translateY(-50%) scaleX(1.5);
                   font-size: 8px;
                   color: #888;
-                "
-              >
-                ▼
-              </span>
+                  pointer-events: none;
+                ">
+              ▼
+            </span>
+
+            <div v-if="showCustomerDropdown && filteredCustomers.length > 0" class="custom-datalist-options show">
+              <div v-for="item in filteredCustomers" :key="item.cus_id" class="custom-datalist-option"
+                @mousedown.prevent="selectCustomer(item)">
+                {{ item.cus_name }}
+              </div>
             </div>
-            <datalist id="browsers">
-              <option
-                v-for="item in Customers"
-                :key="item.cus_id"
-                :value="item.cus_name"
-              ></option>
-            </datalist>
           </div>
         </div>
         <!-- <div class="mb-3 div-for-InputDropdown">
@@ -374,97 +292,33 @@
           </div>
         </div> -->
         <div class="mb-3 div-for-formControl">
-          <label class="col-sm-5 col-md-6"
-            ><span style="color: red">*</span>{{ t("customerAddress") }}</label
-          >
-          <input
-            class="form-control readonly"
-            v-model="formData.cus_address"
-            :readonly="isReadonly"
-            :disabled="isDisabled"
-            :class="{ error: isEmpty.cus_address }"
-            style="color: #212529"
-            @click="resetError('cus_address')"
-          />
+          <label class="col-sm-5 col-md-6"><span style="color: red">*</span>{{ t("customerAddress") }}</label>
+          <input class="form-control" v-model="formData.cus_address" :class="{ error: isEmpty.cus_address }"
+            style="color: #212529" @click="resetError('cus_address')" />
         </div>
         <div class="mb-3 div-for-formControl">
-          <label class="col-sm-5 col-md-6"
-            ><span style="color: red">*</span>{{ t("phoneNum") }}
+          <label class="col-sm-5 col-md-6"><span style="color: red">*</span>{{ t("phoneNum") }}
           </label>
-          <input
-            class="form-control readonly"
-            v-model="formData.cus_tel"
-            maxlength="10"
-            @keypress="validateInput"
-            :readonly="isReadonly"
-            :disabled="isDisabled"
-            :class="{ error: isEmpty.cus_tel }"
-            style="color: #212529"
-            @click="resetError('cus_tel')"
-          />
+          <input class="form-control" v-model="formData.cus_tel" maxlength="10" @keypress="validateInput"
+            :class="{ error: isEmpty.cus_tel }" style="color: #212529" @click="resetError('cus_tel')" />
         </div>
         <div class="mb-3 div-for-formControl">
-          <label class="col-sm-5 col-md-6"
-            ><span style="color: red">*</span>{{ t("email") }}
+          <label class="col-sm-5 col-md-6"><span style="color: red">*</span>{{ t("taxID") }}
           </label>
-          <input
-            class="form-control readonly"
-            v-model="formData.cus_email"
-            :readonly="isReadonly"
-            :disabled="isDisabled"
-            :class="{ error: isEmpty.cus_email }"
-            style="color: #212529"
-            @click="resetError('cus_email')"
-          />
+          <input class="form-control" v-model="formData.cus_tax" :class="{ error: isEmpty.cus_tax }"
+            @keypress="validateInput" maxlength="13" style="color: #212529" @click="resetError('cus_tax')" />
         </div>
-        <div class="mb-3 div-for-formControl">
-          <label class="col-sm-5 col-md-6"
-            ><span style="color: red">*</span>{{ t("taxID") }}
-          </label>
-          <input
-            class="form-control readonly"
-            v-model="formData.cus_tax"
-            :readonly="isReadonly"
-            :disabled="isDisabled"
-            :class="{ error: isEmpty.cus_tax }"
-            @keypress="validateInput"
-            maxlength="13"
-            style="color: #212529"
-            @click="resetError('cus_tax')"
-          />
-        </div>
-        <div class="mb-3 div-for-formControl">
-          <label class="col-sm-5 col-md-6"
-            ><span style="color: red">*</span
-            >{{ t("customerPurchaseBy") }}</label
-          >
-          <input
-            class="form-control readonly"
-            v-model="formData.cus_purchase"
-            :readonly="isReadonly"
-            :disabled="isDisabled"
-            :class="{ error: isEmpty.cus_purchase }"
-            style="color: #212529"
-            @click="resetError('cus_purchase')"
-          />
-        </div>
+
       </div>
 
       <!-- <div class="mb-3"> -->
       <div class="border p-4 mb-3">
-        <div
-          class="Register-contain"
-          :class="{ error: isEmpty.productForms }"
-          style="padding: 20px; width: unset"
-        >
+        <div class="Register-contain" :class="{ error: isEmpty.productForms }" style="padding: 20px; width: unset">
           <h5 style="text-decoration-line: underline">
             <span style="color: red">*</span>{{ t("product") }}
           </h5>
           <div class="mb-3">
-            <button
-              class="round-button btn btn-primary"
-              @click="showingAddProduct"
-            >
+            <button class="round-button btn btn-primary" @click="showingAddProduct">
               +
             </button>
           </div>
@@ -484,51 +338,42 @@
               <tbody>
                 <tr v-for="(form, index) in productForms" :key="index">
                   <td class="product-name-column">
+                    <!-- Modified Product Selection -->
                     <div class="relative-wrapper">
-                      <label>
-                        <input
-                          list="browsers2"
-                          name="myBrowser2"
-                          class="form-control"
-                          v-model="form.productName"
-                          @input="getDetailProduct(form, index)"
-                          :class="{ error: inputError }"
-                          autoComplete="off"
-                          :placeholder="t('selectProduct')"
-                      /></label>
-                      <datalist id="browsers2">
-                        <option
-                          v-for="item in filteredProducts"
-                          :key="item.productID"
-                          :value="item.productname"
-                        ></option>
-                      </datalist>
-                      <!-- <v-autocomplete
-                        label=""
-                        :items="Products"
-                        item-title="productname"
-                        item-value="productID"
-                        variant="outlined"
-                        v-model="form.productID"
-                        :class="{ error: inputError }"
-                        @update:modelValue="updatePrice(form, index)"
-                      >
-                      </v-autocomplete> -->
+                      <div style="position: relative">
+                        <input class="form-control" v-model="form.productName" @input="onProductInput(form, index)"
+                          @focus="form.showProductDropdown = true; closeErrorPopup()" @blur="closeProductList(form)"
+                          :class="{ error: inputError }" autoComplete="off"
+                          style="width: 100%; padding-right: 30px; font-size: 14px" :placeholder="t('selectProduct')" />
+                        <span style="
+                            position: absolute;
+                            right: 16px;
+                            top: 50%;
+                            transform: translateY(-50%) scaleX(1.5);
+                            font-size: 8px;
+                            color: #888;
+                            pointer-events: none;
+                          ">
+                          ▼
+                        </span>
 
-                      <a
-                        class="text-muted ng-star-inserted text-start"
-                        href="javascript:void(0)"
-                        @click="toggleProductDetail(form, index)"
-                        ><div _ngcontent-vfm-c67="" class="description-row">
-                          เพิ่มรายละเอียดสินค้า
-                        </div></a
-                      >
-                      <textarea
-                        v-if="form.showDetails || form.product_detail !== ''"
-                        class="form-control"
-                        v-model="form.product_detail"
-                        rows="3"
-                      ></textarea>
+                        <div v-if="form.showProductDropdown && getFilteredProducts(form.productName).length > 0"
+                          class="custom-datalist-options show">
+                          <div v-for="item in getFilteredProducts(form.productName)" :key="item.productID"
+                            class="custom-datalist-option" @mousedown.prevent="selectProduct(form, item, index)">
+                            {{ item.productname }}
+                          </div>
+                        </div>
+                      </div>
+
+                      <a class="text-muted ng-star-inserted text-start" href="javascript:void(0)"
+                        @click="toggleProductDetail(form, index)">
+                        <div _ngcontent-vfm-c67="" class="description-row">
+                          {{ t('addProductDetail') }}
+                        </div>
+                      </a>
+                      <textarea v-if="form.showDetails || form.product_detail !== ''" class="form-control"
+                        v-model="form.product_detail" rows="3"></textarea>
                     </div>
                     <!-- <select
                       class="form-control form-select"
@@ -545,42 +390,26 @@
                     </select> -->
                   </td>
                   <td class="price-column">
-                    <input
-                      class="form-control readonly"
-                      v-model="form.price"
-                      :readonly="form.isReadonly2"
-                      :disabled="form.isDisabled2"
-                    />
+                    <input class="form-control readonly" v-model="form.price" :readonly="form.isReadonly2"
+                      :disabled="form.isDisabled2" />
                   </td>
                   <td class="quantity-column">
-                    <input
-                      class="form-control"
-                      v-model="form.sale_qty"
-                      @keypress="validatePaste"
-                      @input="updatePrice(form, index)"
-                    />
+                    <input class="form-control" v-model="form.sale_qty" @keypress="validatePaste"
+                      @input="updatePrice(form, index)" />
                   </td>
                   <td class="unit-column">
-                    <input
-                      class="form-control"
-                      v-model="form.pro_unti"
-                      maxlength="30"
-                    />
+                    <input class="form-control" v-model="form.pro_unti" maxlength="30" />
                   </td>
 
                   <td class="discount-column">
                     <div class="discount-type">
-                      <select
-                        class="form-control form-select"
-                        v-model="form.discounttype"
-                        @change="updatePrice2(form, index)"
-                        style="
+                      <select class="form-control form-select" v-model="form.discounttype"
+                        @change="updatePrice2(form, index)" style="
                           border-top-right-radius: 0px;
                           border-bottom-right-radius: 0px;
                           width: 20px !important;
                           min-width: 125px;
-                        "
-                      >
+                        ">
                         <option value="amount">
                           {{ t("productDiscountTypeAmount") }}
                         </option>
@@ -589,39 +418,24 @@
                         </option>
                       </select>
 
-                      <input
-                        style="
+                      <input style="
                           min-width: 100px;
                           border-top-left-radius: 0px;
                           border-bottom-left-radius: 0px;
                           border-left: 1px solid rgba(0, 0, 0, 0) !important;
-                        "
-                        class="form-control"
-                        v-model="form.sale_discount"
-                        min="0"
-                        @input="
+                        " class="form-control" v-model="form.sale_discount" min="0" @input="
                           (event) => {
                             limitDiscount(form);
                             updatePrice(form, index);
                           }
-                        "
-                        @keypress="validatePaste"
-                      />
+                        " @keypress="validatePaste" />
                     </div>
                   </td>
                   <td class="total-price-column">
-                    <input
-                      class="form-control readonly"
-                      v-model="form.sale_price"
-                      readonly
-                      disabled
-                    />
+                    <input class="form-control readonly" v-model="form.sale_price" readonly disabled />
                   </td>
                   <td class="action-column">
-                    <button
-                      class="btn btn-danger mdi mdi-trash-can-outline"
-                      @click="closingProduct(index)"
-                    ></button>
+                    <button class="btn btn-danger mdi mdi-trash-can-outline" @click="closingProduct(index)"></button>
                   </td>
                 </tr>
               </tbody>
@@ -633,54 +447,15 @@
         <h5 style="text-decoration-line: underline">
           {{ t("Condition") }}
         </h5>
-        <div class="mb-3 div-for-formControl">
-          <div class="col-6 col-sm-6 col-md-6">
-            <label class="col-sm-6 col-md-6">{{ t("quotationDate") }}</label>
-          </div>
-          <div class="col-6 col-sm-6 col-md-6">
-            <!-- <DatePicker
-              v-model:value="formData.sale_date"
-              format="DD/MM/YYYY"
-              value-type="date"
-              placeholder="DD/MM/YYYY"
-              :formatter="momentFormat"
-              :lang="currentLocale"
-              :class="{ error: isEmpty.sale_date, 'form-control': true }"
-            /> -->
-            <v-date-picker
-              v-model="formData.sale_date"
-              locale="th-TH"
-              :format="formatDatePicker"
-            >
-              <template v-slot="{ inputEvents }">
-                <input
-                  class="custom-input"
-                  :value="formatDatePicker(formData.sale_date)"
-                  v-on="inputEvents"
-                  :placeholder="t('selectDate')"
-                  style="width: 100%"
-                />
-              </template>
-            </v-date-picker>
-          </div>
-        </div>
+        <!-- Quotation Date moved to Header -->
         <div class="mb-3 div-for-formControl">
           <div class="col-6 col-sm-6 col-md-6">
             <label class="col-sm-5 col-md-2">{{ t("creditDate") }}</label>
           </div>
           <div class="col-6 col-sm-6 col-md-6">
-            <select
-              v-model="formData.credit_date_number"
-              class="form-control form-select"
-              @focus="toggleDropdown(true)"
-              @blur="toggleDropdown(false)"
-              :class="{ error: isEmpty.credit_date_number }"
-            >
-              <option
-                v-for="creditday in creditDay"
-                :key="creditday"
-                :value="creditday"
-              >
+            <select v-model="formData.credit_date_number" class="form-control form-select" @focus="toggleDropdown(true)"
+              @blur="toggleDropdown(false)" :class="{ error: isEmpty.credit_date_number }">
+              <option v-for="creditday in creditDay" :key="creditday" :value="creditday">
                 {{ creditday }}
               </option>
             </select>
@@ -700,81 +475,42 @@
               :lang="currentLocale"
               class="form-control readonly"
             /> -->
-            <v-date-picker
-              v-model="formData.credit_expired_date"
-              locale="th-TH"
-              :format="formatDatePicker"
-            >
+            <v-date-picker v-model="formData.credit_expired_date" locale="th-TH" :format="formatDatePicker">
               <template v-slot="{ inputEvents }">
-                <input
-                  class="custom-input"
-                  :value="formatDatePicker(formData.credit_expired_date)"
-                  v-on="inputEvents"
-                  placeholder="เลือกวันที่"
-                  style="width: 100%"
-                />
+                <input class="custom-input" :value="formatDatePicker(formData.credit_expired_date)" v-on="inputEvents"
+                  placeholder="เลือกวันที่" style="width: 100%" />
               </template>
             </v-date-picker>
           </div>
         </div>
         <div class="mb-3 div-for-formControl">
           <label class="col-sm-5 col-md-6">{{ t("totalDiscount") }}</label>
-          <input
-            class="form-control readonly"
-            v-model="formData.discount_quotation"
-            :class="{ error: inputError }"
-            @input="calculateNat(formData.discount_quotation)"
-            @keypress="validatePaste"
-          />
+          <input class="form-control readonly" v-model="formData.discount_quotation" :class="{ error: inputError }"
+            @input="calculateNat(formData.discount_quotation)" @keypress="validatePaste" />
         </div>
         <div class="mb-3 div-for-formControl">
           <!-- <label class="col-sm-5 col-md-6">{{ t("consluPrice") }} </label> -->
-          <label
-            v-if="this.formData.vatType === 'VATincluding'"
-            class="col-sm-5 col-md-6"
-            >{{ t("consluPrice") }}</label
-          >
+          <label v-if="this.formData.vatType === 'VATincluding'" class="col-sm-5 col-md-6">{{ t("consluPrice")
+          }}</label>
           <label v-else class="col-sm-5 col-md-6">{{ t("consluPrice") }}</label>
-          <input
-            v-if="this.formData.vatType === 'VATincluding'"
-            class="form-control readonly"
-            v-model="formData.sale_totalprice"
-            readonly
-            :class="{ error: inputError }"
-            disabled
-          />
-          <input
-            v-else
-            class="form-control readonly"
-            v-model="formData.Net_price"
-            readonly
-            :class="{ error: inputError }"
-            disabled
-          />
+          <input v-if="this.formData.vatType === 'VATincluding'" class="form-control readonly"
+            v-model="formData.sale_totalprice" readonly :class="{ error: inputError }" disabled />
+          <input v-else class="form-control readonly" v-model="formData.Net_price" readonly
+            :class="{ error: inputError }" disabled />
         </div>
         <div class="row mb-3">
           <label class="col-sm-5 col-md-6">{{ t("typeVat") }}</label>
           <div class="col-md-6">
             <div class="form-check form-check-inline">
-              <input
-                class="form-check-input"
-                type="radio"
-                value="VATexcluding"
-                v-model="formData.vatType"
-                @change="vatTypeChange()"
-              />
+              <input class="form-check-input" type="radio" value="VATexcluding" v-model="formData.vatType"
+                @change="vatTypeChange()" />
               <label class="form-check-label" for="inlineCheckbox1">{{
                 t("vatType1")
               }}</label>
             </div>
             <div class="form-check form-check-inline">
-              <input
-                class="form-check-input"
-                type="radio"
-                value="VATincluding"
-                v-model="formData.vatType"
-                @change="vatTypeChange()"
-              />
+              <input class="form-check-input" type="radio" value="VATincluding" v-model="formData.vatType"
+                @change="vatTypeChange()" />
               <label class="form-check-label" for="inlineCheckbox2">{{
                 t("vatType2")
               }}</label>
@@ -784,38 +520,16 @@
 
         <div class="mb-3 div-for-formControl">
           <label class="col-sm-5 col-md-6">{{ t("vatPrice") }} </label>
-          <input
-            :placeholder="t('vatPricePlaceholder')"
-            v-model="formData.vat"
-            class="form-control readonly"
-            readonly
-            :class="{ error: inputError }"
-            disabled
-          />
+          <input :placeholder="t('vatPricePlaceholder')" v-model="formData.vat" class="form-control readonly" readonly
+            :class="{ error: inputError }" disabled />
         </div>
         <div class="mb-3 div-for-formControl">
-          <label
-            v-if="this.formData.vatType === 'VATincluding'"
-            class="col-sm-5 col-md-6"
-            >{{ t("netPrice") }}</label
-          >
+          <label v-if="this.formData.vatType === 'VATincluding'" class="col-sm-5 col-md-6">{{ t("netPrice") }}</label>
           <label v-else class="col-sm-5 col-md-6">{{ t("netPrice") }}</label>
-          <input
-            v-if="this.formData.vatType === 'VATincluding'"
-            class="form-control readonly"
-            v-model="formData.Net_price"
-            readonly
-            :class="{ error: inputError }"
-            disabled
-          />
-          <input
-            v-else
-            class="form-control readonly"
-            v-model="formData.sale_totalprice"
-            readonly
-            :class="{ error: inputError }"
-            disabled
-          />
+          <input v-if="this.formData.vatType === 'VATincluding'" class="form-control readonly"
+            v-model="formData.Net_price" readonly :class="{ error: inputError }" disabled />
+          <input v-else class="form-control readonly" v-model="formData.sale_totalprice" readonly
+            :class="{ error: inputError }" disabled />
         </div>
         <div class="mb-5 div-for-formControl-textarea">
           <div class="col-6 col-sm-6 col-md-6">
@@ -825,14 +539,8 @@
           </div>
           <div class="col-6 col-sm-6 col-md-6">
             <div class="text-editor">
-              <textarea
-                v-model="formData.remark"
-                class="form-control"
-                rows="3"
-                @input="onInput"
-                maxlength="220"
-                :placeholder="t('remarkPlaceholder')"
-              ></textarea>
+              <textarea v-model="formData.remark" class="form-control" rows="3" @input="onInput" maxlength="220"
+                :placeholder="t('remarkPlaceholder')"></textarea>
               <!-- <p>
               {{ 105 - (formData.remark ? formData.remark.length : 0) }}
               {{ t("characters") }}
@@ -894,13 +602,8 @@
                 {{ t("SelectImage") }}
                 <input type="file" hidden @change="previewImage" />
               </label>
-              <input
-                type="text"
-                class="form-control"
-                :value="fileName || t('FileImageName')"
-                ref="fileInput"
-                readonly
-              />
+              <input type="text" class="form-control" :value="fileName || t('FileImageName')" ref="fileInput"
+                readonly />
             </div>
           </div>
           <!-- <input class="form-control" v-model="formData.remark"> -->
@@ -910,11 +613,7 @@
           <label class="col-sm-5 col-md-6 label-textarea"></label>
           <div class="text-editor">
             <div v-if="imageSrc" class="image-preview mt-3">
-              <img
-                :src="imageSrc"
-                alt="Preview"
-                style="max-width: 200px; max-height: 200px"
-              />
+              <img :src="imageSrc" alt="Preview" style="max-width: 200px; max-height: 200px" />
             </div>
           </div>
         </div>
@@ -926,13 +625,8 @@
           </div>
           <div class="col-6 col-sm-6 col-md-6">
             <div class="text-editor">
-              <textarea
-                v-model="formData.remarkInfernal"
-                class="form-control"
-                rows="3"
-                @input="onInput"
-                maxlength="220"
-              ></textarea>
+              <textarea v-model="formData.remarkInfernal" class="form-control" rows="3" @input="onInput"
+                maxlength="220"></textarea>
               <!-- <p>
               {{ 105 - (formData.remark ? formData.remark.length : 0) }}
               {{ t("characters") }}
@@ -943,32 +637,12 @@
         </div>
       </div>
       <div class="modal-footer">
-        <button
-          :disabled="isLoading"
-          class="btn btn-primary me-3"
-          v-if="isAddingMode"
-          @click="addQuotation"
-        >
-          <span
-            v-if="isLoading"
-            class="spinner-border spinner-border-sm"
-            role="status"
-            aria-hidden="true"
-          ></span>
+        <button :disabled="isLoading" class="btn btn-primary me-3" v-if="isAddingMode" @click="addQuotation">
+          <span v-if="isLoading" class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
           <span v-else>{{ t("buttonAdd") }}</span>
         </button>
-        <button
-          :disabled="isLoading"
-          class="btn btn-primary me-3"
-          v-if="isEditMode"
-          @click="editQuotation"
-        >
-          <span
-            v-if="isLoading"
-            class="spinner-border spinner-border-sm"
-            role="status"
-            aria-hidden="true"
-          ></span>
+        <button :disabled="isLoading" class="btn btn-primary me-3" v-if="isEditMode" @click="editQuotation">
+          <span v-if="isLoading" class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
           <span v-else>{{ t("buttonSave") }}</span>
         </button>
         <button class="btn btn-secondary" @click="closePopup">
@@ -986,10 +660,7 @@
     </popup>
   </div>
   <div class="delete-popup">
-    <Popup
-      :isOpen="isDeleteConfirmPopupOpen"
-      :closePopup="closeDeleteConfirmPopup"
-    >
+    <Popup :isOpen="isDeleteConfirmPopupOpen" :closePopup="closeDeleteConfirmPopup">
       <div class="mb-5">
         <a>{{ t("deleteConfirmSentence") }}</a>
       </div>
@@ -1035,10 +706,7 @@
     <!-- </div> -->
   </div>
   <div class="delete-popup">
-    <Popup
-      :isOpen="isAllowConfirmPopupOpen"
-      :closePopup="closeAllowConfirmPopup"
-    >
+    <Popup :isOpen="isAllowConfirmPopupOpen" :closePopup="closeAllowConfirmPopup">
       <div class="mb-5">
         <a>{{ t("AllowConfirmSentence") }}</a>
       </div>
@@ -1071,13 +739,8 @@
     </div> -->
     <div v-if="isPopupVisible_error" class="popup-error2">
       <div class="text-end">
-        <button
-          type="button"
-          class="btn-close"
-          aria-label="Close"
-          @click="closeErrorPopup"
-          style="color: #9f9999"
-        ></button>
+        <button type="button" class="btn-close" aria-label="Close" @click="closeErrorPopup"
+          style="color: #9f9999"></button>
       </div>
       <div class="popup-content-error2">
         <ul>
@@ -1088,10 +751,7 @@
       </div>
     </div>
   </div>
-  <div
-    v-if="isLoading"
-    class="d-flex justify-content-center align-items-center"
-  >
+  <div v-if="isLoading" class="d-flex justify-content-center align-items-center">
     <div class="spinner-border text-primary" role="status">
       <span class="visually-hidden">Loading...</span>
     </div>
@@ -1214,6 +874,7 @@ export default {
       isReadonly2: true, // กำหนดให้ readonly หรือไม่
       isDisabled2: true, // กำหนดให้ disabled หรือไม่
       selectedCusName: "",
+      showCustomerDropdown: false, // Added for custom dropdown
       selectedProName: "",
       newImg: false,
       Image_pd: [],
@@ -1332,6 +993,14 @@ export default {
     };
   },
   computed: {
+    // Added filteredCustomers for custom dropdown
+    filteredCustomers() {
+      if (!this.selectedCusName) return this.Customers;
+      return this.Customers.filter((c) =>
+        c.cus_name.toLowerCase().includes(this.selectedCusName.toLowerCase())
+      );
+    },
+    // ... existing computed properties ...
     filteredProducts() {
       return this.Products.filter((item) => item.Status !== "not active");
     },
@@ -1424,10 +1093,10 @@ export default {
           sale.status === "Allowed" || sale.status === "Allow"
             ? t("AllowLG")
             : sale.status === "Pending"
-            ? t("PendingLG")
-            : sale.status === "Cancel"
-            ? t("CancelLG")
-            : sale.status,
+              ? t("PendingLG")
+              : sale.status === "Cancel"
+                ? t("CancelLG")
+                : sale.status,
 
         // invoice:
         //   sale.invoice === "Pending"
@@ -1666,9 +1335,9 @@ export default {
           if (discountPercent > 0) {
             form.sale_price = this.formatDecimal(
               form.sale_qty * parseFloat(form.price.replace(/,/g, "")) -
-                form.sale_qty *
-                  parseFloat(form.price.replace(/,/g, "")) *
-                  (discountPercent / 100)
+              form.sale_qty *
+              parseFloat(form.price.replace(/,/g, "")) *
+              (discountPercent / 100)
             );
           }
         } else {
@@ -1689,7 +1358,7 @@ export default {
             form.sale_price = this.formatDecimal(
               parseFloat(
                 form.sale_qty * parseFloat(form.price.replace(/,/g, "")) -
-                  parseFloat(form.sale_discount)
+                parseFloat(form.sale_discount)
               )
             );
           }
@@ -1706,7 +1375,7 @@ export default {
           );
           this.formData.vat = this.formatDecimal(
             parseFloat(this.formData.Net_price.replace(/,/g, "")) -
-              parseFloat(this.formData.sale_totalprice.replace(/,/g, ""))
+            parseFloat(this.formData.sale_totalprice.replace(/,/g, ""))
           );
         } else {
           this.formData.vat = this.formatDecimal(
@@ -1714,7 +1383,7 @@ export default {
           );
           this.formData.sale_totalprice = this.formatDecimal(
             parseFloat(this.formData.Net_price.replace(/,/g, "")) +
-              parseFloat(this.formData.vat.replace(/,/g, ""))
+            parseFloat(this.formData.vat.replace(/,/g, ""))
           );
         }
         // this.isReadonly2 = true;
@@ -1750,6 +1419,54 @@ export default {
         form.productID = "";
       }
     },
+    // --- Customer Dropdown Methods ---
+    onCustomerInput() {
+      this.formData.cus_id = ""; // Clear ID when typing
+      this.showCustomerDropdown = true;
+    },
+    selectCustomer(item) {
+      this.selectedCusName = item.cus_name;
+      this.formData.cus_id = item.cus_id;
+      this.formData.cus_name = item.cus_name;
+      this.formData.cus_address = item.cus_address;
+      this.formData.cus_tel = item.cus_tel;
+      this.formData.cus_email = item.cus_email;
+      this.formData.cus_tax = item.cus_tax;
+      this.formData.cus_purchase = item.cus_purchase;
+      this.showCustomerDropdown = false;
+      this.inputError = false;
+      this.isEmpty.cus_name = false;
+    },
+    closeCustomerList() {
+      // Delay closing to allow click event to register
+      setTimeout(() => {
+        this.showCustomerDropdown = false;
+      }, 200);
+    },
+
+    // --- Product Dropdown Methods ---
+    getFilteredProducts(query) {
+      if (!query) return this.Products;
+      return this.Products.filter((p) =>
+        p.productname.toLowerCase().includes(query.toLowerCase())
+      );
+    },
+    onProductInput(form, index) {
+      form.productID = ""; // Clear ID when typing
+      form.showProductDropdown = true;
+    },
+    selectProduct(form, item, index) {
+      form.productName = item.productname;
+      form.productID = item.productname; // Using name as ID based on existing logic
+      form.showProductDropdown = false;
+      this.getDetailProduct(form, index); // Call existing logic to populate price etc
+    },
+    closeProductList(form) {
+      setTimeout(() => {
+        form.showProductDropdown = false;
+      }, 200);
+    },
+
     getDetailCustomer() {
       let items = [];
 
@@ -1821,7 +1538,7 @@ export default {
         );
         this.formData.vat = this.formatDecimal(
           parseFloat(this.formData.Net_price.replace(/,/g, "")) -
-            parseFloat(this.formData.sale_totalprice.replace(/,/g, ""))
+          parseFloat(this.formData.sale_totalprice.replace(/,/g, ""))
         );
       } else {
         this.formData.vat = this.formatDecimal(
@@ -1829,7 +1546,7 @@ export default {
         );
         this.formData.sale_totalprice = this.formatDecimal(
           parseFloat(this.formData.Net_price.replace(/,/g, "")) +
-            parseFloat(this.formData.vat.replace(/,/g, ""))
+          parseFloat(this.formData.vat.replace(/,/g, ""))
         );
         // if (this.formData.vatType === "VATincluding") {
         //   this.formData.sale_totalprice = this.formatDecimal(
@@ -1882,7 +1599,7 @@ export default {
         );
         this.formData.vat = this.formatDecimal(
           parseFloat(this.formData.Net_price.replace(/,/g, "")) -
-            parseFloat(this.formData.sale_totalprice.replace(/,/g, ""))
+          parseFloat(this.formData.sale_totalprice.replace(/,/g, ""))
         );
       } else {
         this.formData.vat = this.formatDecimal(
@@ -1890,7 +1607,7 @@ export default {
         );
         this.formData.sale_totalprice = this.formatDecimal(
           parseFloat(this.formData.Net_price.replace(/,/g, "")) +
-            parseFloat(this.formData.vat.replace(/,/g, ""))
+          parseFloat(this.formData.vat.replace(/,/g, ""))
         );
       }
     },
@@ -2055,7 +1772,7 @@ export default {
           product && product.productImg ? product.productImg : "---", // ดึงรูปภาพสินค้าถ้ามี
           product
             ? product.productname +
-              (form.product_detail ? "\n" + form.product_detail : "")
+            (form.product_detail ? "\n" + form.product_detail : "")
             : "",
           form.sale_qty.toLocaleString(),
           this.formatDecimal(product ? product.price : ""),
@@ -2306,8 +2023,8 @@ export default {
             `${this.formatDecimal(quotationData.discount_quotation)}`,
             `${this.formatDecimal(
               total_price -
-                quotationData.discount_quotation -
-                (total_price - quotationData.discount_quotation) / 1.07
+              quotationData.discount_quotation -
+              (total_price - quotationData.discount_quotation) / 1.07
             )}`,
             `${this.formatDecimal(
               total_price - quotationData.discount_quotation
@@ -2340,8 +2057,8 @@ export default {
             )}`,
             `${this.formatDecimal(
               total_price -
-                quotationData.discount_quotation +
-                (total_price - quotationData.discount_quotation) * 0.07
+              quotationData.discount_quotation +
+              (total_price - quotationData.discount_quotation) * 0.07
             )}`,
           ];
           // doc.text(FormTotalprice, 200, 215, {
@@ -3979,7 +3696,7 @@ export default {
         const json = await response.json();
 
         if (json.statusCode === 200 && json.data.sale_number) {
-          const lastCode = json.data.sale_number; 
+          const lastCode = json.data.sale_number;
           // รูปแบบใหม่: QT-HD20260124-01
           // รูปแบบเก่า: QT-2601240001
 
@@ -3987,21 +3704,21 @@ export default {
 
           // ตรวจสอบว่าเป็นรูปแบบใหม่หรือไม่ (ขึ้นต้นด้วย QT-HD)
           if (lastCode.startsWith(prefix)) {
-             // ตัด prefix ออก: 20260124-01
-             const codeBody = lastCode.substring(prefix.length); 
-             // แยกวันที่และลำดับด้วยชีดกลาง
-             const parts = codeBody.split('-');
-             
-             if (parts.length === 2) {
-                const lastDate = parts[0];
-                const lastSeq = parts[1];
+            // ตัด prefix ออก: 20260124-01
+            const codeBody = lastCode.substring(prefix.length);
+            // แยกวันที่และลำดับด้วยชีดกลาง
+            const parts = codeBody.split('-');
 
-                if (lastDate === todayDatePart) {
-                   nextNumber = parseInt(lastSeq) + 1;
-                }
-             }
-          } 
-          
+            if (parts.length === 2) {
+              const lastDate = parts[0];
+              const lastSeq = parts[1];
+
+              if (lastDate === todayDatePart) {
+                nextNumber = parseInt(lastSeq) + 1;
+              }
+            }
+          }
+
           const nextNumberStr = String(nextNumber).padStart(2, "0");
           this.formData.sale_number = `${prefix}${todayDatePart}-${nextNumberStr}`;
         } else {
@@ -4096,7 +3813,7 @@ export default {
       const nextMonthDate = new Date(currentDate);
       nextMonthDate.setMonth(nextMonthDate.getMonth() + 1);
 
-      this.checkLastestQuotationNumber();
+      // this.checkLastestQuotationNumber();
       this.isPopupOpen = true;
       this.isAddingMode = true;
       this.isEditMode = false;
@@ -4105,8 +3822,8 @@ export default {
         bus_id: "",
         cus_id: "",
         productID: "",
-        employeeID: "",
-        employeeName: "",
+        employeeID: localStorage.getItem("user_id") || "",
+        employeeName: localStorage.getItem("user_name") || "",
         position: "",
         employeeEmail: "",
         employeeTel: "",
@@ -4117,21 +3834,21 @@ export default {
         cus_tax: "",
         cus_purchase: "",
         sale_qty: "",
-        sale_number: "",
+        sale_number: "HD",
         // sale_date: currentDate,
         // credit_date_number: "30 Days",
         sale_date:
           this.t("lang") === "en"
             ? new Date(
-                new Date(currentDate).setFullYear(currentDate.getFullYear())
-              )
+              new Date(currentDate).setFullYear(currentDate.getFullYear())
+            )
             : currentDate,
         credit_date_number: "30 Days",
         credit_expired_date:
           this.t("lang") === "en"
             ? new Date(
-                new Date(nextMonthDate).setFullYear(nextMonthDate.getFullYear())
-              )
+              new Date(nextMonthDate).setFullYear(nextMonthDate.getFullYear())
+            )
             : nextMonthDate,
         discounttype: "",
         sale_discount: 0,
@@ -4326,6 +4043,8 @@ export default {
         sale_discount: 0,
         discounttype: "amount",
         productname: "",
+        productName: "", // Added for consistency with new template
+        showProductDropdown: false, // Added for dropdown control
         productImg: "",
         product_detail: "",
         pro_unti: "",
@@ -4401,7 +4120,7 @@ export default {
           );
           this.formData.vat = this.formatDecimal(
             parseFloat(this.formData.Net_price.replace(/,/g, "")) -
-              parseFloat(this.formData.sale_totalprice.replace(/,/g, ""))
+            parseFloat(this.formData.sale_totalprice.replace(/,/g, ""))
           );
         } else {
           this.formData.vat = this.formatDecimal(
@@ -4409,7 +4128,7 @@ export default {
           );
           this.formData.sale_totalprice = this.formatDecimal(
             parseFloat(this.formData.Net_price.replace(/,/g, "")) +
-              parseFloat(this.formData.vat.replace(/,/g, ""))
+            parseFloat(this.formData.vat.replace(/,/g, ""))
           );
         }
 
@@ -4439,9 +4158,9 @@ export default {
           if (discountPercent > 0) {
             form.sale_price = this.formatDecimal(
               form.sale_qty * parseFloat(form.price.replace(/,/g, "")) -
-                form.sale_qty *
-                  parseFloat(form.price.replace(/,/g, "")) *
-                  (discountPercent / 100)
+              form.sale_qty *
+              parseFloat(form.price.replace(/,/g, "")) *
+              (discountPercent / 100)
             );
           }
         } else {
@@ -4462,7 +4181,7 @@ export default {
             form.sale_price = this.formatDecimal(
               parseFloat(
                 form.sale_qty * parseFloat(form.price.replace(/,/g, "")) -
-                  parseFloat(form.sale_discount)
+                parseFloat(form.sale_discount)
               )
             );
           }
@@ -4479,7 +4198,7 @@ export default {
           );
           this.formData.vat = this.formatDecimal(
             parseFloat(this.formData.Net_price.replace(/,/g, "")) -
-              parseFloat(this.formData.sale_totalprice.replace(/,/g, ""))
+            parseFloat(this.formData.sale_totalprice.replace(/,/g, ""))
           );
         } else {
           this.formData.vat = this.formatDecimal(
@@ -4487,7 +4206,7 @@ export default {
           );
           this.formData.sale_totalprice = this.formatDecimal(
             parseFloat(this.formData.Net_price.replace(/,/g, "")) +
-              parseFloat(this.formData.vat.replace(/,/g, ""))
+            parseFloat(this.formData.vat.replace(/,/g, ""))
           );
         }
       }
@@ -4535,7 +4254,7 @@ export default {
           );
           this.formData.vat = this.formatDecimal(
             parseFloat(this.formData.Net_price.replace(/,/g, "")) -
-              parseFloat(this.formData.sale_totalprice.replace(/,/g, ""))
+            parseFloat(this.formData.sale_totalprice.replace(/,/g, ""))
           );
         } else {
           this.formData.vat = this.formatDecimal(
@@ -4543,7 +4262,7 @@ export default {
           );
           this.formData.sale_totalprice = this.formatDecimal(
             parseFloat(this.formData.Net_price.replace(/,/g, "")) +
-              parseFloat(this.formData.vat.replace(/,/g, ""))
+            parseFloat(this.formData.vat.replace(/,/g, ""))
           );
         }
 
@@ -4573,9 +4292,9 @@ export default {
           if (discountPercent > 0) {
             form.sale_price = this.formatDecimal(
               form.sale_qty * parseFloat(form.price.replace(/,/g, "")) -
-                form.sale_qty *
-                  parseFloat(form.price.replace(/,/g, "")) *
-                  (discountPercent / 100)
+              form.sale_qty *
+              parseFloat(form.price.replace(/,/g, "")) *
+              (discountPercent / 100)
             );
           }
         } else {
@@ -4596,7 +4315,7 @@ export default {
             form.sale_price = this.formatDecimal(
               parseFloat(
                 form.sale_qty * parseFloat(form.price.replace(/,/g, "")) -
-                  parseFloat(form.sale_discount)
+                parseFloat(form.sale_discount)
               )
             );
           }
@@ -4614,7 +4333,7 @@ export default {
           );
           this.formData.vat = this.formatDecimal(
             parseFloat(this.formData.Net_price.replace(/,/g, "")) -
-              parseFloat(this.formData.sale_totalprice.replace(/,/g, ""))
+            parseFloat(this.formData.sale_totalprice.replace(/,/g, ""))
           );
         } else {
           this.formData.vat = this.formatDecimal(
@@ -4622,7 +4341,7 @@ export default {
           );
           this.formData.sale_totalprice = this.formatDecimal(
             parseFloat(this.formData.Net_price.replace(/,/g, "")) +
-              parseFloat(this.formData.vat.replace(/,/g, ""))
+            parseFloat(this.formData.vat.replace(/,/g, ""))
           );
         }
       }
@@ -4768,7 +4487,8 @@ export default {
           discounttype: detail.discounttype,
           product_detail: detail.product_detail,
           pro_unti: detail.pro_unti,
-          productName: selectedProduct.productname,
+          productName: selectedProduct ? selectedProduct.productname : "",
+          showProductDropdown: false,
         };
       });
 
@@ -4814,7 +4534,7 @@ export default {
         );
         this.formData.vat = this.formatDecimal(
           parseFloat(this.formData.Net_price.replace(/,/g, "")) -
-            parseFloat(this.formData.sale_totalprice.replace(/,/g, ""))
+          parseFloat(this.formData.sale_totalprice.replace(/,/g, ""))
         );
       } else {
         this.formData.vat = this.formatDecimal(
@@ -4822,7 +4542,7 @@ export default {
         );
         this.formData.sale_totalprice = this.formatDecimal(
           parseFloat(this.formData.Net_price.replace(/,/g, "")) +
-            parseFloat(this.formData.vat.replace(/,/g, ""))
+          parseFloat(this.formData.vat.replace(/,/g, ""))
         );
       }
       this.isReadonly = true;
@@ -5121,7 +4841,7 @@ export default {
         );
         this.formData.vat = this.formatDecimal(
           parseFloat(this.formData.Net_price.replace(/,/g, "")) -
-            parseFloat(this.formData.sale_totalprice.replace(/,/g, ""))
+          parseFloat(this.formData.sale_totalprice.replace(/,/g, ""))
         );
       } else {
         this.formData.vat = this.formatDecimal(
@@ -5129,7 +4849,7 @@ export default {
         );
         this.formData.sale_totalprice = this.formatDecimal(
           parseFloat(this.formData.Net_price.replace(/,/g, "")) +
-            parseFloat(this.formData.vat.replace(/,/g, ""))
+          parseFloat(this.formData.vat.replace(/,/g, ""))
         );
       }
 
@@ -5151,62 +4871,71 @@ export default {
 </script>
 <style>
 .custom-dropdown {
-  padding-right: 30px; /* เพิ่มพื้นที่ด้านขวาเพื่อใส่ลูกศร */
-  background-image: url('data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 8"%3E%3Cpath fill="none" stroke="black" stroke-width="1" d="M1 1l5 5 5-5" /%3E%3C/svg%3E'); /* สัญลักษณ์ลูกศร */
+  padding-right: 30px;
+  /* เพิ่มพื้นที่ด้านขวาเพื่อใส่ลูกศร */
+  background-image: url('data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 8"%3E%3Cpath fill="none" stroke="black" stroke-width="1" d="M1 1l5 5 5-5" /%3E%3C/svg%3E');
+  /* สัญลักษณ์ลูกศร */
   background-repeat: no-repeat;
-  background-position: right 10px center; /* กำหนดตำแหน่งของลูกศร */
-  background-size: 12px; /* ขนาดของลูกศร */
+  background-position: right 10px center;
+  /* กำหนดตำแหน่งของลูกศร */
+  background-size: 12px;
+  /* ขนาดของลูกศร */
 }
+
 /* ปรับขนาดของแต่ละคอลัมน์ */
 .product-name-column {
-  width: 30%; /* กำหนดพื้นที่มากที่สุดสำหรับชื่อสินค้า */
+  width: 30%;
+  /* กำหนดพื้นที่มากที่สุดสำหรับชื่อสินค้า */
   min-width: 150px !important;
 }
+
 .price-column {
-  width: 15%; /* รองรับข้อมูลยาวสำหรับ Price */
+  width: 15%;
+  /* รองรับข้อมูลยาวสำหรับ Price */
   min-width: 130px !important;
 }
+
 .quantity-column {
   width: 5%;
   min-width: 100px !important;
 }
+
 .unit-column {
   width: 5%;
   min-width: 120px !important;
 }
+
 .discount-column {
-  width: auto; /* ให้ขนาดปรับตามเนื้อหา */
-  white-space: nowrap; /* บังคับให้ข้อความอยู่บรรทัดเดียว */
+  width: auto;
+  /* ให้ขนาดปรับตามเนื้อหา */
+  white-space: nowrap;
+  /* บังคับให้ข้อความอยู่บรรทัดเดียว */
   text-align: center;
 }
+
 .total-price-column {
-  width: 15%; /* รองรับข้อมูลยาวสำหรับ Price */
+  width: 15%;
+  /* รองรับข้อมูลยาวสำหรับ Price */
   min-width: 130px !important;
 }
+
 .action-column {
-  width: 10%; /* คอลัมน์ปุ่มลบ */
+  width: 10%;
+  /* คอลัมน์ปุ่มลบ */
   min-width: 10px !important;
 }
+
 h5 {
   margin-bottom: 25px;
 }
-#app
-  > div
-  > div.main-page
-  > div
-  > div:nth-child(3)
-  > div
-  > div.table-contain.table-responsive.table-form
-  > table
-  > tbody
-  > tr:nth-child(1)
-  > td:nth-child(16)
-  > div {
+
+#app>div>div.main-page>div>div:nth-child(3)>div>div.table-contain.table-responsive.table-form>table>tbody>tr:nth-child(1)>td:nth-child(16)>div {
   text-overflow: ellipsis;
   overflow: hidden;
   width: 160px;
   white-space: nowrap;
 }
+
 /* เพิ่ม cursor pointer เพื่อให้ปุ่มดูเหมือนกดได้ */
 button.btn-link {
   text-decoration: none;
@@ -5241,6 +4970,7 @@ button.btn-link {
 .fade-leave-active {
   transition: opacity 0.3s ease;
 }
+
 .fade-enter-from,
 .fade-leave-to {
   opacity: 0;
@@ -5251,10 +4981,12 @@ button.btn-link {
 .popup-leave-active {
   transition: all 0.3s ease;
 }
+
 .popup-enter-from {
   opacity: 0;
   transform: scale(0.8);
 }
+
 .popup-leave-to {
   opacity: 0;
   transform: scale(0.8);
@@ -5279,5 +5011,44 @@ button.btn-link {
 .show-only-desktop table thead tr th:nth-child(19),
 .show-only-desktop table tbody tr td:nth-child(19) {
   display: none;
+}
+
+/* Added Styles for Custom Dropdowns */
+.relative-wrapper {
+  position: relative;
+}
+
+.custom-datalist-options {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  width: 100%;
+  background: white;
+  border: 1px solid #cfcfcf;
+  border-radius: 4px;
+  max-height: 200px;
+  overflow-y: auto;
+  z-index: 1000;
+  display: none;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.custom-datalist-options.show {
+  display: block;
+}
+
+.custom-datalist-option {
+  padding: 8px 12px;
+  cursor: pointer;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.custom-datalist-option:last-child {
+  border-bottom: none;
+}
+
+.custom-datalist-option:hover {
+  background-color: #f8f9fa;
+  color: #007bff;
 }
 </style>

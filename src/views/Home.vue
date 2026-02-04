@@ -4,66 +4,80 @@
       <!-- Section Header -->
       <div class="row justify-content-center mb-4">
         <div class="col-12 col-lg-10">
-           <h2 class="section-title">เมนูลัด</h2>
+          <h2 class="section-title">เมนูลัด</h2>
         </div>
       </div>
 
       <!-- Shortcuts Cards -->
       <div class="row justify-content-center mx-2">
+        <!-- Quotation Card -->
+        <!-- <div class="col-md-6 col-lg-6 col-xl-6 mb-4 lg:mx-2">
+          <div class="shortcut-card card-quotation" @click="accessQuotation">
+            <div class="icon-wrapper">
+              <span class="mdi mdi-file-document-outline"></span>
+            </div>
+            <div class="card-info">
+              <h3 class="card-title">{{ t("headerQuotation") }}</h3>
+              <span class="card-desc">{{ t("descQuotation") }}</span>
+            </div>
+            <div class="card-decoration"></div>
+          </div>
+        </div> -->
+
         <!-- Billing Note Card -->
         <div class="col-md-6 col-lg-6 col-xl-6 mb-4 lg:mx-2">
-           <div class="shortcut-card card-billing"  @click="accessBillingNote">
-              <div class="icon-wrapper">
-                 <span class="mdi mdi-receipt-text-outline"></span>
-              </div>
-              <div class="card-info">
-                 <h3 class="card-title">{{ t("headerBilling") }}</h3>
-                 <span class="card-desc">{{ t("descBilling") }}</span>
-              </div>
-              <div class="card-decoration"></div>
-           </div>
+          <div class="shortcut-card card-billing" @click="accessBillingNote">
+            <div class="icon-wrapper">
+              <span class="mdi mdi-receipt-text-outline"></span>
+            </div>
+            <div class="card-info">
+              <h3 class="card-title">{{ t("headerBilling") }}</h3>
+              <span class="card-desc">{{ t("descBilling") }}</span>
+            </div>
+            <div class="card-decoration"></div>
+          </div>
         </div>
 
         <!-- Product Card -->
         <div class="col-md-6 col-lg-6 col-xl-6 mb-4 lg:mx-2">
-           <div class="shortcut-card card-product" @click="accessProduct">
-              <div class="icon-wrapper">
-                 <span class="mdi mdi-cube-outline"></span>
-              </div>
-              <div class="card-info">
-                 <h3 class="card-title">{{ t("headerProduct") }}</h3>
-                 <span class="card-desc">{{ t("descProduct") }}</span>
-              </div>
-              <div class="card-decoration"></div>
-           </div>
+          <div class="shortcut-card card-product" @click="accessProduct">
+            <div class="icon-wrapper">
+              <span class="mdi mdi-cube-outline"></span>
+            </div>
+            <div class="card-info">
+              <h3 class="card-title">{{ t("headerProduct") }}</h3>
+              <span class="card-desc">{{ t("descProduct") }}</span>
+            </div>
+            <div class="card-decoration"></div>
+          </div>
         </div>
 
         <!-- Customer Card -->
         <div class="col-md-6 col-lg-6 col-xl-6 mb-4 lg:mx-2">
-           <div class="shortcut-card card-customer" @click="accessCustomer">
-              <div class="icon-wrapper">
-                 <span class="mdi mdi-account-group-outline"></span>
-              </div>
-              <div class="card-info">
-                 <h3 class="card-title">{{ t("headerCustomer") }}</h3>
-                 <span class="card-desc">{{ t("descCustomer") }}</span>
-              </div>
-              <div class="card-decoration"></div>
-           </div>
+          <div class="shortcut-card card-customer" @click="accessCustomer">
+            <div class="icon-wrapper">
+              <span class="mdi mdi-account-group-outline"></span>
+            </div>
+            <div class="card-info">
+              <h3 class="card-title">{{ t("headerCustomer") }}</h3>
+              <span class="card-desc">{{ t("descCustomer") }}</span>
+            </div>
+            <div class="card-decoration"></div>
+          </div>
         </div>
 
         <!-- About Business Card -->
         <div class="col-md-6 col-lg-6 col-xl-6 mb-4 lg:mx-2">
-           <div class="shortcut-card card-about" @click="accessAbout">
-              <div class="icon-wrapper">
-                 <span class="mdi mdi-domain"></span>
-              </div>
-              <div class="card-info">
-                 <h3 class="card-title">{{ t("headerAbout") }}</h3>
-                 <span class="card-desc">{{ t("descAbout") }}</span>
-              </div>
-              <div class="card-decoration"></div>
-           </div>
+          <div class="shortcut-card card-about" @click="accessAbout">
+            <div class="icon-wrapper">
+              <span class="mdi mdi-domain"></span>
+            </div>
+            <div class="card-info">
+              <h3 class="card-title">{{ t("headerAbout") }}</h3>
+              <span class="card-desc">{{ t("descAbout") }}</span>
+            </div>
+            <div class="card-decoration"></div>
+          </div>
         </div>
       </div>
     </div>
@@ -86,6 +100,9 @@ export default {
     };
   },
   methods: {
+    accessQuotation() {
+      this.$router.push("/quotation");
+    },
     accessProduct() {
       this.$router.push("/product");
     },
@@ -206,7 +223,7 @@ export default {
 
 /* Product Card - Orange/Pink Gradient */
 .card-product .icon-wrapper {
-  background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 99%, #fecfef 100%); 
+  background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 99%, #fecfef 100%);
   /* Using a more vibrant orange/red gradient based on popular dashboard trends */
   background: linear-gradient(135deg, #FF8008 0%, #FFC837 100%);
   box-shadow: 0 8px 16px rgba(255, 128, 8, 0.3);
@@ -272,18 +289,43 @@ export default {
   color: #8E2DE2;
 }
 
+/* Quotation Card - Indigo Gradient */
+.card-quotation .icon-wrapper {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  box-shadow: 0 8px 16px rgba(102, 126, 234, 0.3);
+}
+
+.card-quotation .card-decoration {
+  position: absolute;
+  top: -20px;
+  right: -20px;
+  width: 120px;
+  height: 120px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  opacity: 0.1;
+  border-radius: 50%;
+  z-index: 1;
+}
+
+.card-quotation:hover .card-title {
+  color: #667eea;
+}
+
 @media (max-width: 768px) {
   .shortcut-card {
     padding: 20px;
   }
+
   .icon-wrapper {
     width: 60px;
     height: 60px;
     margin-right: 15px;
   }
+
   .icon-wrapper .mdi {
     font-size: 28px;
   }
+
   .card-title {
     font-size: 18px;
   }

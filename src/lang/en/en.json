@@ -28,6 +28,7 @@
   "headerInvoice": "Invoice",
   "descAbout": "Manage business information",
   "descCustomer": "Manage customer information",
+  "descQuotation": "Manage quotation",
   "descProduct": "Manage product information",
   "descService": "Manage service information",
   "descBilling": "Manage receipt/tax invoice",

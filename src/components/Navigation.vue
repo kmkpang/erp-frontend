@@ -91,6 +91,12 @@
               </a>
             </li>
             <div class="sub-sidebar" v-if="isOpenSale">
+              <!-- Quotation -->
+              <!-- <li v-if="searchNav === ''" class="nav-item" :class="{ active: activePage === 'quotation' }"
+                @click="handleSidebarToggleOnMobile">
+                <router-link @click="handleClicktoQuotation" class="nav-link" to="/quotation"
+                  :disabled="activePage === 'quotation'">{{ t("headerQuotation") }}</router-link>
+              </li> -->
               <!-- Billing Note -->
               <li v-if="searchNav === ''" class="nav-item" :class="{ active: activePage === 'billingnote' }"
                 @click="handleSidebarToggleOnMobile">
@@ -425,12 +431,12 @@ export default {
         //   path: "/expenses",
         //   displayNameTh: "รายจ่าย",
         // },
-        // {
-        //   name: "quotation",
-        //   displayName: "Quotation",
-        //   path: "/quotation",
-        //   displayNameTh: "ใบเสนอราคา",
-        // },
+        {
+          name: "quotation",
+          displayName: "Quotation",
+          path: "/quotation",
+          displayNameTh: "ใบเสนอราคา",
+        },
         // {
         //   name: "invoice",
         //   displayName: "Invoice",

@@ -10,6 +10,7 @@ import About from "./views/About.vue";
 import forgetPassword from "./views/forgetpassword.vue";
 import Customer from "./views/Customer.vue";
 import BillingNote from "./views/BillingNote.vue";
+import Quotation from "./views/Quotation.vue";
 import { config } from "../constant";
 import FirstRegis from "./views/FirstRegister.vue";
 
@@ -65,6 +66,12 @@ const routes = [
     name: "customer",
     meta: { requiresAuth: true, roles: ["SUPERUSER", "MANAGER", "SALE"] },
   },
+  // {
+  //   path: "/quotation",
+  //   component: Quotation,
+  //   name: "quotation",
+  //   meta: { requiresAuth: true, roles: ["SUPERUSER", "MANAGER", "SALE"] },
+  // },
   {
     path: "/rolemanage",
     component: RoleManage,
